@@ -169,13 +169,20 @@ Optional site description extensions such as `keySections`, `publisher`, `compan
 
 ## Examples
 
-See the [`examples/`](./examples) directory for industry-specific `siteai.json` examples:
+### Core examples
+See the [`examples/`](./examples) directory for core-governance `siteai.json` examples:
 
 - 🛒 [E-Commerce](./examples/ecommerce.json)
 - 🏥 [Healthcare](./examples/healthcare.json)
 - 🍽️ [Restaurant](./examples/restaurant.json)
 - 🏦 [Banking](./examples/banking.json)
 - 📰 [News & Media](./examples/news-media.json)
+
+### Extensions examples
+See [`examples/extensions/`](./examples/extensions) for richer examples that combine the core with optional site description extensions:
+
+- ☁️ [SaaS Platform](./examples/extensions/saas-platform.json)
+- 🛍️ [Rich E-Commerce](./examples/extensions/ecommerce-rich.json)
 
 ## Contributing
 

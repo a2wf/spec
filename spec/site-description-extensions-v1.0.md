@@ -370,7 +370,18 @@ A good UI model is:
 
 ---
 
-## 8. References
+## 8. Example Files in This Repository
+
+The repository includes practical extension examples:
+
+- `examples/extensions/saas-platform.json`
+- `examples/extensions/ecommerce-rich.json`
+
+These examples are intentionally richer than the core examples and demonstrate how optional descriptive fields can coexist with the governance layer.
+
+---
+
+## 9. References
 
 - Core Specification: `spec/specification-v1.0.md`
 - Website: https://a2wf.org

@@ -1,0 +1,138 @@
+{
+  "@context": "https://schema.org",
+  "specVersion": "1.0",
+  "identity": {
+    "@type": "WebSite",
+    "domain": "https://www.example-store.com",
+    "name": "Example Commerce Store",
+    "description": "Online store for electronics and accessories.",
+    "purpose": "E-commerce storefront with catalog, cart, checkout, and post-purchase support.",
+    "inLanguage": "en",
+    "category": "e-commerce"
+  },
+  "defaults": {
+    "agentAccess": "restricted",
+    "requireIdentification": true,
+    "maxRequestsPerMinute": 30,
+    "respectRobotsTxt": true
+  },
+  "permissions": {
+    "read": {
+      "productCatalog": {
+        "allowed": true,
+        "rateLimit": 60
+      },
+      "pricing": {
+        "allowed": true
+      },
+      "availability": {
+        "allowed": true,
+        "rateLimit": 30
+      },
+      "faq": {
+        "allowed": true
+      }
+    },
+    "action": {
+      "search": {
+        "allowed": true,
+        "rateLimit": 20
+      },
+      "addToCart": {
+        "allowed": true
+      },
+      "checkout": {
+        "allowed": true,
+        "humanVerification": true
+      },
+      "requestRefund": {
+        "allowed": false,
+        "note": "Refund initiation requires human review."
+      }
+    },
+    "data": {
+      "customerRecords": {
+        "allowed": false
+      },
+      "paymentInfo": {
+        "allowed": false
+      },
+      "orderHistory": {
+        "allowed": false
+      }
+    }
+  },
+  "humanVerification": {
+    "methods": [
+      "redirect-to-browser"
+    ],
+    "requiredFor": [
+      "checkout"
+    ]
+  },
+  "forms": [
+    {
+      "name": "Checkout",
+      "type": "checkout",
+      "url": "https://www.example-store.com/checkout",
+      "method": "POST",
+      "fields": [
+        "shippingAddress",
+        "billingAddress",
+        "paymentMethod"
+      ],
+      "humanVerificationRecommended": true
+    },
+    {
+      "name": "Contact support",
+      "type": "contact",
+      "url": "https://www.example-store.com/support/contact",
+      "method": "POST",
+      "fields": [
+        "name",
+        "email",
+        "orderId",
+        "message"
+      ],
+      "humanVerificationRecommended": true
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "name": "Product API",
+      "url": "https://api.example-store.com/catalog/v1",
+      "kind": "rest",
+      "documentationUrl": "https://developers.example-store.com/catalog",
+      "authenticationRequired": false
+    }
+  ],
+  "search": {
+    "url": "https://www.example-store.com/search",
+    "parameter": "q",
+    "supportsFilters": true,
+    "searchTypes": [
+      "products",
+      "brands",
+      "categories"
+    ]
+  },
+  "ecommerce": {
+    "currency": "EUR",
+    "supportsCart": true,
+    "supportsCheckout": true,
+    "supportsRefunds": true,
+    "supportsGuestCheckout": true,
+    "inventoryVisibility": "public"
+  },
+  "mainContact": {
+    "@type": "ContactPoint",
+    "url": "https://www.example-store.com/support",
+    "contactType": "customer support",
+    "email": "support@example-store.com"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Example Commerce GmbH",
+    "url": "https://www.example-store.com"
+  }
+}

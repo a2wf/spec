@@ -1,0 +1,139 @@
+{
+  "@context": "https://schema.org",
+  "specVersion": "1.0",
+  "identity": {
+    "@type": "WebSite",
+    "domain": "https://www.example-saas.com",
+    "name": "Example SaaS Platform",
+    "description": "Cloud platform for project collaboration and client workflows.",
+    "purpose": "SaaS platform for managing projects, tasks, and client communication.",
+    "inLanguage": "en",
+    "category": "saas"
+  },
+  "defaults": {
+    "agentAccess": "restricted",
+    "requireIdentification": true,
+    "maxRequestsPerMinute": 30,
+    "respectRobotsTxt": true
+  },
+  "permissions": {
+    "read": {
+      "companyInfo": {
+        "allowed": true
+      },
+      "faq": {
+        "allowed": true
+      },
+      "pricing": {
+        "allowed": true
+      }
+    },
+    "action": {
+      "search": {
+        "allowed": true,
+        "rateLimit": 20
+      },
+      "submitContactForm": {
+        "allowed": false,
+        "note": "Contact requests require a real human."
+      },
+      "createAccount": {
+        "allowed": false,
+        "note": "Account creation should be user initiated."
+      }
+    },
+    "data": {
+      "customerRecords": {
+        "allowed": false
+      },
+      "internalAnalytics": {
+        "allowed": false
+      }
+    }
+  },
+  "agentIdentification": {
+    "requireUserAgent": true,
+    "requiredFields": [
+      "agentName",
+      "agentOperator",
+      "agentPurpose"
+    ],
+    "allowAnonymousAgents": false
+  },
+  "discovery": {
+    "robotsTxt": "https://www.example-saas.com/robots.txt",
+    "llmsTxt": "https://www.example-saas.com/llms.txt",
+    "openApi": "https://developer.example-saas.com/openapi.json",
+    "schemaOrg": true
+  },
+  "forms": [
+    {
+      "name": "Contact sales",
+      "type": "contact",
+      "url": "https://www.example-saas.com/contact",
+      "method": "POST",
+      "fields": [
+        "name",
+        "email",
+        "company",
+        "message"
+      ],
+      "humanVerificationRecommended": true
+    },
+    {
+      "name": "Request demo",
+      "type": "contact",
+      "url": "https://www.example-saas.com/demo",
+      "method": "POST",
+      "fields": [
+        "name",
+        "email",
+        "company",
+        "teamSize"
+      ],
+      "humanVerificationRecommended": true
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "name": "Public REST API",
+      "url": "https://api.example-saas.com/v1",
+      "kind": "rest",
+      "documentationUrl": "https://developer.example-saas.com/api",
+      "authenticationRequired": true
+    },
+    {
+      "name": "MCP server",
+      "url": "https://www.example-saas.com/.well-known/mcp.json",
+      "kind": "mcp",
+      "authenticationRequired": false
+    }
+  ],
+  "search": {
+    "url": "https://www.example-saas.com/search",
+    "parameter": "q",
+    "supportsFilters": true,
+    "searchTypes": [
+      "docs",
+      "blog",
+      "templates"
+    ]
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Example SaaS Inc.",
+    "url": "https://www.example-saas.com"
+  },
+  "services": [
+    {
+      "name": "Project Management",
+      "url": "https://www.example-saas.com/features/project-management",
+      "category": "software"
+    },
+    {
+      "name": "Client Portal",
+      "url": "https://www.example-saas.com/features/client-portal",
+      "category": "software"
+    }
+  ]
+}
