@@ -1,0 +1,54 @@
+{
+  "$schema": "https://a2wf.org/schemas/agent-policy/v0.1/schema.json",
+  "specVersion": "0.1",
+  "identity": {
+    "domain": "https://www.example-store.com",
+    "name": "Example Online Store",
+    "jurisdiction": "EU"
+  },
+  "defaults": {
+    "agentAccess": "restricted",
+    "requireIdentification": true,
+    "maxRequestsPerMinute": 30
+  },
+  "permissions": {
+    "read": {
+      "productCatalog": { "allowed": true, "rateLimit": 60 },
+      "pricing": { "allowed": true, "rateLimit": 60 },
+      "availability": { "allowed": true, "rateLimit": 30 },
+      "reviews": { "allowed": true, "rateLimit": 20 },
+      "faq": { "allowed": true }
+    },
+    "action": {
+      "search": { "allowed": true, "rateLimit": 20 },
+      "addToCart": { "allowed": true },
+      "checkout": { "allowed": true, "humanVerification": true, "note": "Final purchase requires human confirmation." },
+      "createAccount": { "allowed": false },
+      "submitReview": { "allowed": false }
+    },
+    "data": {
+      "customerRecords": { "allowed": false },
+      "orderHistory": { "allowed": false },
+      "paymentInfo": { "allowed": false }
+    }
+  },
+  "scraping": {
+    "bulkDataExtraction": false,
+    "priceMonitoring": false,
+    "trainingDataUsage": false,
+    "contentReproduction": false
+  },
+  "agentIdentification": {
+    "requireUserAgent": true,
+    "requiredFields": ["agentName", "agentOperator"],
+    "allowAnonymousAgents": false
+  },
+  "humanVerification": {
+    "methods": ["redirect-to-browser"],
+    "requiredFor": ["checkout"]
+  },
+  "legal": {
+    "termsUrl": "https://www.example-store.com/legal/ai-terms",
+    "dataRetention": "Agents must not cache content beyond the user session."
+  }
+}

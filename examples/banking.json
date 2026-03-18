@@ -1,0 +1,72 @@
+{
+  "$schema": "https://a2wf.org/schemas/agent-policy/v0.1/schema.json",
+  "specVersion": "0.1",
+  "identity": {
+    "domain": "https://www.example-bank.com",
+    "name": "Example Bank AG",
+    "jurisdiction": "EU",
+    "applicableLaw": ["EU AI Act", "GDPR", "PSD2", "MiFID II"]
+  },
+  "defaults": {
+    "agentAccess": "minimal",
+    "requireIdentification": true,
+    "humanVerificationRequired": true,
+    "maxRequestsPerMinute": 5,
+    "maxRequestsPerHour": 50
+  },
+  "permissions": {
+    "read": {
+      "productCatalog": { "allowed": true, "rateLimit": 5, "note": "Public product information: account types, interest rates, fee schedules." },
+      "contactInfo": { "allowed": true },
+      "openingHours": { "allowed": true },
+      "faq": { "allowed": true }
+    },
+    "action": {
+      "search": { "allowed": true, "rateLimit": 3 },
+      "checkout": { "allowed": false, "note": "No financial transactions may be initiated by agents." },
+      "createAccount": { "allowed": false, "note": "Account opening requires in-person or video identification (KYC)." },
+      "submitContactForm": { "allowed": true, "humanVerification": true },
+      "bookAppointment": { "allowed": true, "humanVerification": true },
+      "cancelOrder": { "allowed": false },
+      "requestRefund": { "allowed": false }
+    },
+    "data": {
+      "customerRecords": { "allowed": false, "note": "Banking secrecy. No customer data access permitted." },
+      "orderHistory": { "allowed": false, "note": "Transaction history is confidential." },
+      "paymentInfo": { "allowed": false },
+      "internalAnalytics": { "allowed": false },
+      "employeeData": { "allowed": false }
+    }
+  },
+  "scraping": {
+    "bulkDataExtraction": false,
+    "priceMonitoring": false,
+    "trainingDataUsage": false,
+    "contentReproduction": false,
+    "competitiveAnalysis": false
+  },
+  "agentIdentification": {
+    "requireUserAgent": true,
+    "requiredFields": ["agentName", "agentOperator", "agentPurpose"],
+    "allowAnonymousAgents": false,
+    "trustedAgents": [],
+    "blockedAgents": [
+      { "pattern": "*scraper*", "reason": "Prohibited." },
+      { "pattern": "*crawler*", "reason": "Prohibited." }
+    ]
+  },
+  "humanVerification": {
+    "methods": ["redirect-to-browser", "email-confirmation", "sms-otp"],
+    "requiredFor": ["submitContactForm", "bookAppointment"]
+  },
+  "legal": {
+    "termsUrl": "https://www.example-bank.com/legal/ai-access-policy",
+    "complianceNote": "This financial institution is regulated under EU banking law. Unauthorized automated access to banking systems may constitute a criminal offense. All agent interactions are logged and monitored.",
+    "dataRetention": "Agents must not store any data obtained from this domain.",
+    "euAiActCompliance": {
+      "transparencyRequired": true,
+      "riskClassification": "high",
+      "humanOversightMandatory": true
+    }
+  }
+}
