@@ -37,7 +37,7 @@ Create `/siteai.json` on your website:
 
 ```json
 {
-  "specVersion": "0.1",
+  "specVersion": "1.0",
   "identity": {
     "name": "My Website",
     "description": "A brief description",

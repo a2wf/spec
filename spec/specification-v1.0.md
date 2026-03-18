@@ -1,4 +1,4 @@
-# A2WF Specification — Version 0.1 (Draft)
+# A2WF Specification — Version 1.0 (Draft)
 
 **Status:** Proposed Standard  
 **Version:** 0.1  
@@ -78,7 +78,7 @@ SiteAI: https://example.com/siteai.json
 
 ```json
 {
-  "specVersion": "0.1",
+  "specVersion": "1.0",
   "identity": { ... },
   "permissions": { ... },
   "rateLimit": { ... },
@@ -94,7 +94,7 @@ SiteAI: https://example.com/siteai.json
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `specVersion` | String | Yes | The A2WF specification version. Currently `"0.1"` |
+| `specVersion` | String | Yes | The A2WF specification version. Currently `"1.0"` |
 
 ### 3.3 identity Object (REQUIRED)
 
@@ -187,7 +187,7 @@ Defines how agents should identify themselves when interacting.
 
 ```json
 {
-  "specVersion": "0.1",
+  "specVersion": "1.0",
   "identity": {
     "name": "Example Online Store",
     "description": "Premium widgets and gadgets with AI-assisted shopping",
