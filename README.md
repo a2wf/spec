@@ -5,6 +5,13 @@
 </p>
 
 <p align="center">
+  <a href="https://a2wf.org/specification/"><img src="https://img.shields.io/badge/spec-v1.0-0D7377?style=flat-square" alt="Spec v1.0"></a>
+  <a href="https://schema.org"><img src="https://img.shields.io/badge/Schema.org-compatible-blue?style=flat-square&logo=schema.org" alt="Schema.org Compatible"></a>
+  <a href="https://github.com/a2wf/spec/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License"></a>
+  <a href="https://a2wf.org/convert/"><img src="https://img.shields.io/badge/try-converter-orange?style=flat-square" alt="Try Converter"></a>
+</p>
+
+<p align="center">
   <strong>The open standard for structured AI agent interaction with websites.</strong>
 </p>
 
