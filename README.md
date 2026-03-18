@@ -184,6 +184,14 @@ See [`examples/extensions/`](./examples/extensions) for richer examples that com
 - ☁️ [SaaS Platform](./examples/extensions/saas-platform.json)
 - 🛍️ [Rich E-Commerce](./examples/extensions/ecommerce-rich.json)
 
+## WordPress Plugin Prototype
+
+A first MVP scaffold for WordPress lives in:
+
+- [`wordpress-plugin/a2wf-siteai-manager/`](./wordpress-plugin/a2wf-siteai-manager)
+
+It separates **Core Governance** and **Extensions** in the admin UI and publishes a generated `siteai.json` via WordPress.
+
 ## Contributing
 
 We welcome contributions. Please see [CONTRIBUTING.md](./CONTRIBUTING.md).
