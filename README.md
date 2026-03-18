@@ -1,7 +1,7 @@
 # A2WF — Agent-to-Web Framework
 
 <p align="center">
-  <img src="https://a2wf.org/wp-content/uploads/2025/04/kleinAgents.png" alt="A2WF Logo" width="200">
+  <img src="assets/logo.png" alt="A2WF Logo" width="200">
 </p>
 
 <p align="center">
