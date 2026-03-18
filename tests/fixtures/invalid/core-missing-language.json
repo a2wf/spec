@@ -1,0 +1,12 @@
+{
+  "specVersion": "1.0",
+  "identity": {
+    "domain": "https://example.org",
+    "name": "Broken Core Site"
+  },
+  "permissions": {
+    "read": {
+      "faq": { "allowed": true }
+    }
+  }
+}

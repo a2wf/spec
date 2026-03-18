@@ -1,0 +1,17 @@
+{
+  "specVersion": "1.0",
+  "identity": {
+    "domain": "https://example.org",
+    "name": "Broken Extension Site",
+    "inLanguage": "en"
+  },
+  "permissions": {
+    "action": {
+      "search": { "allowed": true }
+    }
+  },
+  "search": {
+    "url": "/search",
+    "parameter": "q"
+  }
+}

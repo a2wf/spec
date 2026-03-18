@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2wf.org/schema/extensions-companion-v1.0.json",
+  "title": "A2WF Site Description Extensions v1.0 (baseline structure)",
+  "type": "object",
+  "properties": {
+    "keySections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "entryPoint": { "type": "string", "format": "uri" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "mainContact": { "type": "object", "additionalProperties": true },
+    "publisher": { "type": "object", "additionalProperties": true },
+    "company": { "type": "object", "additionalProperties": true },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "category": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "forms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "method": { "type": "string" },
+          "fields": { "type": "array", "items": { "type": "string" } },
+          "humanVerificationRecommended": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "apiEndpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "kind": { "type": "string" },
+          "documentationUrl": { "type": "string", "format": "uri" },
+          "authenticationRequired": { "type": "boolean" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "search": {
+      "type": "object",
+      "properties": {
+        "url": { "type": "string", "format": "uri" },
+        "parameter": { "type": "string" },
+        "supportsFilters": { "type": "boolean" },
+        "searchTypes": { "type": "array", "items": { "type": "string" } }
+      },
+      "additionalProperties": true
+    },
+    "faq": { "type": "object", "additionalProperties": true },
+    "navigation": { "type": "object", "additionalProperties": true },
+    "ecommerce": { "type": "object", "additionalProperties": true },
+    "media": { "type": "object", "additionalProperties": true },
+    "careers": { "type": "object", "additionalProperties": true },
+    "innovations": { "type": "object", "additionalProperties": true },
+    "securityDefinitions": { "type": "object", "additionalProperties": true },
+    "alternateVersions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "language": { "type": "string" },
+          "url": { "type": "string", "format": "uri" }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

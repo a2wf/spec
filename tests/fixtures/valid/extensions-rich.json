@@ -1,0 +1,59 @@
+{
+  "@context": "https://schema.org",
+  "specVersion": "1.0",
+  "identity": {
+    "@type": "WebSite",
+    "domain": "https://example.com",
+    "name": "Example Rich Site",
+    "inLanguage": "de-AT",
+    "category": "e-commerce"
+  },
+  "permissions": {
+    "read": {
+      "productCatalog": { "allowed": true },
+      "faq": { "allowed": true }
+    },
+    "action": {
+      "search": { "allowed": true },
+      "checkout": { "allowed": true, "humanVerification": true }
+    },
+    "data": {
+      "paymentInfo": { "allowed": false }
+    }
+  },
+  "humanVerification": {
+    "methods": ["redirect-to-browser"],
+    "requiredFor": ["checkout"]
+  },
+  "forms": [
+    {
+      "name": "Checkout",
+      "type": "checkout",
+      "url": "https://example.com/checkout",
+      "method": "POST",
+      "fields": ["email", "shippingAddress"],
+      "humanVerificationRecommended": true
+    }
+  ],
+  "apiEndpoints": [
+    {
+      "name": "Catalog API",
+      "url": "https://api.example.com/v1",
+      "kind": "rest",
+      "documentationUrl": "https://developer.example.com/catalog",
+      "authenticationRequired": false
+    }
+  ],
+  "search": {
+    "url": "https://example.com/search",
+    "parameter": "q",
+    "supportsFilters": true,
+    "searchTypes": ["products"]
+  },
+  "alternateVersions": [
+    {
+      "language": "en",
+      "url": "https://example.com/en/siteai.json"
+    }
+  ]
+}

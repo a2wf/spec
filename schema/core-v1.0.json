@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2wf.org/schema/core-v1.0.json",
+  "title": "A2WF Core v1.0 (baseline structure)",
+  "type": "object",
+  "required": ["specVersion", "identity", "permissions"],
+  "properties": {
+    "@context": { "type": "string", "const": "https://schema.org" },
+    "specVersion": { "type": "string", "const": "1.0" },
+    "identity": {
+      "type": "object",
+      "required": ["domain", "name", "inLanguage"],
+      "properties": {
+        "@type": { "type": "string" },
+        "domain": { "type": "string", "format": "uri" },
+        "name": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "purpose": { "type": "string" },
+        "inLanguage": { "type": "string", "minLength": 2 },
+        "category": { "type": "string" },
+        "jurisdiction": { "type": "string" },
+        "applicableLaw": { "type": "array", "items": { "type": "string" } },
+        "contact": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "read": { "$ref": "#/$defs/permissionGroup" },
+        "action": { "$ref": "#/$defs/permissionGroup" },
+        "data": { "$ref": "#/$defs/permissionGroup" }
+      },
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "permissionRule": {
+      "type": "object",
+      "required": ["allowed"],
+      "properties": {
+        "allowed": { "type": "boolean" },
+        "rateLimit": { "type": "integer", "minimum": 0 },
+        "humanVerification": { "type": "boolean" },
+        "note": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "permissionGroup": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/permissionRule" }
+    }
+  },
+  "additionalProperties": true
+}

@@ -5,9 +5,10 @@
     "domain": "https://www.example-restaurant.com",
     "name": "Example Restaurant",
     "jurisdiction": "EU",
-    "@type": "WebSite"
+    "@type": "WebSite",
+    "inLanguage": "en",
+    "category": "restaurant"
   },
-  "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
   "defaults": {
     "agentAccess": "open",
     "requireIdentification": false,
@@ -82,5 +83,10 @@
   },
   "legal": {
     "termsUrl": "https://www.example-restaurant.com/legal/ai-terms"
+  },
+  "metadata": {
+    "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
+    "generatedAt": "2026-03-18T14:40:00Z",
+    "author": "A2WF example"
   }
 }

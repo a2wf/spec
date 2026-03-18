@@ -5,9 +5,10 @@
     "domain": "https://www.example-store.com",
     "name": "Example Online Store",
     "jurisdiction": "EU",
-    "@type": "WebSite"
+    "@type": "WebSite",
+    "inLanguage": "en",
+    "category": "e-commerce"
   },
-  "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
   "defaults": {
     "agentAccess": "restricted",
     "requireIdentification": true,
@@ -92,5 +93,10 @@
   "legal": {
     "termsUrl": "https://www.example-store.com/legal/ai-terms",
     "dataRetention": "Agents must not cache content beyond the user session."
+  },
+  "metadata": {
+    "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
+    "generatedAt": "2026-03-18T14:40:00Z",
+    "author": "A2WF example"
   }
 }

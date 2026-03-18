@@ -195,6 +195,22 @@ Priority areas:
 - validators / generators / plugins
 - additional industry examples
 
+## Validation & Conformance
+
+A pragmatic validator and first conformance tests live in:
+
+- [`schema/`](./schema) — baseline JSON Schemas for core + extensions
+- [`validator/`](./validator) — semantic validator + CLI
+- [`tests/`](./tests) — conformance fixtures and regression tests
+- [`VALIDATION.md`](./VALIDATION.md) — structure proposal, scope, gaps, next steps
+
+Run locally:
+
+```bash
+npm test
+node validator/cli.js examples/extensions/ecommerce-rich.json
+```
+
 ## License
 
 MIT License — see [LICENSE](./LICENSE) for details.

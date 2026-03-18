@@ -10,9 +10,10 @@
       "GDPR",
       "EU Copyright Directive"
     ],
-    "@type": "WebSite"
+    "@type": "WebSite",
+    "inLanguage": "en",
+    "category": "news"
   },
-  "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
   "defaults": {
     "agentAccess": "restricted",
     "requireIdentification": true,
@@ -82,5 +83,10 @@
     "euAiActCompliance": {
       "transparencyRequired": true
     }
+  },
+  "metadata": {
+    "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
+    "generatedAt": "2026-03-18T14:40:00Z",
+    "author": "A2WF example"
   }
 }

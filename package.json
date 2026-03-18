@@ -1,0 +1,15 @@
+{
+  "name": "@a2wf/spec",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A2WF Core v1.0 + Site Description Extensions validation and conformance tests",
+  "type": "module",
+  "scripts": {
+    "validate": "node ./validator/cli.js",
+    "test": "node --test",
+    "test:conformance": "node --test tests/*.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

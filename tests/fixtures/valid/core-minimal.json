@@ -1,0 +1,21 @@
+{
+  "@context": "https://schema.org",
+  "specVersion": "1.0",
+  "identity": {
+    "@type": "WebSite",
+    "domain": "https://example.org",
+    "name": "Example Core Site",
+    "inLanguage": "en"
+  },
+  "permissions": {
+    "read": {
+      "faq": { "allowed": true }
+    },
+    "action": {
+      "search": { "allowed": true, "rateLimit": 10 }
+    },
+    "data": {
+      "customerRecords": { "allowed": false }
+    }
+  }
+}

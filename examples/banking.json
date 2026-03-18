@@ -11,9 +11,10 @@
       "PSD2",
       "MiFID II"
     ],
-    "@type": "WebSite"
+    "@type": "WebSite",
+    "inLanguage": "en",
+    "category": "finance"
   },
-  "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
   "defaults": {
     "agentAccess": "minimal",
     "requireIdentification": true,
@@ -133,5 +134,10 @@
       "riskClassification": "high",
       "humanOversightMandatory": true
     }
+  },
+  "metadata": {
+    "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
+    "generatedAt": "2026-03-18T14:40:00Z",
+    "author": "A2WF example"
   }
 }
