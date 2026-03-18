@@ -7,7 +7,7 @@
 
 ## Abstract
 
-This document defines the `agent-policy.json` format for the **Agent-to-Web Framework (A2WF)**. It provides a standardized, machine-readable method for website operators to define permissions, capabilities, and interaction rules for AI agents, personal assistants, and other automated systems.
+This document defines the `siteai.json` format for the **Agent-to-Web Framework (A2WF)**. It provides a standardized, machine-readable method for website operators to define permissions, capabilities, and interaction rules for AI agents, personal assistants, and other automated systems.
 
 A2WF complements existing web standards like `robots.txt`, `sitemap.xml`, and in-page Schema.org markup by providing granular, agent-specific policies in a single, efficiently consumable file.
 
@@ -23,9 +23,9 @@ AI agents increasingly interact with websites beyond simple crawling — they fi
 
 Website operators need a standardized way to tell AI agents: *"Here's what you can do, here's what you can't, and here's how to interact with us."*
 
-### 1.2 Solution: agent-policy.json
+### 1.2 Solution: siteai.json
 
-A single JSON file at `/.well-known/agent-policy.json` that defines:
+A single JSON file at `/siteai.json` that defines:
 
 - **Identity** — Who the website is
 - **Permissions** — What agents can read, do, and access
@@ -37,27 +37,27 @@ A single JSON file at `/.well-known/agent-policy.json` that defines:
 
 ### 2.1 Well-Known URI (Primary)
 
-The `agent-policy.json` file MUST be placed at:
+The `siteai.json` file MUST be placed at:
 
 ```
-https://example.com/.well-known/agent-policy.json
+https://example.com/siteai.json
 ```
 
 ### 2.2 robots.txt Directive (Alternative)
 
-Agents SHOULD also check `robots.txt` for an `AgentPolicy:` directive:
+Agents SHOULD also check `robots.txt` for an `SiteAI:` directive:
 
 ```
 User-agent: *
 Disallow: /admin/
 
-AgentPolicy: https://example.com/.well-known/agent-policy.json
+SiteAI: https://example.com/siteai.json
 ```
 
 ### 2.3 HTML Link Tag (Fallback)
 
 ```html
-<link rel="agent-policy" type="application/json" href="/.well-known/agent-policy.json">
+<link rel="siteai" type="application/json" href="/siteai.json">
 ```
 
 ### 2.4 Priority
@@ -260,19 +260,19 @@ Defines how agents should identify themselves when interacting.
 - Agent-policy files SHOULD NOT contain sensitive credentials
 - Rate limits SHOULD be enforced server-side (the policy is advisory)
 - Agents SHOULD respect `deny` directives as equivalent to `robots.txt` Disallow
-- Websites SHOULD NOT rely solely on `agent-policy.json` for security
+- Websites SHOULD NOT rely solely on `siteai.json` for security
 
 ## 7. IANA Considerations
 
 This specification defines:
-- Well-Known URI: `/.well-known/agent-policy.json`
-- Link Relation: `agent-policy`
-- robots.txt directive: `AgentPolicy:`
+- Well-Known URI: `/siteai.json`
+- Link Relation: `siteai`
+- robots.txt directive: `SiteAI:`
 
 ## Appendix A: JSON Schema
 
 A formal JSON Schema for validation is available at:
-`https://github.com/a2wf/spec/blob/main/schema/agent-policy.schema.json`
+`https://github.com/a2wf/spec/blob/main/schema/siteai.schema.json`
 
 ---
 

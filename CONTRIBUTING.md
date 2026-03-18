@@ -16,7 +16,7 @@ Thank you for your interest in the Agent-to-Web Framework!
 4. Submit a Pull Request with a clear description of the change and its rationale
 
 ### Add Examples
-We welcome `agent-policy.json` examples for additional website types and industries. Place them in the `examples/` directory with a descriptive filename.
+We welcome `siteai.json` examples for additional website types and industries. Place them in the `examples/` directory with a descriptive filename.
 
 ### Discussion
 - Use [GitHub Discussions](https://github.com/a2wf/spec/discussions) for general questions, ideas, and feedback
@@ -29,7 +29,7 @@ We welcome `agent-policy.json` examples for additional website types and industr
 - **Legal Review**: Validating enforcement mechanisms across jurisdictions
 - **Examples**: Creating policies for additional website types and industries
 - **Translations**: Making the specification accessible in more languages
-- **Implementation Feedback**: Real-world experience deploying agent-policy.json
+- **Implementation Feedback**: Real-world experience deploying siteai.json
 - **Tool Development**: Validators, generators, CMS plugins
 
 ## Design Principles

@@ -23,7 +23,7 @@ A2WF (Agent-to-Web Framework) provides a standardized, machine-readable way for 
 
 **The problem:** AI agents are increasingly interacting with websites — not just crawling, but filling forms, making purchases, booking appointments. Yet website operators have no standardized way to control what agents can do. `robots.txt` was designed for search engine crawlers, not for autonomous AI agents.
 
-**The solution:** A single JSON file at `/.well-known/agent-policy.json` that defines:
+**The solution:** A single JSON file at `/siteai.json` that defines:
 
 - **Identity** — Who you are (name, category, language, contact)
 - **Permissions** — What agents can read, do, and access
@@ -33,7 +33,7 @@ A2WF (Agent-to-Web Framework) provides a standardized, machine-readable way for 
 
 ## Quick Start
 
-Create `/.well-known/agent-policy.json` on your website:
+Create `/siteai.json` on your website:
 
 ```json
 {
@@ -93,7 +93,7 @@ The full specification is available at [a2wf.org/specification](https://a2wf.org
 We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 - **Report issues** — Found a gap? [Open an issue](https://github.com/a2wf/spec/issues)
-- **Submit examples** — Share your `agent-policy.json`
+- **Submit examples** — Share your `siteai.json`
 - **Build tools** — Validators, generators, parsers
 - **Improve the spec** — PRs welcome
 
