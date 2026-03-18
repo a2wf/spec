@@ -225,7 +225,7 @@ Defines how agents should identify themselves when interacting.
   "identity": {
     "name": "Example Online Store",
     "description": "Premium widgets and gadgets with AI-assisted shopping",
-    "primaryLanguage": "en",
+    "inLanguage": "en",
     "category": "e-commerce",
     "url": "https://www.example-store.com",
     "logo": "https://www.example-store.com/logo.png"
