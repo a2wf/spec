@@ -37,11 +37,13 @@ Create `/siteai.json` on your website:
 
 ```json
 {
+    "@context": "https://schema.org",
   "specVersion": "1.0",
   "identity": {
+    "@type": "WebSite",
     "name": "My Website",
     "description": "A brief description",
-    "primaryLanguage": "en",
+    "inLanguage": "en",
     "category": "business"
   },
   "permissions": {

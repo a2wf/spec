@@ -1,12 +1,19 @@
 {
-  "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
+  "@context": "https://schema.org",
   "specVersion": "1.0",
   "identity": {
     "domain": "https://www.example-bank.com",
     "name": "Example Bank AG",
     "jurisdiction": "EU",
-    "applicableLaw": ["EU AI Act", "GDPR", "PSD2", "MiFID II"]
+    "applicableLaw": [
+      "EU AI Act",
+      "GDPR",
+      "PSD2",
+      "MiFID II"
+    ],
+    "@type": "WebSite"
   },
+  "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
   "defaults": {
     "agentAccess": "minimal",
     "requireIdentification": true,
@@ -16,26 +23,67 @@
   },
   "permissions": {
     "read": {
-      "productCatalog": { "allowed": true, "rateLimit": 5, "note": "Public product information: account types, interest rates, fee schedules." },
-      "contactInfo": { "allowed": true },
-      "openingHours": { "allowed": true },
-      "faq": { "allowed": true }
+      "productCatalog": {
+        "allowed": true,
+        "rateLimit": 5,
+        "note": "Public product information: account types, interest rates, fee schedules."
+      },
+      "contactInfo": {
+        "allowed": true
+      },
+      "openingHours": {
+        "allowed": true
+      },
+      "faq": {
+        "allowed": true
+      }
     },
     "action": {
-      "search": { "allowed": true, "rateLimit": 3 },
-      "checkout": { "allowed": false, "note": "No financial transactions may be initiated by agents." },
-      "createAccount": { "allowed": false, "note": "Account opening requires in-person or video identification (KYC)." },
-      "submitContactForm": { "allowed": true, "humanVerification": true },
-      "bookAppointment": { "allowed": true, "humanVerification": true },
-      "cancelOrder": { "allowed": false },
-      "requestRefund": { "allowed": false }
+      "search": {
+        "allowed": true,
+        "rateLimit": 3
+      },
+      "checkout": {
+        "allowed": false,
+        "note": "No financial transactions may be initiated by agents."
+      },
+      "createAccount": {
+        "allowed": false,
+        "note": "Account opening requires in-person or video identification (KYC)."
+      },
+      "submitContactForm": {
+        "allowed": true,
+        "humanVerification": true
+      },
+      "bookAppointment": {
+        "allowed": true,
+        "humanVerification": true
+      },
+      "cancelOrder": {
+        "allowed": false
+      },
+      "requestRefund": {
+        "allowed": false
+      }
     },
     "data": {
-      "customerRecords": { "allowed": false, "note": "Banking secrecy. No customer data access permitted." },
-      "orderHistory": { "allowed": false, "note": "Transaction history is confidential." },
-      "paymentInfo": { "allowed": false },
-      "internalAnalytics": { "allowed": false },
-      "employeeData": { "allowed": false }
+      "customerRecords": {
+        "allowed": false,
+        "note": "Banking secrecy. No customer data access permitted."
+      },
+      "orderHistory": {
+        "allowed": false,
+        "note": "Transaction history is confidential."
+      },
+      "paymentInfo": {
+        "allowed": false
+      },
+      "internalAnalytics": {
+        "allowed": false
+      },
+      "employeeData": {
+        "allowed": false
+      }
     }
   },
   "scraping": {
@@ -47,17 +95,34 @@
   },
   "agentIdentification": {
     "requireUserAgent": true,
-    "requiredFields": ["agentName", "agentOperator", "agentPurpose"],
+    "requiredFields": [
+      "agentName",
+      "agentOperator",
+      "agentPurpose"
+    ],
     "allowAnonymousAgents": false,
     "trustedAgents": [],
     "blockedAgents": [
-      { "pattern": "*scraper*", "reason": "Prohibited." },
-      { "pattern": "*crawler*", "reason": "Prohibited." }
+      {
+        "pattern": "*scraper*",
+        "reason": "Prohibited."
+      },
+      {
+        "pattern": "*crawler*",
+        "reason": "Prohibited."
+      }
     ]
   },
   "humanVerification": {
-    "methods": ["redirect-to-browser", "email-confirmation", "sms-otp"],
-    "requiredFor": ["submitContactForm", "bookAppointment"]
+    "methods": [
+      "redirect-to-browser",
+      "email-confirmation",
+      "sms-otp"
+    ],
+    "requiredFor": [
+      "submitContactForm",
+      "bookAppointment"
+    ]
   },
   "legal": {
     "termsUrl": "https://www.example-bank.com/legal/ai-access-policy",
@@ -68,5 +133,10 @@
       "riskClassification": "high",
       "humanOversightMandatory": true
     }
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Example Bank AG",
+    "url": ""
   }
 }

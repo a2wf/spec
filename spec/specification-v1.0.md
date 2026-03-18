@@ -78,6 +78,7 @@ SiteAI: https://example.com/siteai.json
 
 ```json
 {
+  "@context": "https://schema.org",
   "specVersion": "1.0",
   "identity": { ... },
   "permissions": { ... },
@@ -85,7 +86,8 @@ SiteAI: https://example.com/siteai.json
   "authentication": { ... },
   "compliance": { ... },
   "agentIdentity": { ... },
-  "contact": { ... },
+  "mainContact": { ... },
+  "publisher": { ... },
   "extensions": { ... }
 }
 ```
@@ -96,20 +98,52 @@ SiteAI: https://example.com/siteai.json
 |-------|------|----------|-------------|
 | `specVersion` | String | Yes | The A2WF specification version. Currently `"1.0"` |
 
-### 3.3 identity Object (REQUIRED)
+### 3.3 @context (RECOMMENDED)
 
-Describes the website and its operator.
+The `@context` field enables Schema.org compatibility. When present, consumers MAY interpret Schema.org-typed objects (`@type`) using standard JSON-LD semantics.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `name` | String | Yes | Human-readable name of the website/organization |
-| `description` | String | Yes | Brief description of the website's purpose |
-| `primaryLanguage` | String | Yes | IETF BCP 47 language tag (e.g., `"en"`, `"de-AT"`) |
-| `category` | String | No | Website category (e.g., `"e-commerce"`, `"healthcare"`, `"restaurant"`) |
-| `url` | String | No | Canonical URL of the website |
+| `@context` | String | Recommended | SHOULD be `"https://schema.org"` |
+
+### 3.4 identity Object (REQUIRED)
+
+Describes the website. Corresponds to `schema:WebSite`.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `@type` | String | Recommended | SHOULD be `"WebSite"` (Schema.org type) |
+| `name` | String | Yes | Human-readable name (corresponds to `schema:WebSite.name`) |
+| `description` | String | Yes | Brief description (corresponds to `schema:WebSite.description`) |
+| `inLanguage` | String | Yes | IETF BCP 47 language tag, e.g. `"en"`, `"de-AT"` (corresponds to `schema:WebSite.inLanguage`) |
+| `category` | String | No | Website category (e.g., `"e-commerce"`, `"healthcare"`) — A2WF-specific |
+| `url` | String | No | Canonical URL (corresponds to `schema:WebSite.url`) |
 | `logo` | String | No | URL to the website's logo |
 
-### 3.4 permissions Object (RECOMMENDED)
+### 3.5 publisher Object (RECOMMENDED)
+
+Identifies the entity publishing the website. Corresponds to `schema:Organization`.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `@type` | String | Recommended | `"Organization"` or `"Person"` |
+| `name` | String | Yes | Name of the publishing entity |
+| `url` | String | No | URL of the publisher |
+| `logo` | Object | No | Logo as `{"@type": "ImageObject", "url": "..."}` |
+
+### 3.6 mainContact Object (RECOMMENDED)
+
+Primary contact point. Corresponds to `schema:ContactPoint`.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `@type` | String | Recommended | SHOULD be `"ContactPoint"` |
+| `url` | String | Yes | URL of the contact page |
+| `contactType` | String | No | e.g. `"customer support"`, `"sales"` |
+| `email` | String | No | Contact email address |
+| `telephone` | String | No | Contact phone number |
+
+### 3.7 permissions Object (RECOMMENDED)
 
 Defines what agents are allowed to do.
 

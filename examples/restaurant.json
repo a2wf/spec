@@ -1,11 +1,13 @@
 {
-  "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
+  "@context": "https://schema.org",
   "specVersion": "1.0",
   "identity": {
     "domain": "https://www.example-restaurant.com",
     "name": "Example Restaurant",
-    "jurisdiction": "EU"
+    "jurisdiction": "EU",
+    "@type": "WebSite"
   },
+  "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
   "defaults": {
     "agentAccess": "open",
     "requireIdentification": false,
@@ -13,22 +15,51 @@
   },
   "permissions": {
     "read": {
-      "productCatalog": { "allowed": true, "note": "Menu items and daily specials." },
-      "pricing": { "allowed": true },
-      "availability": { "allowed": true, "note": "Table availability for reservations." },
-      "openingHours": { "allowed": true },
-      "contactInfo": { "allowed": true },
-      "reviews": { "allowed": true }
+      "productCatalog": {
+        "allowed": true,
+        "note": "Menu items and daily specials."
+      },
+      "pricing": {
+        "allowed": true
+      },
+      "availability": {
+        "allowed": true,
+        "note": "Table availability for reservations."
+      },
+      "openingHours": {
+        "allowed": true
+      },
+      "contactInfo": {
+        "allowed": true
+      },
+      "reviews": {
+        "allowed": true
+      }
     },
     "action": {
-      "search": { "allowed": true },
-      "bookAppointment": { "allowed": true, "humanVerification": true, "note": "Table reservation requires guest confirmation." },
-      "submitReview": { "allowed": false },
-      "submitContactForm": { "allowed": true, "humanVerification": true }
+      "search": {
+        "allowed": true
+      },
+      "bookAppointment": {
+        "allowed": true,
+        "humanVerification": true,
+        "note": "Table reservation requires guest confirmation."
+      },
+      "submitReview": {
+        "allowed": false
+      },
+      "submitContactForm": {
+        "allowed": true,
+        "humanVerification": true
+      }
     },
     "data": {
-      "customerRecords": { "allowed": false },
-      "paymentInfo": { "allowed": false }
+      "customerRecords": {
+        "allowed": false
+      },
+      "paymentInfo": {
+        "allowed": false
+      }
     }
   },
   "scraping": {
@@ -41,10 +72,20 @@
     "allowAnonymousAgents": true
   },
   "humanVerification": {
-    "methods": ["redirect-to-browser", "sms-otp"],
-    "requiredFor": ["bookAppointment"]
+    "methods": [
+      "redirect-to-browser",
+      "sms-otp"
+    ],
+    "requiredFor": [
+      "bookAppointment"
+    ]
   },
   "legal": {
     "termsUrl": "https://www.example-restaurant.com/legal/ai-terms"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Example Restaurant",
+    "url": ""
   }
 }

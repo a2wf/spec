@@ -1,12 +1,17 @@
 {
-  "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
+  "@context": "https://schema.org",
   "specVersion": "1.0",
   "identity": {
     "domain": "https://www.example-clinic.com",
     "name": "Example Medical Clinic",
     "jurisdiction": "EU",
-    "applicableLaw": ["EU AI Act", "GDPR"]
+    "applicableLaw": [
+      "EU AI Act",
+      "GDPR"
+    ],
+    "@type": "WebSite"
   },
+  "$schema": "https://a2wf.org/schemas/siteai/v0.1/schema.json",
   "defaults": {
     "agentAccess": "restricted",
     "requireIdentification": true,
@@ -15,22 +20,51 @@
   },
   "permissions": {
     "read": {
-      "openingHours": { "allowed": true },
-      "contactInfo": { "allowed": true },
-      "companyInfo": { "allowed": true },
-      "faq": { "allowed": true }
+      "openingHours": {
+        "allowed": true
+      },
+      "contactInfo": {
+        "allowed": true
+      },
+      "companyInfo": {
+        "allowed": true
+      },
+      "faq": {
+        "allowed": true
+      }
     },
     "action": {
-      "search": { "allowed": true, "rateLimit": 5 },
-      "bookAppointment": { "allowed": true, "humanVerification": true, "note": "Patient must confirm identity before booking." },
-      "submitContactForm": { "allowed": true, "humanVerification": true },
-      "createAccount": { "allowed": false }
+      "search": {
+        "allowed": true,
+        "rateLimit": 5
+      },
+      "bookAppointment": {
+        "allowed": true,
+        "humanVerification": true,
+        "note": "Patient must confirm identity before booking."
+      },
+      "submitContactForm": {
+        "allowed": true,
+        "humanVerification": true
+      },
+      "createAccount": {
+        "allowed": false
+      }
     },
     "data": {
-      "customerRecords": { "allowed": false, "note": "Patient records are strictly protected under GDPR and medical confidentiality." },
-      "orderHistory": { "allowed": false },
-      "paymentInfo": { "allowed": false },
-      "employeeData": { "allowed": false }
+      "customerRecords": {
+        "allowed": false,
+        "note": "Patient records are strictly protected under GDPR and medical confidentiality."
+      },
+      "orderHistory": {
+        "allowed": false
+      },
+      "paymentInfo": {
+        "allowed": false
+      },
+      "employeeData": {
+        "allowed": false
+      }
     }
   },
   "scraping": {
@@ -42,16 +76,35 @@
   },
   "agentIdentification": {
     "requireUserAgent": true,
-    "requiredFields": ["agentName", "agentOperator", "agentPurpose"],
+    "requiredFields": [
+      "agentName",
+      "agentOperator",
+      "agentPurpose"
+    ],
     "allowAnonymousAgents": false
   },
   "humanVerification": {
-    "methods": ["redirect-to-browser", "email-confirmation"],
-    "requiredFor": ["bookAppointment", "submitContactForm"]
+    "methods": [
+      "redirect-to-browser",
+      "email-confirmation"
+    ],
+    "requiredFor": [
+      "bookAppointment",
+      "submitContactForm"
+    ]
   },
   "legal": {
     "termsUrl": "https://www.example-clinic.com/legal/ai-policy",
     "dataRetention": "No patient-related data may be stored or transmitted by agents.",
-    "euAiActCompliance": { "transparencyRequired": true, "riskClassification": "high", "humanOversightMandatory": true }
+    "euAiActCompliance": {
+      "transparencyRequired": true,
+      "riskClassification": "high",
+      "humanOversightMandatory": true
+    }
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Example Medical Clinic",
+    "url": ""
   }
 }
