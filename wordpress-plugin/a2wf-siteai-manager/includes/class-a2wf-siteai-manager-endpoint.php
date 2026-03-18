@@ -21,6 +21,7 @@ class A2WF_SiteAI_Manager_Endpoint {
 
     public function register_query_var($vars) {
         $vars[] = self::QUERY_VAR;
+
         return $vars;
     }
 
@@ -29,9 +30,18 @@ class A2WF_SiteAI_Manager_Endpoint {
             return;
         }
 
+        $json = $this->generator->get_pretty_json();
+
+        status_header(200);
         nocache_headers();
         header('Content-Type: application/json; charset=' . get_bloginfo('charset'));
-        echo $this->generator->get_pretty_json();
+        header('X-Content-Type-Options: nosniff');
+
+        if ('HEAD' === strtoupper(isset($_SERVER['REQUEST_METHOD']) ? (string) $_SERVER['REQUEST_METHOD'] : 'GET')) {
+            exit;
+        }
+
+        echo $json;
         exit;
     }
 }

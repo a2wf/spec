@@ -71,13 +71,24 @@ class A2WF_SiteAI_Manager_Admin {
 
     public function handle_save() {
         if (! current_user_can('manage_options')) {
-            wp_die('Insufficient permissions.');
+            wp_die(esc_html__('Insufficient permissions.', 'a2wf-siteai-manager'));
         }
 
         check_admin_referer('a2wf_siteai_save');
 
         $payload = isset($_POST['a2wf']) ? wp_unslash($_POST['a2wf']) : array();
-        $this->settings->update($payload);
+        $result = $this->settings->update($payload);
+        $errors = isset($result['errors']) && is_array($result['errors']) ? $result['errors'] : array();
+
+        if (! empty($errors)) {
+            $this->settings->set_admin_notice(
+                'warning',
+                'Konfiguration gespeichert. Einzelne JSON-Blöcke waren ungültig und wurden verworfen.',
+                $errors
+            );
+        } else {
+            $this->settings->set_admin_notice('success', 'siteai.json-Konfiguration gespeichert.');
+        }
 
         wp_safe_redirect(add_query_arg(array(
             'page' => 'a2wf-siteai-manager',
@@ -87,27 +98,47 @@ class A2WF_SiteAI_Manager_Admin {
     }
 
     public function render_page() {
+        if (! current_user_can('manage_options')) {
+            wp_die(esc_html__('Insufficient permissions.', 'a2wf-siteai-manager'));
+        }
+
         $settings = $this->settings->get_all();
         $json = $this->generator->get_pretty_json();
         $tab = isset($_GET['tab']) ? sanitize_key($_GET['tab']) : 'core';
+        $allowed_tabs = array('core', 'extensions', 'preview');
+
+        if (! in_array($tab, $allowed_tabs, true)) {
+            $tab = 'core';
+        }
+
+        $notice = $this->settings->get_admin_notice();
         ?>
         <div class="wrap a2wf-admin-wrap">
             <h1>A2WF SiteAI Manager</h1>
             <p class="description">Pflegt <code>siteai.json</code> für A2WF Core und optionale Site-Description-Extensions an einem Ort.</p>
 
-            <?php if (! empty($_GET['updated'])) : ?>
-                <div class="notice notice-success is-dismissible"><p>siteai.json-Konfiguration gespeichert.</p></div>
+            <?php if ($notice) : ?>
+                <div class="notice notice-<?php echo esc_attr($this->normalize_notice_type($notice['type'])); ?> is-dismissible">
+                    <p><?php echo esc_html($notice['message']); ?></p>
+                    <?php if (! empty($notice['details'])) : ?>
+                        <ul>
+                            <?php foreach ($notice['details'] as $detail) : ?>
+                                <li><?php echo esc_html($detail); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </div>
             <?php endif; ?>
 
             <div class="a2wf-top-actions">
-                <a class="button button-secondary" href="<?php echo esc_url(home_url('/siteai.json')); ?>" target="_blank" rel="noreferrer">siteai.json öffnen</a>
+                <a class="button button-secondary" href="<?php echo esc_url(home_url('/siteai.json')); ?>" target="_blank" rel="noopener noreferrer">siteai.json öffnen</a>
                 <button type="button" class="button button-secondary" data-a2wf-copy="#a2wf-json-preview">JSON kopieren</button>
             </div>
 
             <nav class="nav-tab-wrapper">
-                <a href="<?php echo esc_url(admin_url('admin.php?page=a2wf-siteai-manager&tab=core')); ?>" class="nav-tab <?php echo 'core' === $tab ? 'nav-tab-active' : ''; ?>">Core Governance</a>
-                <a href="<?php echo esc_url(admin_url('admin.php?page=a2wf-siteai-manager&tab=extensions')); ?>" class="nav-tab <?php echo 'extensions' === $tab ? 'nav-tab-active' : ''; ?>">Extensions</a>
-                <a href="<?php echo esc_url(admin_url('admin.php?page=a2wf-siteai-manager&tab=preview')); ?>" class="nav-tab <?php echo 'preview' === $tab ? 'nav-tab-active' : ''; ?>">Preview</a>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=a2wf-siteai-manager&tab=core')); ?>" class="nav-tab <?php echo esc_attr('core' === $tab ? 'nav-tab-active' : ''); ?>">Core Governance</a>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=a2wf-siteai-manager&tab=extensions')); ?>" class="nav-tab <?php echo esc_attr('extensions' === $tab ? 'nav-tab-active' : ''); ?>">Extensions</a>
+                <a href="<?php echo esc_url(admin_url('admin.php?page=a2wf-siteai-manager&tab=preview')); ?>" class="nav-tab <?php echo esc_attr('preview' === $tab ? 'nav-tab-active' : ''); ?>">Preview</a>
             </nav>
 
             <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>" class="a2wf-form">
@@ -137,7 +168,7 @@ class A2WF_SiteAI_Manager_Admin {
         <div class="a2wf-grid">
             <div class="a2wf-card">
                 <h2>Identity</h2>
-                <?php $this->text('a2wf[core][identity][domain]', 'Domain', $core['identity']['domain']); ?>
+                <?php $this->text('a2wf[core][identity][domain]', 'Domain', $core['identity']['domain'], 'url'); ?>
                 <?php $this->text('a2wf[core][identity][name]', 'Name', $core['identity']['name']); ?>
                 <?php $this->textarea('a2wf[core][identity][description]', 'Description', $core['identity']['description']); ?>
                 <?php $this->textarea('a2wf[core][identity][purpose]', 'Purpose', $core['identity']['purpose']); ?>
@@ -218,7 +249,7 @@ class A2WF_SiteAI_Manager_Admin {
 
             <div class="a2wf-card">
                 <h2>Legal, Discovery & Metadata</h2>
-                <?php $this->text('a2wf[core][legal][termsUrl]', 'Terms URL', $core['legal']['termsUrl']); ?>
+                <?php $this->text('a2wf[core][legal][termsUrl]', 'Terms URL', $core['legal']['termsUrl'], 'url'); ?>
                 <?php $this->textarea('a2wf[core][legal][complianceNote]', 'Compliance Note', $core['legal']['complianceNote']); ?>
                 <?php $this->text('a2wf[core][legal][dataRetention]', 'Data Retention', $core['legal']['dataRetention']); ?>
                 <?php $this->checkbox('a2wf[core][legal][euAiActCompliance][transparencyRequired]', 'EU AI Act: Transparency Required', $core['legal']['euAiActCompliance']['transparencyRequired']); ?>
@@ -226,18 +257,18 @@ class A2WF_SiteAI_Manager_Admin {
                 <?php $this->checkbox('a2wf[core][legal][euAiActCompliance][humanOversightMandatory]', 'EU AI Act: Human Oversight Mandatory', $core['legal']['euAiActCompliance']['humanOversightMandatory']); ?>
 
                 <hr>
-                <?php $this->text('a2wf[core][discovery][robotsTxt]', 'robots.txt', $core['discovery']['robotsTxt']); ?>
-                <?php $this->text('a2wf[core][discovery][llmsTxt]', 'llms.txt', $core['discovery']['llmsTxt']); ?>
-                <?php $this->text('a2wf[core][discovery][mcpEndpoint]', 'MCP Endpoint', $core['discovery']['mcpEndpoint']); ?>
-                <?php $this->text('a2wf[core][discovery][a2aAgentCard]', 'A2A Agent Card', $core['discovery']['a2aAgentCard']); ?>
-                <?php $this->text('a2wf[core][discovery][openApi]', 'OpenAPI', $core['discovery']['openApi']); ?>
+                <?php $this->text('a2wf[core][discovery][robotsTxt]', 'robots.txt', $core['discovery']['robotsTxt'], 'url'); ?>
+                <?php $this->text('a2wf[core][discovery][llmsTxt]', 'llms.txt', $core['discovery']['llmsTxt'], 'url'); ?>
+                <?php $this->text('a2wf[core][discovery][mcpEndpoint]', 'MCP Endpoint', $core['discovery']['mcpEndpoint'], 'url'); ?>
+                <?php $this->text('a2wf[core][discovery][a2aAgentCard]', 'A2A Agent Card', $core['discovery']['a2aAgentCard'], 'url'); ?>
+                <?php $this->text('a2wf[core][discovery][openApi]', 'OpenAPI', $core['discovery']['openApi'], 'url'); ?>
                 <?php $this->checkbox('a2wf[core][discovery][schemaOrg]', 'Schema.org available', $core['discovery']['schemaOrg']); ?>
 
                 <hr>
                 <?php $this->text('a2wf[core][metadata][author]', 'Metadata Author', $core['metadata']['author']); ?>
                 <?php $this->text('a2wf[core][metadata][lastUpdated]', 'Last Updated', $core['metadata']['lastUpdated']); ?>
                 <?php $this->text('a2wf[core][metadata][expiresAt]', 'Expires At', $core['metadata']['expiresAt']); ?>
-                <?php $this->text('a2wf[core][metadata][changelogUrl]', 'Changelog URL', $core['metadata']['changelogUrl']); ?>
+                <?php $this->text('a2wf[core][metadata][changelogUrl]', 'Changelog URL', $core['metadata']['changelogUrl'], 'url'); ?>
             </div>
         </div>
         <?php
@@ -266,6 +297,7 @@ class A2WF_SiteAI_Manager_Admin {
         <div class="a2wf-card a2wf-card-full">
             <h2>Extensions</h2>
             <p class="description">Extensions bleiben bewusst getrennt von Governance. So wird die Core-Spec nicht mit beschreibenden Site-Capabilities vermischt.</p>
+            <p class="description">Nur valides JSON wird gespeichert. Ungültige Blöcke werden beim Speichern verworfen und als Hinweis gemeldet.</p>
             <?php $this->checkbox('a2wf[extensions][enabled]', 'Extensions in siteai.json ausgeben', $extensions['enabled']); ?>
             <?php foreach ($fields as $key => $label) : ?>
                 <?php $this->textarea('a2wf[extensions][' . $key . ']', $label, $extensions[$key], 8); ?>
@@ -297,7 +329,7 @@ class A2WF_SiteAI_Manager_Admin {
 
     private function text($name, $label, $value, $type = 'text') {
         printf(
-            '<p><label><strong>%s</strong><br><input type="%s" class="regular-text" name="%s" value="%s"></label></p>',
+            '<p><label><strong>%s</strong><br><input type="%s" class="regular-text" name="%s" value="%s" spellcheck="false" autocomplete="off"></label></p>',
             esc_html($label),
             esc_attr($type),
             esc_attr($name),
@@ -316,10 +348,12 @@ class A2WF_SiteAI_Manager_Admin {
 
     private function textarea($name, $label, $value, $rows = 4, $hint = '') {
         echo '<p><label><strong>' . esc_html($label) . '</strong>';
+
         if ($hint) {
             echo '<br><span class="description">' . esc_html($hint) . '</span>';
         }
-        echo '<br><textarea class="large-text code" rows="' . esc_attr($rows) . '" name="' . esc_attr($name) . '">' . esc_textarea($value) . '</textarea></label></p>';
+
+        echo '<br><textarea class="large-text code" rows="' . esc_attr($rows) . '" name="' . esc_attr($name) . '" spellcheck="false">' . esc_textarea($value) . '</textarea></label></p>';
     }
 
     private function checkbox($name, $label, $checked) {
@@ -329,5 +363,11 @@ class A2WF_SiteAI_Manager_Admin {
             checked($checked, true, false),
             esc_html($label)
         );
+    }
+
+    private function normalize_notice_type($type) {
+        $allowed = array('success', 'warning', 'error', 'info');
+
+        return in_array($type, $allowed, true) ? $type : 'info';
     }
 }

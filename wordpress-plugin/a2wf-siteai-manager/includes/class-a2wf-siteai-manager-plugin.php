@@ -41,7 +41,14 @@ class A2WF_SiteAI_Manager_Plugin {
     }
 
     public static function activate() {
-        $endpoint = new A2WF_SiteAI_Manager_Endpoint(new A2WF_SiteAI_Manager_Generator(new A2WF_SiteAI_Manager_Settings()));
+        $settings = new A2WF_SiteAI_Manager_Settings();
+        $stored = get_option(A2WF_SiteAI_Manager_Settings::OPTION_KEY, null);
+
+        if (! is_array($stored)) {
+            add_option(A2WF_SiteAI_Manager_Settings::OPTION_KEY, $settings->get_defaults(), '', false);
+        }
+
+        $endpoint = new A2WF_SiteAI_Manager_Endpoint(new A2WF_SiteAI_Manager_Generator($settings));
         $endpoint->register_rewrite();
         flush_rewrite_rules();
     }
