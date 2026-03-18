@@ -147,7 +147,10 @@ The current public core specification is in [`spec/specification-v1.0.md`](./spe
 
 ## Core vs Extensions
 
-The current repository focuses on the **core governance layer**.
+The current repository separates:
+
+- **Core governance spec**: [`spec/specification-v1.0.md`](./spec/specification-v1.0.md)
+- **Site description extensions companion**: [`spec/site-description-extensions-v1.0.md`](./spec/site-description-extensions-v1.0.md)
 
 Core fields include:
 - `@context`
@@ -162,7 +165,7 @@ Core fields include:
 - `legal`
 - `metadata`
 
-Optional site description extensions such as `keySections`, `publisher`, `company`, `services`, `forms`, `apiEndpoints`, or `alternateVersions` are treated separately from the core governance model.
+Optional site description extensions such as `keySections`, `publisher`, `company`, `services`, `forms`, `apiEndpoints`, `search`, or `alternateVersions` are documented separately so the governance layer stays clean and focused.
 
 ## Examples
 
