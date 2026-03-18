@@ -1,0 +1,11 @@
+{
+  "name": "@a2wf/shopify-siteai-scaffold",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Pragmatisches MVP-Scaffold für eine Shopify Embedded App rund um A2WF siteai.json",
+  "scripts": {
+    "example:generate": "node -e \"import('./src/lib/siteai-generator.js').then(async m => { const fs = await import('node:fs/promises'); const input = JSON.parse(await fs.readFile(new URL('./src/examples/merchant-settings.example.json', import.meta.url), 'utf8')); const doc = m.generateSiteAiDocument(input); console.log(JSON.stringify(doc, null, 2)); })\"",
+    "example:validate": "node -e \"import('./src/lib/siteai-generator.js').then(async g => { const fs = await import('node:fs/promises'); const input = JSON.parse(await fs.readFile(new URL('./src/examples/merchant-settings.example.json', import.meta.url), 'utf8')); const doc = g.generateSiteAiDocument(input); const v = await import('../../validator/index.js'); console.log(JSON.stringify(v.validateDocument(doc), null, 2)); })\""
+  }
+}

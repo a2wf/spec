@@ -1,0 +1,30 @@
+{% comment %}
+  Minimaler App-Embed-/Theme-Block für Discovery.
+  Ziel: siteai.json im Storefront-Head auffindbar machen.
+
+  Erwartet:
+  - block.settings.siteai_url: öffentliche URL zur Datei
+
+  Hinweis:
+  - Für strikte Spec-Konformität ist /siteai.json am Root ideal.
+  - Dieser Block ist der pragmatische Shopify-Fallback und ersetzt keine Embedded App.
+{% endcomment %}
+
+{% if block.settings.siteai_url != blank %}
+  <link rel="siteai" type="application/json" href="{{ block.settings.siteai_url | escape }}">
+{% endif %}
+
+{% schema %}
+{
+  "name": "A2WF SiteAI Discovery",
+  "target": "head",
+  "settings": [
+    {
+      "type": "text",
+      "id": "siteai_url",
+      "label": "Öffentliche SiteAI-URL",
+      "default": "/apps/a2wf/siteai.json"
+    }
+  ]
+}
+{% endschema %}

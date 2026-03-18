@@ -1,0 +1,114 @@
+{
+  "shop": {
+    "name": "Acme Demo Store",
+    "primaryDomain": "https://acme-demo.myshopify.com",
+    "primaryLocale": "de",
+    "description": "Shopify Demo-Store für A2WF",
+    "contactEmail": "support@acme-demo.example"
+  },
+  "core": {
+    "identity": {
+      "purpose": "E-Commerce-Shop für Demo-Produkte im DACH-Raum.",
+      "jurisdiction": "EU",
+      "applicableLaw": ["EU AI Act", "GDPR"]
+    },
+    "defaults": {
+      "agentAccess": "restricted",
+      "requireIdentification": true,
+      "maxRequestsPerMinute": 30,
+      "maxRequestsPerHour": 500,
+      "respectRobotsTxt": true
+    },
+    "permissions": {
+      "action": {
+        "checkout": {
+          "allowed": true,
+          "humanVerification": true,
+          "note": "Checkout darf nur mit expliziter menschlicher Bestätigung abgeschlossen werden."
+        }
+      }
+    },
+    "agentIdentification": {
+      "requireUserAgent": true,
+      "requiredFields": ["agentName", "agentOperator", "agentPurpose"],
+      "allowAnonymousAgents": false
+    },
+    "scraping": {
+      "bulkDataExtraction": false,
+      "priceMonitoring": false,
+      "contentReproduction": false,
+      "competitiveAnalysis": false,
+      "trainingDataUsage": false,
+      "note": "Großflächige Extraktion und Trainingsnutzung sind nicht erlaubt."
+    },
+    "humanVerification": {
+      "methods": ["redirect-to-browser"],
+      "requiredFor": ["checkout"]
+    },
+    "legal": {
+      "termsUrl": "https://acme-demo.myshopify.com/policies/terms-of-service",
+      "euAiActCompliance": {
+        "transparencyRequired": true,
+        "riskClassification": "limited",
+        "humanOversightMandatory": false
+      }
+    },
+    "discovery": {
+      "schemaOrg": true,
+      "llmsTxt": "https://acme-demo.myshopify.com/llms.txt"
+    },
+    "metadata": {
+      "author": "Acme Demo Store Ops",
+      "lastUpdated": "2026-03-18"
+    }
+  },
+  "extensions": {
+    "enabled": true,
+    "keySections": [
+      {
+        "name": "Katalog",
+        "entryPoint": "https://acme-demo.myshopify.com/collections/all"
+      },
+      {
+        "name": "Support",
+        "entryPoint": "https://acme-demo.myshopify.com/pages/contact"
+      }
+    ],
+    "search": {
+      "url": "https://acme-demo.myshopify.com/search",
+      "parameter": "q",
+      "supportsFilters": true,
+      "searchTypes": ["products", "pages"]
+    },
+    "ecommerce": {
+      "currency": "EUR",
+      "supportsCart": true,
+      "supportsCheckout": true,
+      "supportsRefunds": true,
+      "supportsGuestCheckout": true,
+      "inventoryVisibility": "shopify-storefront"
+    },
+    "forms": [
+      {
+        "name": "Kontaktformular",
+        "type": "contact",
+        "url": "https://acme-demo.myshopify.com/pages/contact",
+        "method": "POST",
+        "fields": ["name", "email", "message"],
+        "humanVerificationRecommended": true
+      }
+    ],
+    "alternateVersions": [
+      {
+        "language": "de",
+        "url": "https://acme-demo.myshopify.com/apps/a2wf/siteai.json"
+      }
+    ]
+  },
+  "publication": {
+    "enabled": true,
+    "deliveryMode": "app-proxy",
+    "publicUrl": "https://acme-demo.myshopify.com/apps/a2wf/siteai.json",
+    "robotsUrl": "https://acme-demo.myshopify.com/robots.txt"
+  }
+}
