@@ -82,10 +82,5 @@
   },
   "legal": {
     "termsUrl": "https://www.example-restaurant.com/legal/ai-terms"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Example Restaurant",
-    "url": ""
   }
 }

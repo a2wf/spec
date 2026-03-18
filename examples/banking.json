@@ -133,10 +133,5 @@
       "riskClassification": "high",
       "humanOversightMandatory": true
     }
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Example Bank AG",
-    "url": ""
   }
 }

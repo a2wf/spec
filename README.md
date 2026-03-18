@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <strong>The open standard for structured AI agent interaction with websites.</strong>
+  <strong>The open standard for AI agent governance on websites.</strong>
 </p>
 
 <p align="center">
@@ -26,64 +26,147 @@
 
 ## What is A2WF?
 
-A2WF (Agent-to-Web Framework) provides a standardized, machine-readable way for websites to communicate their capabilities, permissions, and interaction rules to AI agents.
+A2WF (Agent-to-Web Framework) provides a standardized, machine-readable way for website operators to publish a `siteai.json` policy for AI agents.
 
-**The problem:** AI agents are increasingly interacting with websites — not just crawling, but filling forms, making purchases, booking appointments. Yet website operators have no standardized way to control what agents can do. `robots.txt` was designed for search engine crawlers, not for autonomous AI agents.
+It answers questions like:
+- What may agents read?
+- What may agents do?
+- What requires human verification?
+- What data is off-limits?
+- How should agents identify themselves?
+- Which legal / compliance rules apply?
 
-**The solution:** A single JSON file at `/siteai.json` that defines:
+A2WF complements existing standards like `robots.txt`, `sitemap.xml`, `llms.txt`, MCP, A2A, and in-page Schema.org markup.
 
-- **Identity** — Who you are (name, category, language, contact)
-- **Permissions** — What agents can read, do, and access
-- **Rate Limits** — How often agents can interact
-- **Authentication** — What requires login vs. anonymous access
-- **Compliance** — GDPR, HIPAA, and other regulatory requirements
+## Core Principle
+
+A2WF is about **site governance**, not website navigation.
+
+- `robots.txt` controls crawling
+- `sitemap.xml` lists URLs
+- `Schema.org` describes entities on pages
+- `siteai.json` defines **what AI agents are allowed to do on the site**
 
 ## Quick Start
 
-Create `/siteai.json` on your website:
+Create `/siteai.json` on your website root:
 
 ```json
 {
-    "@context": "https://schema.org",
+  "@context": "https://schema.org",
   "specVersion": "1.0",
   "identity": {
     "@type": "WebSite",
-    "name": "My Website",
-    "description": "A brief description",
+    "domain": "https://www.example-store.com",
+    "name": "Example Online Store",
+    "description": "Premium widgets and gadgets",
+    "purpose": "E-commerce store selling premium widgets to EU consumers.",
     "inLanguage": "en",
-    "category": "business"
+    "category": "e-commerce",
+    "jurisdiction": "EU",
+    "contact": "ai-policy@example-store.com"
+  },
+  "defaults": {
+    "agentAccess": "restricted",
+    "requireIdentification": true,
+    "maxRequestsPerMinute": 30,
+    "respectRobotsTxt": true
   },
   "permissions": {
     "read": {
-      "allow": ["public-content", "faq", "products"],
-      "deny": ["admin", "internal"]
+      "productCatalog": { "allowed": true, "rateLimit": 60 },
+      "pricing": { "allowed": true },
+      "availability": { "allowed": true, "rateLimit": 30 },
+      "faq": { "allowed": true }
     },
-    "actions": {
-      "allow": ["search", "contact"],
-      "requireAuth": ["purchase", "account"]
+    "action": {
+      "search": { "allowed": true, "rateLimit": 20 },
+      "addToCart": { "allowed": true },
+      "checkout": {
+        "allowed": true,
+        "humanVerification": true,
+        "note": "Final purchase requires human confirmation."
+      },
+      "createAccount": { "allowed": false },
+      "submitReview": { "allowed": false }
+    },
+    "data": {
+      "customerRecords": { "allowed": false },
+      "paymentInfo": { "allowed": false },
+      "internalAnalytics": { "allowed": false }
     }
   },
-  "rateLimit": {
-    "requestsPerMinute": 30,
-    "dailyQuota": 5000
+  "scraping": {
+    "bulkDataExtraction": false,
+    "priceMonitoring": false,
+    "contentReproduction": false,
+    "trainingDataUsage": false
+  },
+  "agentIdentification": {
+    "requireUserAgent": true,
+    "requiredFields": ["agentName", "agentOperator"],
+    "allowAnonymousAgents": false
+  },
+  "humanVerification": {
+    "methods": ["redirect-to-browser"],
+    "requiredFor": ["checkout"]
+  },
+  "discovery": {
+    "robotsTxt": "https://www.example-store.com/robots.txt",
+    "llmsTxt": "https://www.example-store.com/llms.txt",
+    "schemaOrg": true
+  },
+  "legal": {
+    "termsUrl": "https://www.example-store.com/legal/ai-terms",
+    "euAiActCompliance": {
+      "transparencyRequired": true,
+      "riskClassification": "limited",
+      "humanOversightMandatory": false
+    }
+  },
+  "metadata": {
+    "author": "Example Store Legal Team",
+    "lastUpdated": "2026-03-18"
   }
 }
 ```
 
-That's it. AI agents will discover and respect your policy automatically.
+## Discovery Order
 
-## How It Works With Existing Standards
+Agents should attempt discovery in this order:
+1. `https://example.com/siteai.json`
+2. `robots.txt` with `SiteAI:` directive
+3. HTML `<link rel="siteai">`
+4. `/.well-known/siteai.json`
 
-| Standard | Purpose | A2WF Relationship |
-|----------|---------|-------------------|
-| **robots.txt** | Crawl control (allow/deny) | A2WF extends with granular agent permissions |
-| **MCP** | How agents connect to tools | A2WF defines what agents CAN do on your site |
-| **A2A** | Agent-to-agent communication | A2WF provides the web-facing policy layer |
-| **OpenAI Plugins** | OpenAI-specific integration | A2WF is vendor-neutral and universal |
+## Specification Status
+
+**Current version:** 1.0 (Core Proposed Standard)
+
+The current public core specification is in [`spec/specification-v1.0.md`](./spec/specification-v1.0.md).
+
+## Core vs Extensions
+
+The current repository focuses on the **core governance layer**.
+
+Core fields include:
+- `@context`
+- `specVersion`
+- `identity`
+- `defaults`
+- `permissions`
+- `scraping`
+- `agentIdentification`
+- `humanVerification`
+- `discovery`
+- `legal`
+- `metadata`
+
+Optional site description extensions such as `keySections`, `publisher`, `company`, `services`, `forms`, `apiEndpoints`, or `alternateVersions` are treated separately from the core governance model.
 
 ## Examples
 
-See the [`examples/`](./examples) directory for industry-specific policy files:
+See the [`examples/`](./examples) directory for industry-specific `siteai.json` examples:
 
 - 🛒 [E-Commerce](./examples/ecommerce.json)
 - 🏥 [Healthcare](./examples/healthcare.json)
@@ -91,20 +174,16 @@ See the [`examples/`](./examples) directory for industry-specific policy files:
 - 🏦 [Banking](./examples/banking.json)
 - 📰 [News & Media](./examples/news-media.json)
 
-## Specification
-
-The full specification is available at [a2wf.org/specification](https://a2wf.org/specification/) and in the [`spec/`](./spec) directory of this repository.
-
-**Current version:** 0.1 (Draft)
-
 ## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
+We welcome contributions. Please see [CONTRIBUTING.md](./CONTRIBUTING.md).
 
-- **Report issues** — Found a gap? [Open an issue](https://github.com/a2wf/spec/issues)
-- **Submit examples** — Share your `siteai.json`
-- **Build tools** — Validators, generators, parsers
-- **Improve the spec** — PRs welcome
+Priority areas:
+- spec review
+- legal review
+- implementation feedback
+- validators / generators / plugins
+- additional industry examples
 
 ## License
 

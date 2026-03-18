@@ -92,10 +92,5 @@
   "legal": {
     "termsUrl": "https://www.example-store.com/legal/ai-terms",
     "dataRetention": "Agents must not cache content beyond the user session."
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Example Online Store",
-    "url": ""
   }
 }

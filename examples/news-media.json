@@ -82,10 +82,5 @@
     "euAiActCompliance": {
       "transparencyRequired": true
     }
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "Example News Network",
-    "url": ""
   }
 }
