@@ -192,6 +192,24 @@ A first MVP scaffold for WordPress lives in:
 
 It separates **Core Governance** and **Extensions** in the admin UI and publishes a generated `siteai.json` via WordPress.
 
+## Integrations
+
+### OpenClaw (AI Agent Platform)
+
+The official A2WF skill for [OpenClaw](https://github.com/openclaw/openclaw) lets AI agents validate, generate, and audit `siteai.json` files:
+
+```bash
+# Install via ClawHub
+clawhub install a2wf
+
+# Or clone directly
+git clone https://github.com/a2wf/openclaw-skill.git ~/.openclaw/workspace/skills/a2wf
+```
+
+→ **[a2wf/openclaw-skill](https://github.com/a2wf/openclaw-skill)** — Validator, Generator (6 templates), Compliance Audit
+
+*Want to add your framework? Open a PR or issue.*
+
 ## Contributing
 
 We welcome contributions. Please see [CONTRIBUTING.md](./CONTRIBUTING.md).
