@@ -1,0 +1,18 @@
+{
+  "_test_meta": {
+    "class": "negative",
+    "description": "Missing specVersion — MUST be rejected",
+    "guide_ids": ["P-2"],
+    "expected": "reject"
+  },
+  "identity": {
+    "domain": "https://example.com",
+    "name": "Example",
+    "inLanguage": "en"
+  },
+  "permissions": {
+    "read": {},
+    "action": {},
+    "data": {}
+  }
+}

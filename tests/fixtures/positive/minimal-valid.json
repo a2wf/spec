@@ -1,0 +1,20 @@
+{
+  "_test_meta": {
+    "class": "positive",
+    "description": "Minimal valid core document with only required fields",
+    "expected": "valid"
+  },
+  "@context": "https://schema.org",
+  "specVersion": "1.0",
+  "identity": {
+    "@type": "WebSite",
+    "domain": "https://example.com",
+    "name": "Example Site",
+    "inLanguage": "en"
+  },
+  "permissions": {
+    "read": {},
+    "action": {},
+    "data": {}
+  }
+}

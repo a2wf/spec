@@ -1,0 +1,18 @@
+{
+  "_test_meta": {
+    "class": "negative",
+    "description": "Relative URL in identity.domain — MUST be rejected",
+    "expected": "reject"
+  },
+  "specVersion": "1.0",
+  "identity": {
+    "domain": "/example.com",
+    "name": "Example",
+    "inLanguage": "en"
+  },
+  "permissions": {
+    "read": {},
+    "action": {},
+    "data": {}
+  }
+}

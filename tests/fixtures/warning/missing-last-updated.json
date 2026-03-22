@@ -1,0 +1,22 @@
+{
+  "_test_meta": {
+    "class": "warning",
+    "description": "Valid doc but missing metadata.lastUpdated — should warn",
+    "expected": "valid_with_warning"
+  },
+  "@context": "https://schema.org",
+  "specVersion": "1.0",
+  "identity": {
+    "domain": "https://example.com",
+    "name": "Example",
+    "inLanguage": "en"
+  },
+  "permissions": {
+    "read": { "faq": { "allowed": true } },
+    "action": {},
+    "data": {}
+  },
+  "metadata": {
+    "author": "Test"
+  }
+}

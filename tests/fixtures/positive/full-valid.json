@@ -1,0 +1,73 @@
+{
+  "_test_meta": {
+    "class": "positive",
+    "description": "Full valid core document with all optional sections populated",
+    "expected": "valid"
+  },
+  "@context": "https://schema.org",
+  "specVersion": "1.0",
+  "identity": {
+    "@type": "WebSite",
+    "domain": "https://www.example-store.com",
+    "name": "Example Online Store",
+    "description": "Premium widgets and gadgets",
+    "purpose": "E-commerce store selling premium widgets to EU consumers.",
+    "inLanguage": "en",
+    "category": "e-commerce",
+    "jurisdiction": "EU",
+    "applicableLaw": ["EU AI Act", "GDPR"],
+    "contact": "ai-policy@example-store.com"
+  },
+  "defaults": {
+    "agentAccess": "restricted",
+    "requireIdentification": true,
+    "maxRequestsPerMinute": 30,
+    "respectRobotsTxt": true
+  },
+  "permissions": {
+    "read": {
+      "productCatalog": { "allowed": true, "rateLimit": 60 },
+      "pricing": { "allowed": true }
+    },
+    "action": {
+      "search": { "allowed": true, "rateLimit": 20 },
+      "checkout": { "allowed": true, "humanVerification": true },
+      "createAccount": { "allowed": false }
+    },
+    "data": {
+      "customerRecords": { "allowed": false },
+      "paymentInfo": { "allowed": false }
+    }
+  },
+  "scraping": {
+    "bulkDataExtraction": false,
+    "priceMonitoring": false,
+    "trainingDataUsage": false
+  },
+  "agentIdentification": {
+    "requireUserAgent": true,
+    "requiredFields": ["agentName", "agentOperator"],
+    "allowAnonymousAgents": false
+  },
+  "humanVerification": {
+    "methods": ["redirect-to-browser"],
+    "requiredFor": ["checkout"]
+  },
+  "discovery": {
+    "robotsTxt": "https://www.example-store.com/robots.txt",
+    "schemaOrg": true
+  },
+  "legal": {
+    "termsUrl": "https://www.example-store.com/legal/ai-terms",
+    "euAiActCompliance": {
+      "transparencyRequired": true,
+      "riskClassification": "limited",
+      "humanOversightMandatory": false
+    }
+  },
+  "metadata": {
+    "$schema": "https://a2wf.org/schema/core-v1.0.json",
+    "author": "Example Store Legal Team",
+    "lastUpdated": "2026-03-22"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "_test_meta": {
+    "class": "positive",
+    "description": "Valid doc with unknown top-level keys — agent MUST ignore them",
+    "guide_ids": ["P-3"],
+    "expected": "valid"
+  },
+  "@context": "https://schema.org",
+  "specVersion": "1.0",
+  "identity": {
+    "domain": "https://example.com",
+    "name": "Example",
+    "inLanguage": "en"
+  },
+  "permissions": {
+    "read": { "faq": { "allowed": true } },
+    "action": {},
+    "data": {}
+  },
+  "futureField": "some value",
+  "anotherFutureField": { "nested": true }
+}

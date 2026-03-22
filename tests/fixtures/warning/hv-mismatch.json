@@ -1,0 +1,25 @@
+{
+  "_test_meta": {
+    "class": "warning",
+    "description": "humanVerification=true on action but not in requiredFor — should warn",
+    "expected": "valid_with_warning"
+  },
+  "@context": "https://schema.org",
+  "specVersion": "1.0",
+  "identity": {
+    "domain": "https://example.com",
+    "name": "Example",
+    "inLanguage": "en"
+  },
+  "permissions": {
+    "read": {},
+    "action": {
+      "checkout": { "allowed": true, "humanVerification": true }
+    },
+    "data": {}
+  },
+  "humanVerification": {
+    "methods": ["redirect-to-browser"],
+    "requiredFor": []
+  }
+}
