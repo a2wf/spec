@@ -1,6 +1,6 @@
 # A2WF Agent-to-Web Framework — siteai.json Specification
 
-**Version 1.0 — Proposed Standard (Core)**
+**Version 1.0 — Public Draft (Core)**
 **Date:** March 2026
 **Author:** Wolfgang Wimmer
 **Organization:** SSC Software Sales Consulting
@@ -14,7 +14,7 @@
 
 ### 1.1. Abstract
 
-This document defines the `siteai.json` format, Version 1.0, as part of the Agent-to-Web Framework (A2WF). It provides a standardized, machine-readable method for website operators to:
+This document defines the `siteai.json` format, Version 1.0, as part of the Agent-to-Web Framework (A2WF). It provides a machine-readable policy format for website operators to:
 
 - Declare granular access policies defining what AI agents may and may not do on their digital properties.
 - Require agent identification, human-in-the-loop verification for sensitive actions, and enforce rate limits.
@@ -41,7 +41,7 @@ Current agent-side standards (MCP, A2A, enterprise IAM) govern agents from the a
 
 ### 1.3. Proposed Solution: siteai.json
 
-`siteai.json` is a standardized JSON file provided by website operators as a machine-readable access policy declaring permissions, restrictions, agent identification requirements, and legal terms.
+`siteai.json` is a JSON-based policy file provided by website operators to declare permissions, restrictions, agent identification requirements, and legal terms in machine-readable form.
 
 ### 1.4. Relationship to Schema.org
 

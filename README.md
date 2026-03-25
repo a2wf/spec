@@ -12,7 +12,7 @@
 </p>
 
 <p align="center">
-  <strong>The open standard for AI agent governance on websites.</strong>
+  <strong>A public framework for AI agent governance on websites.</strong>
 </p>
 
 <p align="center">
@@ -26,7 +26,7 @@
 
 ## What is A2WF?
 
-A2WF (Agent-to-Web Framework) provides a standardized, machine-readable way for website operators to publish a `siteai.json` policy for AI agents.
+A2WF (Agent-to-Web Framework) provides a machine-readable way for website operators to publish a `siteai.json` policy for AI agents.
 
 It answers questions like:
 - What may agents read?
@@ -141,7 +141,7 @@ Agents should attempt discovery in this order:
 
 ## Specification Status
 
-**Current version:** 1.0 (Core Proposed Standard)
+**Current version:** 1.0 (Core Public Draft)
 
 The current public core specification is in [`spec/specification-v1.0.md`](./spec/specification-v1.0.md).
 
