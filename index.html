@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Agent-to-Web Framework (A2WF) — siteai.json Specification</title>
+  <script
+    src="https://www.w3.org/Tools/respec/respec-w3c"
+    class="remove"
+    defer></script>
+  <script class="remove">
+    var respecConfig = {
+      // Community Group Draft Report — correct status while the spec is in progress.
+      specStatus: "CG-DRAFT",
+
+      // The W3C Community Group short name. "a2wf" is registered with W3C
+      // (group ID 175828) and recognized by ReSpec — generates correct
+      // boilerplate, links, and IPR statements automatically.
+      group: "a2wf",
+
+      // Short name of THIS specification.
+      shortName: "a2wf",
+
+      // GitHub repository — used for "Edit on GitHub", issues, and contribution history.
+      github: "a2wf/spec",
+
+      // Canonical published location (GitHub Pages URL).
+      latestVersion: "https://a2wf.github.io/spec/",
+
+      // Editors — minimum the chair. Affiliations are optional but improve credibility.
+      editors: [
+        {
+          name: "Wolfgang Wimmer",
+          company: "SSC Software Sales Consulting",
+          companyURL: "https://ssc-slovakia.com"
+        }
+      ],
+
+      // CG output is a Community Group Report, not a W3C Recommendation.
+      noRecTrack: true,
+
+      // Local references for documents not in W3C/IETF default biblio.
+      localBiblio: {
+        "EU-AI-ACT": {
+          title: "Regulation (EU) 2024/1689 of the European Parliament and of the Council laying down harmonised rules on artificial intelligence (Artificial Intelligence Act)",
+          href: "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+          publisher: "European Union",
+          date: "2024"
+        },
+        "ROBOTS-TXT": {
+          title: "Robots Exclusion Protocol",
+          href: "https://www.rfc-editor.org/rfc/rfc9309.html",
+          publisher: "IETF",
+          date: "September 2022"
+        },
+        "MCP": {
+          title: "Model Context Protocol",
+          href: "https://modelcontextprotocol.io/",
+          publisher: "Anthropic",
+          date: "2024"
+        },
+        "A2A": {
+          title: "Agent-to-Agent Protocol",
+          href: "https://google.github.io/A2A/",
+          publisher: "Google / Linux Foundation",
+          date: "2024"
+        },
+        "LLMS-TXT": {
+          title: "llms.txt: A proposal to standardize using /llms.txt",
+          href: "https://llmstxt.org/",
+          date: "2024"
+        },
+        "NIST-AI-RMF": {
+          title: "AI Risk Management Framework (AI RMF 1.0)",
+          href: "https://www.nist.gov/itl/ai-risk-management-framework",
+          publisher: "U.S. National Institute of Standards and Technology",
+          date: "January 2023"
+        },
+        "SCHEMA-ORG": {
+          title: "Schema.org",
+          href: "https://schema.org/",
+          publisher: "W3C Schema.org Community Group"
+        }
+      },
+
+      // External cross-references.
+      xref: ["web-platform"]
+    };
+  </script>
+  <style>
+    pre.json,
+    pre.example {
+      background: #f7f7f9;
+      border-left: 3px solid #2a5db0;
+      padding: 1em;
+      overflow-x: auto;
+    }
+    .field-name {
+      font-family: monospace;
+      font-weight: 600;
+    }
+    table.field-table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 1em 0;
+    }
+    table.field-table th,
+    table.field-table td {
+      border: 1px solid #ccc;
+      padding: 0.4em 0.6em;
+      text-align: left;
+      vertical-align: top;
+    }
+    table.field-table th {
+      background: #eef2f7;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     ABSTRACT
+============================================================ -->
+<section id="abstract">
+  <p>
+    The Agent-to-Web Framework (A2WF) defines <code>siteai.json</code>,
+    a machine-readable policy file that website operators publish to declare
+    which actions AI agents are permitted, restricted, or prohibited from
+    performing on their site. Where robots.txt [[ROBOTS-TXT]]
+    governs what may be <em>crawled</em>, <code>siteai.json</code> governs
+    what an agent may <em>do</em>: submit forms, complete transactions,
+    book appointments, or extract data.
+  </p>
+  <p>
+    This specification defines the file location, syntax, semantics, and
+    conformance requirements for <code>siteai.json</code>, together with
+    fields that support transparency and human-oversight obligations under
+    the EU AI Act (in particular Articles 14, 26, and 50).
+  </p>
+</section>
+
+<!-- ============================================================
+     STATUS OF THIS DOCUMENT — ReSpec auto-fills from specStatus + group.
+     The text added here is appended after the boilerplate.
+============================================================ -->
+<section id="sotd">
+  <p>
+    This document is a <strong>work in progress</strong> developed by the
+    <a href="https://www.w3.org/community/a2wf/">A2WF Community Group</a>.
+    Comments, issues, and pull requests are welcome at the
+    <a href="https://github.com/a2wf/spec">A2WF specification repository on GitHub</a>.
+  </p>
+  <p>
+    The Community Group was launched on 29 March 2026. This is the first
+    ReSpec-based revision of the specification and corresponds to the same
+    technical content as <a href="https://github.com/a2wf/spec/blob/main/spec/specification-v1.0.md">specification-v1.0.md</a>
+    in the repository, restructured to meet
+    <a href="https://www.w3.org/community/reports/reqs/">W3C Community Group specification requirements</a>.
+  </p>
+</section>
+
+<!-- ============================================================
+     INTRODUCTION
+============================================================ -->
+<section class="informative">
+  <h2>Introduction</h2>
+
+  <p>
+    AI agents now interact with websites in ways that go well beyond
+    traditional crawling. Agents fill out forms, complete checkouts,
+    schedule appointments, compare prices, and operate accounts on behalf
+    of users. Existing web standards address only adjacent concerns:
+  </p>
+  <ul>
+    <li>robots.txt [[ROBOTS-TXT]] governs which URLs may be crawled, with a binary allow/deny model. It says nothing about actions.</li>
+    <li>IETF AIPREF expresses preferences about training and content reuse. It does not govern interactive behaviour.</li>
+    <li>Cookie consent banners govern client-side tracking by humans, not actions taken by autonomous agents.</li>
+  </ul>
+
+  <p>
+    A2WF fills this gap. A site operator places a <code>siteai.json</code>
+    document at a well-known location and declares, in a structured form,
+    the conditions under which an AI agent may operate on the site.
+  </p>
+
+  <section class="informative">
+    <h3>Problem statement</h3>
+    <p>
+      AI agents increasingly interact with websites — browsing products,
+      comparing prices, booking appointments, filling forms, extracting data.
+      Website operators face a critical gap: no standard exists that gives the
+      website operator a machine-readable way to declare:
+    </p>
+    <ul>
+      <li>What agents are <strong>ALLOWED</strong> to do (read catalogues, search, compare prices).</li>
+      <li>What agents <strong>MUST NOT</strong> do (bulk scrape, post fake reviews, complete unauthorised transactions).</li>
+      <li>What requires <strong>HUMAN VERIFICATION</strong> (checkout, booking, contact forms).</li>
+      <li>How agents must <strong>IDENTIFY</strong> themselves (name, operator, purpose).</li>
+      <li>What <strong>LEGAL TERMS</strong> apply (Terms of Service, jurisdiction, regulatory compliance).</li>
+      <li>What <strong>RATE LIMITS</strong> are enforced (per action, per minute, per hour).</li>
+    </ul>
+    <p>
+      Current agent-side standards (MCP [[MCP]],
+      A2A [[A2A]], enterprise IAM) govern agents from the
+      agent operator's perspective. A2WF fills the gap by providing
+      governance from the <em>website operator's</em> perspective.
+    </p>
+  </section>
+
+  <section class="informative">
+    <h3>Proposed solution: <code>siteai.json</code></h3>
+    <p>
+      <code>siteai.json</code> is a JSON-based policy file provided by
+      website operators to declare permissions, restrictions, agent
+      identification requirements, and legal terms in machine-readable form.
+      Its design intent is to give the website side of the agent ecosystem
+      a single, discoverable, structured artifact &mdash; comparable in
+      role to <a href="https://www.rfc-editor.org/rfc/rfc9309.html">robots.txt</a>
+      [[ROBOTS-TXT]] for crawlers &mdash; but expressing actions, not just
+      paths.
+    </p>
+  </section>
+
+  <section class="informative">
+    <h3>Relationship to Schema.org</h3>
+    <p>
+      This specification leverages Schema.org [[SCHEMA-ORG]]
+      vocabulary where applicable for site-level concepts (WebSite,
+      Organization, ContactPoint), avoiding reinvention of standard terms.
+      It complements Schema.org by introducing governance structures not
+      covered there: permissions, scraping policies, agent identification,
+      human verification, and legal enforcement metadata.
+    </p>
+    <p>
+      An AI agent uses <code>siteai.json</code> first to obtain the
+      governance rules, then uses detailed Schema.org markup found on
+      specific pages for in-depth entity information.
+    </p>
+  </section>
+
+  <section class="informative">
+    <h3>Relationship to existing standards</h3>
+    <table class="field-table">
+      <thead>
+        <tr>
+          <th>Standard</th>
+          <th>Scope</th>
+          <th>Relationship to A2WF</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>robots.txt</td><td>Crawling</td><td>Complementary — A2WF references robots.txt via <code>discovery.robotsTxt</code>.</td></tr>
+        <tr><td>sitemap.xml</td><td>URL listing</td><td>Independent — both files may coexist.</td></tr>
+        <tr><td>llms.txt</td><td>Content guidance for LLMs</td><td>Complementary — A2WF references it via <code>discovery.llmsTxt</code>.</td></tr>
+        <tr><td>MCP / A2A</td><td>Agent-side protocols</td><td>Complementary — A2WF references endpoints via <code>discovery.mcpEndpoint</code> / <code>discovery.a2aAgentCard</code>.</td></tr>
+        <tr><td>Schema.org</td><td>Page-level entity vocabulary</td><td>A2WF reuses Schema.org terms where applicable.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="informative">
+    <h3>Approach to multilinguality</h3>
+    <p>
+      <code>siteai.json</code> is a single canonical document in one language,
+      identified via <code>identity.inLanguage</code> using a BCP 47 tag.
+      Multilingual sites SHOULD provide alternate language versions through
+      site infrastructure (separate origins, Accept-Language negotiation, or
+      regional siteai.json variants) rather than embedding multilingual
+      content inside a single file.
+    </p>
+  </section>
+
+  <section class="informative">
+    <h3>Intended audience</h3>
+    <ul>
+      <li><strong>Website operators</strong> publishing governance policies for AI agents.</li>
+      <li><strong>AI agent operators</strong> implementing conforming consumer behaviour.</li>
+      <li><strong>Tool authors</strong> building generators, validators, or auditing tools for siteai.json files.</li>
+      <li><strong>Compliance and legal teams</strong> mapping declared policies to regulatory frameworks.</li>
+      <li><strong>Regulators &amp; compliance officers</strong>: how <code>siteai.json</code> enables machine-readable AI governance.</li>
+    </ul>
+  </section>
+
+  <section id="conventions">
+    <h3>Conventions and terminology</h3>
+    <p>
+      The format is JSON [[RFC8259]], UTF-8 encoded. Data types
+      used in this specification are: String, Object, Array, Boolean,
+      Integer. URLs are valid URIs, preferably canonical and absolute.
+      Language tags follow IETF BCP 47 [[BCP47]]. Date-time values follow
+      ISO 8601 / [[RFC3339]]. Schema.org vocabulary is referenced from
+      <a href="https://schema.org/">https://schema.org/</a> [[SCHEMA-ORG]].
+    </p>
+    <p>
+      The key words <em>MUST</em>, <em>MUST NOT</em>, <em>REQUIRED</em>,
+      <em>SHOULD</em>, <em>SHOULD NOT</em>, <em>RECOMMENDED</em>,
+      <em>MAY</em>, and <em>OPTIONAL</em> in this document are to be
+      interpreted as described in BCP 14 [[RFC2119]] [[RFC8174]] when, and
+      only when, they appear in all capitals, as shown here.
+    </p>
+  </section>
+</section>
+
+<!-- ============================================================
+     CONFORMANCE — required for any spec using RFC 2119 keywords.
+     ReSpec auto-generates the standard RFC 2119 paragraph.
+============================================================ -->
+<section id="conformance">
+  <p>
+    This document defines two classes of products:
+    <dfn data-lt="publishing sites|publishing site">publishing site</dfn> (the website operator publishing a
+    <code>siteai.json</code>) and
+    <dfn data-lt="consuming agents|consuming agent">consuming agent</dfn> (the AI agent that retrieves and acts on it).
+    Conformance criteria for each are stated in their respective sections.
+  </p>
+</section>
+
+<!-- ============================================================
+     SECTION 2 — FILE LOCATION AND DISCOVERY
+============================================================ -->
+<section>
+  <h2>File location and discovery</h2>
+
+  <section>
+    <h3>Preferred method: root URL</h3>
+    <p>
+      A publishing site MUST serve <code>siteai.json</code> from the
+      well-known location at the root of its origin:
+    </p>
+    <pre class="example">https://example.com/siteai.json</pre>
+    <p>
+      The file MUST be served with HTTP status <code>200 OK</code> and
+      <code>Content-Type: application/json</code>.
+    </p>
+  </section>
+
+  <section>
+    <h3>Alternative: <code>robots.txt</code> directive</h3>
+    <p>
+      A publishing site MAY also declare the location of its
+      <code>siteai.json</code> in <code>robots.txt</code> using the
+      non-standard but conventional directive:
+    </p>
+    <pre class="example">SiteAI: https://example.com/siteai.json</pre>
+  </section>
+
+  <section>
+    <h3>Alternative: HTML <code>&lt;link&gt;</code> tag</h3>
+    <p>
+      A publishing site MAY include a <code>&lt;link&gt;</code> element in
+      the document head:
+    </p>
+    <pre class="example">&lt;link rel="siteai" href="https://example.com/siteai.json"&gt;</pre>
+  </section>
+
+  <section>
+    <h3>Alternative: well-known URI</h3>
+    <p>
+      A publishing site MAY also serve the file at
+      <code>/.well-known/siteai.json</code> for compatibility with
+      well-known URI conventions [[RFC8615]]. When both a root and
+      well-known location are present, they MUST point to the same
+      content.
+    </p>
+  </section>
+
+  <section>
+    <h3>Priority and retrieval</h3>
+    <p>
+      Consuming agents SHOULD retrieve <code>siteai.json</code> in the
+      following order, stopping at the first successful retrieval:
+    </p>
+    <ol>
+      <li>Root URL (<code>/siteai.json</code>)</li>
+      <li>Well-known URI (<code>/.well-known/siteai.json</code>)</li>
+      <li>HTML <code>&lt;link rel="siteai"&gt;</code> in the home page</li>
+      <li><code>SiteAI:</code> directive in <code>robots.txt</code></li>
+    </ol>
+  </section>
+
+  <section>
+    <h3>File serving requirements</h3>
+    <ul>
+      <li>The file MUST be served over HTTPS.</li>
+      <li>The file SHOULD be cacheable with reasonable
+          <code>Cache-Control</code> headers (e.g. <code>max-age=3600</code>).</li>
+      <li>The file SHOULD be at most a few hundred kilobytes; consuming
+          agents MAY truncate or reject responses larger than 1 MiB.</li>
+    </ul>
+  </section>
+</section>
+
+<!-- ============================================================
+     SECTION 3 — FORMAT SPECIFICATION (REQUIRED ELEMENTS)
+============================================================ -->
+<section>
+  <h2>Format specification — required elements</h2>
+
+  <section>
+    <h3>Top-level structure</h3>
+    <p>
+      A <code>siteai.json</code> document MUST consist of a single JSON
+      object [[RFC8259]]. The root object MUST contain:
+    </p>
+    <ul>
+      <li><span class="field-name">specVersion</span> (String): <strong>REQUIRED.</strong> Must be <code>"1.0"</code>.</li>
+      <li><span class="field-name">identity</span> (Object): <strong>REQUIRED.</strong> Core website identification.</li>
+      <li><span class="field-name">permissions</span> (Object): <strong>REQUIRED.</strong> Agent access policies.</li>
+    </ul>
+    <p>The root object SHOULD contain:</p>
+    <ul>
+      <li><span class="field-name">@context</span> (String): RECOMMENDED. <code>"https://schema.org"</code>.</li>
+      <li><span class="field-name">agentIdentification</span> (Object): RECOMMENDED.</li>
+      <li><span class="field-name">scraping</span> (Object): RECOMMENDED.</li>
+    </ul>
+    <p>
+      The root object MAY contain additional members defined in
+      <a href="#optional-governance-extensions">Optional governance extensions</a>.
+      Consuming agents MUST ignore any unrecognised members.
+    </p>
+  </section>
+
+  <section id="identity-object">
+    <h3>The <code>identity</code> object (REQUIRED)</h3>
+    <p>
+      Provides core identifying and contextual information about the
+      publishing site. Where applicable, fields use Schema.org WebSite
+      vocabulary.
+    </p>
+    <table class="field-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Requirement</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>@type</code></td><td>String</td><td>RECOMMENDED</td><td><code>"WebSite"</code>. Schema.org type declaration.</td></tr>
+        <tr><td><code>domain</code></td><td>String</td><td>REQUIRED</td><td>Canonical absolute URL (schema:WebSite.url).</td></tr>
+        <tr><td><code>name</code></td><td>String</td><td>REQUIRED</td><td>Official site / brand name (schema:WebSite.name).</td></tr>
+        <tr><td><code>description</code></td><td>String</td><td>OPTIONAL</td><td>General site description (schema:WebSite.description).</td></tr>
+        <tr><td><code>purpose</code></td><td>String</td><td>RECOMMENDED</td><td>Concise AI-focused description of the site's primary goal and audience. A2WF-specific.</td></tr>
+        <tr><td><code>inLanguage</code></td><td>String</td><td>REQUIRED</td><td>Primary language as a BCP 47 tag.</td></tr>
+        <tr><td><code>category</code></td><td>String</td><td>RECOMMENDED</td><td>Website type, e.g. <code>"e-commerce"</code>, <code>"healthcare"</code>, <code>"government"</code>, <code>"saas"</code>.</td></tr>
+        <tr><td><code>jurisdiction</code></td><td>String</td><td>RECOMMENDED</td><td>Legal jurisdiction, e.g. <code>"EU"</code>, <code>"US"</code>, <code>"US-CA"</code>, <code>"CH"</code>.</td></tr>
+        <tr><td><code>applicableLaw</code></td><td>Array&lt;String&gt;</td><td>OPTIONAL</td><td>Specific regulations, e.g. <code>["EU AI Act", "GDPR"]</code>.</td></tr>
+        <tr><td><code>contact</code></td><td>String</td><td>OPTIONAL</td><td>Email for policy-related questions.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="permissions-object">
+    <h3>The <code>permissions</code> object (REQUIRED)</h3>
+    <p>
+      The core governance layer. Contains three sub-objects that control
+      different aspects of AI agent interaction: <code>read</code>,
+      <code>action</code>, and <code>data</code>.
+    </p>
+
+    <section>
+      <h4>Read permissions</h4>
+      <p>Control what information consuming agents can access (passive operations):</p>
+      <ul>
+        <li><code>productCatalog</code> — product listings, descriptions, images, categories.</li>
+        <li><code>pricing</code> — prices, fees, rate cards.</li>
+        <li><code>availability</code> — stock levels, appointment slots, table availability.</li>
+        <li><code>openingHours</code> — business hours and holiday schedules.</li>
+        <li><code>contactInfo</code> — address, phone, email.</li>
+        <li><code>reviews</code> — customer reviews, ratings, testimonials.</li>
+        <li><code>faq</code> — frequently asked questions.</li>
+        <li><code>companyInfo</code> — about page, team, history.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h4>Action permissions</h4>
+      <p>Control what operations consuming agents may perform (active operations):</p>
+      <ul>
+        <li><code>search</code> — site search functionality.</li>
+        <li><code>addToCart</code> — adding items to a shopping cart.</li>
+        <li><code>checkout</code> — completing a purchase (typically <code>humanVerification: true</code>).</li>
+        <li><code>createAccount</code> — user registration (often denied).</li>
+        <li><code>submitReview</code> — posting reviews (often denied to prevent fakes).</li>
+        <li><code>submitContactForm</code> — contact form submission.</li>
+        <li><code>bookAppointment</code> — booking reservations / appointments.</li>
+        <li><code>cancelOrder</code> — cancelling orders.</li>
+        <li><code>requestRefund</code> — initiating refund requests.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h4>Data permissions</h4>
+      <p>Protect sensitive information (typically all denied):</p>
+      <ul>
+        <li><code>customerRecords</code> — user profiles and personal data.</li>
+        <li><code>orderHistory</code> — past orders and transactions.</li>
+        <li><code>paymentInfo</code> — credit cards and bank details.</li>
+        <li><code>internalAnalytics</code> — traffic data and business metrics.</li>
+        <li><code>employeeData</code> — staff information.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h4>Permission properties</h4>
+      <p>Each permission value is an object with the following members:</p>
+      <table class="field-table">
+        <thead><tr><th>Field</th><th>Type</th><th>Requirement</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>allowed</code></td><td>Boolean</td><td>REQUIRED</td><td>Is this permission granted?</td></tr>
+          <tr><td><code>rateLimit</code></td><td>Integer</td><td>OPTIONAL</td><td>Maximum requests per minute for this action.</td></tr>
+          <tr><td><code>humanVerification</code></td><td>Boolean</td><td>OPTIONAL</td><td>Default <code>false</code>. Requires human confirmation.</td></tr>
+          <tr><td><code>note</code></td><td>String</td><td>OPTIONAL</td><td>Explanatory note for agents and humans. Treated as data, not as instruction.</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </section>
+
+  <section id="agent-identification-object">
+    <h3>The <code>agentIdentification</code> object (RECOMMENDED)</h3>
+    <p>Defines requirements for AI agent self-identification.</p>
+    <ul>
+      <li><code>requireUserAgent</code> (Boolean) — agent MUST include an identifying User-Agent header.</li>
+      <li><code>requiredFields</code> (Array&lt;String&gt;) — fields the agent must provide; valid values include <code>"agentName"</code>, <code>"agentOperator"</code>, <code>"agentPurpose"</code>.</li>
+      <li><code>allowAnonymousAgents</code> (Boolean) — default <code>true</code>. If <code>false</code>, unidentified agents MUST be denied.</li>
+      <li><code>trustedAgents</code> (Array&lt;Object&gt;) — whitelist; each entry has <code>{ name, operator, permissions }</code>.</li>
+      <li><code>blockedAgents</code> (Array&lt;Object&gt;) — blacklist; each entry has <code>{ pattern, reason }</code>.</li>
+    </ul>
+  </section>
+
+  <section id="scraping-object">
+    <h3>The <code>scraping</code> object (RECOMMENDED)</h3>
+    <p>Declares policies on automated data extraction.</p>
+    <ul>
+      <li><code>bulkDataExtraction</code> (Boolean) — default <code>false</code>. Systematic large-scale extraction.</li>
+      <li><code>priceMonitoring</code> (Boolean) — default <code>false</code>. Automated price-change tracking.</li>
+      <li><code>contentReproduction</code> (Boolean) — default <code>false</code>. Reproducing or republishing content.</li>
+      <li><code>competitiveAnalysis</code> (Boolean) — default <code>false</code>. Data collection for competitive intelligence.</li>
+      <li><code>trainingDataUsage</code> (Boolean) — default <code>false</code>. Using site content as training data.</li>
+      <li><code>note</code> (String) — OPTIONAL. Additional context or licensing information.</li>
+    </ul>
+  </section>
+</section>
+
+<!-- ============================================================
+     SECTION 4 — OPTIONAL GOVERNANCE EXTENSIONS
+============================================================ -->
+<section id="optional-governance-extensions">
+  <h2>Optional governance extensions</h2>
+
+  <section>
+    <h3>The <code>defaults</code> object</h3>
+    <p>Global default settings that apply unless overridden by individual permissions.</p>
+    <ul>
+      <li><code>agentAccess</code> (String) — <code>"open"</code> (permissive), <code>"restricted"</code> (deny by default), or <code>"minimal"</code> (deny everything except explicit allows).</li>
+      <li><code>requireIdentification</code> (Boolean) — default <code>false</code>.</li>
+      <li><code>humanVerificationRequired</code> (Boolean) — default <code>false</code>. If <code>true</code>, all actions require human verification.</li>
+      <li><code>maxRequestsPerMinute</code> (Integer) — global per-minute rate limit.</li>
+      <li><code>maxRequestsPerHour</code> (Integer) — global per-hour rate limit.</li>
+      <li><code>respectRobotsTxt</code> (Boolean) — default <code>true</code>.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>The <code>humanVerification</code> object</h3>
+    <p>Defines human-in-the-loop requirements for sensitive actions.</p>
+    <ul>
+      <li><code>methods</code> (Array&lt;String&gt;) — accepted methods: <code>"redirect-to-browser"</code>, <code>"email-confirmation"</code>, <code>"sms-otp"</code>.</li>
+      <li><code>requiredFor</code> (Array&lt;String&gt;) — names of actions that require human verification.</li>
+      <li><code>note</code> (String) — additional human-readable instructions.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>The <code>legal</code> object</h3>
+    <p>References Terms of Service and regulatory frameworks.</p>
+    <ul>
+      <li><code>termsUrl</code> (String) — RECOMMENDED. URL to AI-specific Terms of Service.</li>
+      <li><code>complianceNote</code> (String) — OPTIONAL human-readable compliance statement.</li>
+      <li><code>dataRetention</code> (String) — OPTIONAL rules for agent data retention.</li>
+      <li>
+        <code>euAiActCompliance</code> (Object) — OPTIONAL. EU AI Act-specific metadata
+        supporting Regulation (EU) 2024/1689 [[EU-AI-ACT]]:
+        <ul>
+          <li><code>transparencyRequired</code> (Boolean) — agents must identify as AI.</li>
+          <li><code>riskClassification</code> (String) — <code>"minimal"</code>, <code>"limited"</code>, <code>"high"</code>, or <code>"unacceptable"</code>.</li>
+          <li><code>humanOversightMandatory</code> (Boolean).</li>
+        </ul>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>The <code>discovery</code> object</h3>
+    <p>Links to complementary web resources.</p>
+    <ul>
+      <li><code>mcpEndpoint</code> (String) — URL to an MCP server card.</li>
+      <li><code>a2aAgentCard</code> (String) — URL to an A2A agent card.</li>
+      <li><code>robotsTxt</code> (String) — URL to <code>robots.txt</code>.</li>
+      <li><code>llmsTxt</code> (String) — URL to an <code>llms.txt</code> file.</li>
+      <li><code>schemaOrg</code> (Boolean) — whether Schema.org markup is present on the site.</li>
+      <li><code>openApi</code> (String) — URL to an OpenAPI specification.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h3>The <code>metadata</code> object</h3>
+    <ul>
+      <li><code>$schema</code> (String) — URL of the JSON Schema for validation.</li>
+      <li><code>schemaVersion</code> (String) — specification version, e.g. <code>"1.0"</code>.</li>
+      <li><code>generatedAt</code> (String) — RFC 3339 timestamp of generation.</li>
+      <li><code>author</code> (String) — policy creator.</li>
+      <li><code>lastUpdated</code> (String, ISO date) — last modification date.</li>
+      <li><code>expiresAt</code> (String, ISO date) — policy expiration date.</li>
+      <li><code>changelogUrl</code> (String) — URL to policy change history.</li>
+    </ul>
+  </section>
+</section>
+
+<!-- ============================================================
+     SECTION 5 — ENFORCEMENT
+============================================================ -->
+<section>
+  <h2>Enforcement</h2>
+
+  <section class="informative">
+    <h3>Voluntary compliance</h3>
+    <p>
+      Like robots.txt [[ROBOTS-TXT]], A2WF relies primarily
+      on voluntary compliance by reputable AI agents. Major agent vendors
+      are expected to respect published policies as part of responsible AI
+      deployment.
+    </p>
+  </section>
+
+  <section>
+    <h3>Technical enforcement</h3>
+    <p>Publishing sites MAY enforce policies through:</p>
+    <ul>
+      <li>HTTP <code>403</code> responses to non-compliant agents.</li>
+      <li>Rate limiting based on declared limits.</li>
+      <li>Web Application Firewalls with agent-aware rules.</li>
+      <li>User-Agent-based blocking for agents that violate declared policies.</li>
+    </ul>
+  </section>
+
+  <section class="informative">
+    <h3>Legal enforcement</h3>
+    <p>
+      The <code>legal.termsUrl</code> field enables legal enforcement by
+      linking to machine-readable policies. Existing legal frameworks
+      (e.g. CFAA in the United States) treat violation of machine-readable
+      access policies as evidence of unauthorised access. The
+      EU AI Act [[EU-AI-ACT]] (effective August 2026)
+      requires transparency and risk management for AI systems;
+      <code>siteai.json</code> provides machine-readable evidence of
+      declared policies.
+    </p>
+  </section>
+
+  <section>
+    <h3>Audit and logging</h3>
+    <p>
+      <a>Publishing site</a>s SHOULD log agent access patterns and compare them
+      against declared policies. The <code>agentIdentification</code>
+      section enables meaningful audit trails by requiring agent
+      self-identification.
+    </p>
+  </section>
+</section>
+
+<!-- ============================================================
+     SECTION 6 — SECURITY CONSIDERATIONS
+============================================================ -->
+<section>
+  <h2>Security considerations</h2>
+
+  <section>
+    <h3>Policy integrity</h3>
+    <p>
+      The <code>siteai.json</code> file MUST be served over HTTPS to
+      prevent tampering. Publishing sites SHOULD implement integrity checks
+      and monitor for unauthorised modifications.
+    </p>
+  </section>
+
+  <section>
+    <h3>Prompt injection</h3>
+    <p>
+      The <code>siteai.json</code> file contains structured data, not
+      executable content. Consuming agents MUST treat all fields as data,
+      not instructions. String fields (especially <code>note</code>) MUST
+      NOT be interpreted as agent commands.
+    </p>
+  </section>
+
+  <section>
+    <h3>Policy spoofing</h3>
+    <p>
+      Consuming agents MUST only trust <code>siteai.json</code> files
+      served from the domain they describe. Cross-domain policy
+      declarations MUST be rejected unless explicitly referenced via the
+      <a href="#optional-governance-extensions">discovery</a> mechanism.
+    </p>
+  </section>
+
+  <section>
+    <h3>Denial of service</h3>
+    <p>
+      Rate limits declared in <code>siteai.json</code> are requests from
+      the publishing site, not guarantees. Consuming agents SHOULD respect
+      declared limits. Publishing sites SHOULD implement server-side rate
+      limiting independently of declared policies.
+    </p>
+  </section>
+</section>
+
+<!-- ============================================================
+     SECTION 7 — PRIVACY CONSIDERATIONS
+============================================================ -->
+<section class="informative">
+  <h2>Privacy considerations</h2>
+  <p>
+    The <code>siteai.json</code> file describes a site's policy for AI
+    agents and is intended to be fetched by agents and tools. It SHOULD
+    NOT contain personal data about individual users. The
+    <code>contact</code> field in <a href="#identity-object">identity</a>
+    is intended for a role-based mailbox (for example
+    <code>ai-policy@example.com</code>) rather than an individual
+    person's address.
+  </p>
+  <p>
+    Logging of agent access by publishing sites is governed by applicable
+    data protection law (such as the GDPR in the European Union); access
+    logs MUST be processed in accordance with that law.
+  </p>
+</section>
+
+<!-- ============================================================
+     SECTION 8 — VERSIONING AND EXTENSIBILITY
+============================================================ -->
+<section>
+  <h2>Versioning and extensibility</h2>
+
+  <section>
+    <h3>Version strategy</h3>
+    <p>
+      The <code>specVersion</code> field identifies the specification
+      version. Major versions (2.0, 3.0) MAY introduce breaking changes.
+      Minor updates within v1.x MUST remain backward-compatible.
+    </p>
+  </section>
+
+  <section>
+    <h3>Forward compatibility</h3>
+    <p>
+      Consuming agents MUST ignore any unrecognised members. This ensures
+      that files created with future extensions remain readable by v1.0
+      consumers.
+    </p>
+  </section>
+
+  <section class="informative">
+    <h3>Extensibility roadmap</h3>
+    <p>Future extensions may include:</p>
+    <ul>
+      <li>Dynamic policy endpoints (API-based policy queries).</li>
+      <li>Signed policies (cryptographic verification).</li>
+      <li>Industry-specific profiles (healthcare, finance, government).</li>
+      <li>Agent capability matching.</li>
+    </ul>
+  </section>
+</section>
+
+<!-- ============================================================
+     SECTION 9 — SCHEMA.ORG ALIGNMENT
+============================================================ -->
+<section class="informative">
+  <h2>Schema.org alignment</h2>
+  <table class="field-table">
+    <thead>
+      <tr><th><code>siteai.json</code> field</th><th>Schema.org equivalent</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>@context</code></td><td>JSON-LD context</td></tr>
+      <tr><td><code>identity.@type</code></td><td>schema:WebSite</td></tr>
+      <tr><td><code>identity.name</code></td><td>schema:WebSite.name</td></tr>
+      <tr><td><code>identity.description</code></td><td>schema:WebSite.description</td></tr>
+      <tr><td><code>identity.inLanguage</code></td><td>schema:WebSite.inLanguage</td></tr>
+      <tr><td><code>identity.domain</code></td><td>schema:WebSite.url</td></tr>
+      <tr><td><code>legal.termsUrl</code></td><td>schema:WebSite.publishingPrinciples</td></tr>
+      <tr><td><code>permissions.*</code></td><td><em>A2WF extension (no Schema.org equivalent)</em></td></tr>
+      <tr><td><code>scraping.*</code></td><td><em>A2WF extension</em></td></tr>
+      <tr><td><code>agentIdentification.*</code></td><td><em>A2WF extension</em></td></tr>
+      <tr><td><code>humanVerification.*</code></td><td><em>A2WF extension</em></td></tr>
+    </tbody>
+  </table>
+  <p>
+    A2WF extends Schema.org rather than reinventing it. Fields without a
+    Schema.org equivalent represent the novel governance concepts unique
+    to A2WF.
+  </p>
+</section>
+
+<!-- ============================================================
+     SECTION 10 — FILE ECOSYSTEM
+============================================================ -->
+<section class="informative">
+  <h2>File ecosystem</h2>
+  <table class="field-table">
+    <thead>
+      <tr><th>File</th><th>Purpose</th><th>Since</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>/robots.txt</code></td><td>Crawl permissions</td><td>1994</td></tr>
+      <tr><td><code>/sitemap.xml</code></td><td>URL listing for search engines</td><td>2005</td></tr>
+      <tr><td><code>/llms.txt</code></td><td>Content guide for LLMs</td><td>2024</td></tr>
+      <tr><td><code>/.well-known/mcp.json</code></td><td>MCP server discovery</td><td>2024</td></tr>
+      <tr><td><strong><code>/siteai.json</code></strong></td><td><strong>AI agent access governance (A2WF)</strong></td><td><strong>2025</strong></td></tr>
+    </tbody>
+  </table>
+  <p>
+    Each file serves a distinct purpose. <code>siteai.json</code> is the
+    governance layer that sits alongside all of them. The
+    <code>discovery</code> section of <code>siteai.json</code> can
+    reference each of these files, creating a unified entry point for AI
+    agents.
+  </p>
+</section>
+
+<!-- ============================================================
+     SECTION 11 — COMPLETE EXAMPLE
+============================================================ -->
+<section class="informative">
+  <h2>Complete example: e-commerce store</h2>
+  <aside class="example" title="Minimal siteai.json for an e-commerce site">
+<pre class="json">{
+  "@context": "https://schema.org",
+  "specVersion": "1.0",
+  "identity": {
+    "@type": "WebSite",
+    "domain": "https://www.example-store.com",
+    "name": "Example Online Store",
+    "description": "Premium widgets and gadgets",
+    "purpose": "E-commerce store selling premium widgets to consumers in the EU.",
+    "inLanguage": "en",
+    "category": "e-commerce",
+    "jurisdiction": "EU",
+    "applicableLaw": ["EU AI Act", "GDPR"],
+    "contact": "ai-policy@example-store.com"
+  },
+  "defaults": {
+    "agentAccess": "restricted",
+    "requireIdentification": true,
+    "maxRequestsPerMinute": 30,
+    "respectRobotsTxt": true
+  },
+  "permissions": {
+    "read": {
+      "productCatalog": { "allowed": true, "rateLimit": 60 },
+      "pricing": { "allowed": true },
+      "availability": { "allowed": true, "rateLimit": 30 },
+      "reviews": { "allowed": true, "rateLimit": 20 },
+      "faq": { "allowed": true }
+    },
+    "action": {
+      "search": { "allowed": true, "rateLimit": 20 },
+      "addToCart": { "allowed": true },
+      "checkout": {
+        "allowed": true,
+        "humanVerification": true,
+        "note": "Final purchase requires human confirmation."
+      },
+      "createAccount": { "allowed": false },
+      "submitReview": { "allowed": false }
+    },
+    "data": {
+      "customerRecords": { "allowed": false },
+      "paymentInfo": { "allowed": false },
+      "internalAnalytics": { "allowed": false }
+    }
+  },
+  "scraping": {
+    "bulkDataExtraction": false,
+    "priceMonitoring": false,
+    "trainingDataUsage": false,
+    "contentReproduction": false
+  },
+  "agentIdentification": {
+    "requireUserAgent": true,
+    "requiredFields": ["agentName", "agentOperator"],
+    "allowAnonymousAgents": false
+  },
+  "humanVerification": {
+    "methods": ["redirect-to-browser"],
+    "requiredFor": ["checkout"]
+  },
+  "discovery": {
+    "robotsTxt": "https://www.example-store.com/robots.txt",
+    "llmsTxt": "https://www.example-store.com/llms.txt",
+    "schemaOrg": true
+  },
+  "legal": {
+    "termsUrl": "https://www.example-store.com/legal/ai-terms",
+    "euAiActCompliance": {
+      "transparencyRequired": true,
+      "riskClassification": "limited",
+      "humanOversightMandatory": false
+    }
+  },
+  "metadata": {
+    "author": "Example Store Legal Team",
+    "lastUpdated": "2026-03-18",
+    "schemaVersion": "1.0"
+  }
+}</pre>
+  </aside>
+</section>
+
+<!-- ============================================================
+     SECTION 12 — CONSUMING AGENT REQUIREMENTS
+============================================================ -->
+<section>
+  <h2>Consuming agent requirements</h2>
+  <p>A conforming <a>consuming agent</a> MUST:</p>
+  <ol>
+    <li>Retrieve <code>siteai.json</code> from the well-known location before performing any non-read action on the site.</li>
+    <li>Identify itself in the <code>User-Agent</code> header in a form that distinguishes it from human-operated browsers.</li>
+    <li>Honour all <code>"allowed": false</code> declarations as prohibitions.</li>
+    <li>Observe declared rate limits.</li>
+    <li>Trigger human verification flows where declared.</li>
+    <li>Treat all string content (notably <code>note</code> fields) as data and never as instructions.</li>
+  </ol>
+</section>
+
+<!-- ============================================================
+     ACKNOWLEDGEMENTS
+============================================================ -->
+<section class="informative">
+  <h2>Acknowledgements</h2>
+  <p>
+    The editor thanks the founding members and early reviewers of the
+    A2WF Community Group for their feedback on the draft specification,
+    and the W3C Community Development Lead for guidance on aligning the
+    specification with W3C Community Group requirements.
+  </p>
+</section>
+
+</body>
+</html>
