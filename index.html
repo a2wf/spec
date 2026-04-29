@@ -9,24 +9,11 @@
     defer></script>
   <script class="remove">
     var respecConfig = {
-      // Community Group Draft Report — correct status while the spec is in progress.
       specStatus: "CG-DRAFT",
-
-      // The W3C Community Group short name. "a2wf" is registered with W3C
-      // (group ID 175828) and recognized by ReSpec — generates correct
-      // boilerplate, links, and IPR statements automatically.
-      group: "a2wf",
-
-      // Short name of THIS specification.
+      group: "cg/a2wf",
       shortName: "a2wf",
-
-      // GitHub repository — used for "Edit on GitHub", issues, and contribution history.
       github: "a2wf/spec",
-
-      // Canonical published location (GitHub Pages URL).
       latestVersion: "https://a2wf.github.io/spec/",
-
-      // Editors — minimum the chair. Affiliations are optional but improve credibility.
       editors: [
         {
           name: "Wolfgang Wimmer",
@@ -35,10 +22,8 @@
         }
       ],
 
-      // CG output is a Community Group Report, not a W3C Recommendation.
       noRecTrack: true,
 
-      // Local references for documents not in W3C/IETF default biblio.
       localBiblio: {
         "EU-AI-ACT": {
           title: "Regulation (EU) 2024/1689 of the European Parliament and of the Council laying down harmonised rules on artificial intelligence (Artificial Intelligence Act)",
@@ -82,7 +67,6 @@
         }
       },
 
-      // External cross-references.
       xref: ["web-platform"]
     };
   </script>
@@ -117,9 +101,6 @@
 </head>
 <body>
 
-<!-- ============================================================
-     ABSTRACT
-============================================================ -->
 <section id="abstract">
   <p>
     The Agent-to-Web Framework (A2WF) defines <code>siteai.json</code>,
@@ -138,10 +119,6 @@
   </p>
 </section>
 
-<!-- ============================================================
-     STATUS OF THIS DOCUMENT — ReSpec auto-fills from specStatus + group.
-     The text added here is appended after the boilerplate.
-============================================================ -->
 <section id="sotd">
   <p>
     This document is a <strong>work in progress</strong> developed by the
@@ -158,9 +135,6 @@
   </p>
 </section>
 
-<!-- ============================================================
-     INTRODUCTION
-============================================================ -->
 <section class="informative">
   <h2>Introduction</h2>
 
@@ -223,7 +197,7 @@
   <section class="informative">
     <h3>Relationship to Schema.org</h3>
     <p>
-      This specification leverages Schema.org [[SCHEMA-ORG]]
+      This specification uses Schema.org [[SCHEMA-ORG]]
       vocabulary where applicable for site-level concepts (WebSite,
       Organization, ContactPoint), avoiding reinvention of standard terms.
       It complements Schema.org by introducing governance structures not
@@ -300,10 +274,6 @@
   </section>
 </section>
 
-<!-- ============================================================
-     CONFORMANCE — required for any spec using RFC 2119 keywords.
-     ReSpec auto-generates the standard RFC 2119 paragraph.
-============================================================ -->
 <section id="conformance">
   <p>
     This document defines two classes of products:
@@ -314,9 +284,7 @@
   </p>
 </section>
 
-<!-- ============================================================
-     SECTION 2 — FILE LOCATION AND DISCOVERY
-============================================================ -->
+<!-- discovery -->
 <section>
   <h2>File location and discovery</h2>
 
@@ -389,9 +357,7 @@
   </section>
 </section>
 
-<!-- ============================================================
-     SECTION 3 — FORMAT SPECIFICATION (REQUIRED ELEMENTS)
-============================================================ -->
+<!-- required elements -->
 <section>
   <h2>Format specification — required elements</h2>
 
@@ -535,9 +501,7 @@
   </section>
 </section>
 
-<!-- ============================================================
-     SECTION 4 — OPTIONAL GOVERNANCE EXTENSIONS
-============================================================ -->
+<!-- optional extensions -->
 <section id="optional-governance-extensions">
   <h2>Optional governance extensions</h2>
 
@@ -610,9 +574,7 @@
   </section>
 </section>
 
-<!-- ============================================================
-     SECTION 5 — ENFORCEMENT
-============================================================ -->
+<!-- enforcement -->
 <section>
   <h2>Enforcement</h2>
 
@@ -662,9 +624,7 @@
   </section>
 </section>
 
-<!-- ============================================================
-     SECTION 6 — SECURITY CONSIDERATIONS
-============================================================ -->
+<!-- security -->
 <section>
   <h2>Security considerations</h2>
 
@@ -708,9 +668,7 @@
   </section>
 </section>
 
-<!-- ============================================================
-     SECTION 7 — PRIVACY CONSIDERATIONS
-============================================================ -->
+<!-- privacy -->
 <section class="informative">
   <h2>Privacy considerations</h2>
   <p>
@@ -729,9 +687,7 @@
   </p>
 </section>
 
-<!-- ============================================================
-     SECTION 8 — VERSIONING AND EXTENSIBILITY
-============================================================ -->
+<!-- versioning -->
 <section>
   <h2>Versioning and extensibility</h2>
 
@@ -765,9 +721,7 @@
   </section>
 </section>
 
-<!-- ============================================================
-     SECTION 9 — SCHEMA.ORG ALIGNMENT
-============================================================ -->
+<!-- schema.org alignment -->
 <section class="informative">
   <h2>Schema.org alignment</h2>
   <table class="field-table">
@@ -795,9 +749,7 @@
   </p>
 </section>
 
-<!-- ============================================================
-     SECTION 10 — FILE ECOSYSTEM
-============================================================ -->
+<!-- file ecosystem -->
 <section class="informative">
   <h2>File ecosystem</h2>
   <table class="field-table">
@@ -821,9 +773,7 @@
   </p>
 </section>
 
-<!-- ============================================================
-     SECTION 11 — COMPLETE EXAMPLE
-============================================================ -->
+<!-- example -->
 <section class="informative">
   <h2>Complete example: e-commerce store</h2>
   <aside class="example" title="Minimal siteai.json for an e-commerce site">
@@ -910,9 +860,7 @@
   </aside>
 </section>
 
-<!-- ============================================================
-     SECTION 12 — CONSUMING AGENT REQUIREMENTS
-============================================================ -->
+<!-- consuming agents -->
 <section>
   <h2>Consuming agent requirements</h2>
   <p>A conforming <a>consuming agent</a> MUST:</p>
@@ -926,9 +874,6 @@
   </ol>
 </section>
 
-<!-- ============================================================
-     ACKNOWLEDGEMENTS
-============================================================ -->
 <section class="informative">
   <h2>Acknowledgements</h2>
   <p>
