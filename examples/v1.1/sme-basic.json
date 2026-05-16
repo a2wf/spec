@@ -1,0 +1,47 @@
+{
+  "specVersion": "1.1",
+  "identity": {
+    "legalName": "Bergblick Pension GmbH",
+    "contactEmail": "info@bergblick-pension.example",
+    "siteName": "Bergblick Pension",
+    "siteURL": "https://bergblick-pension.example",
+    "jurisdictionPrimary": "AT"
+  },
+  "conformance": {
+    "level": "basic",
+    "strictUnknown": false
+  },
+  "permissions": [
+    {
+      "action": "view",
+      "schemaOrgType": "ViewAction",
+      "effect": "read-only",
+      "allowed": true
+    },
+    {
+      "action": "search",
+      "schemaOrgType": "SearchAction",
+      "effect": "read-only",
+      "allowed": true
+    },
+    {
+      "action": "book",
+      "schemaOrgType": "ReserveAction",
+      "effect": "commercial",
+      "allowed": true,
+      "notes": "Buchungen werden über das Booking-Widget abgewickelt; konkrete Verfügbarkeit telefonisch."
+    },
+    {
+      "action": "comment",
+      "schemaOrgType": "CommentAction",
+      "effect": "state-changing",
+      "allowed": false,
+      "notes": "Kommentare sind auf dieser Site nicht freigeschaltet."
+    }
+  ],
+  "metadata": {
+    "lastUpdated": "2026-05-16",
+    "language": "de",
+    "documentURI": "https://bergblick-pension.example/.well-known/a2wf/siteai.json"
+  }
+}

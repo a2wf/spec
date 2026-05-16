@@ -24,6 +24,25 @@
 
 ---
 
+## Status
+
+**Stable, in production:** A2WF v1.0 (on the `main` branch). See [`spec/specification-v1.0.md`](./spec/specification-v1.0.md).
+
+**In review on this branch:** A2WF v1.1.0-draft.2, a substantial revision that introduces a three-layer architecture (Core, Optional Normative Modules, Informative Appendix), two Conformance Levels (Basic and Standard), an EU Governance Starter Profile, and a new PASS/WARN/FAIL Validator. See:
+
+- [`spec/specification-v1.1-draft.2.md`](./spec/specification-v1.1-draft.2.md)
+- [`profiles/eu-governance-starter.md`](./profiles/eu-governance-starter.md)
+- [`docs/agent-implementer-guide-v1.1.md`](./docs/agent-implementer-guide-v1.1.md)
+- [`schema/core-v1.1.json`](./schema/core-v1.1.json)
+- [`examples/v1.1/`](./examples/v1.1)
+- [`validator/v1_1/`](./validator/v1_1)
+
+This branch is an Editor's Draft. It is not stable and should not be referenced as a normative standard in production. Discussion happens in the A2WF community and in this repository's issues.
+
+> The sections below describe the **stable v1.0** framework that is in production. Where v1.1 deviates from v1.0 (Discovery path, oversight model, conformance levels, modules, validator semantics) the spec document `spec/specification-v1.1-draft.2.md` is authoritative for v1.1, not this README.
+
+---
+
 ## What is A2WF?
 
 A2WF (Agent-to-Web Framework) provides a machine-readable way for website operators to publish a `siteai.json` policy for AI agents.

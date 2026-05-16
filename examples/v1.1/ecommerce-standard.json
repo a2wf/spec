@@ -1,0 +1,162 @@
+{
+  "specVersion": "1.1",
+  "identity": {
+    "legalName": "Wienerberg Outdoor GmbH",
+    "contactEmail": "agents@wienerberg-outdoor.example",
+    "siteName": "Wienerberg Outdoor Shop",
+    "siteURL": "https://shop.wienerberg-outdoor.example",
+    "jurisdictionPrimary": "AT",
+    "representatives": [
+      { "name": "M. Huber", "role": "DPO", "email": "dpo@wienerberg-outdoor.example" }
+    ]
+  },
+  "conformance": {
+    "level": "standard",
+    "moduleClaims": ["jurisdictions", "incidentReporting"],
+    "claimedFeatures": [
+      "oversight.commercial.confirmation",
+      "rateLimits.checkout-default"
+    ]
+  },
+  "permissions": [
+    {
+      "action": "view",
+      "schemaOrgType": "ViewAction",
+      "effect": "read-only",
+      "allowed": true
+    },
+    {
+      "action": "search",
+      "schemaOrgType": "SearchAction",
+      "effect": "read-only",
+      "allowed": true,
+      "rateLimit": "search-default"
+    },
+    {
+      "action": "register",
+      "schemaOrgType": "RegisterAction",
+      "effect": "state-changing",
+      "allowed": true,
+      "oversight": {
+        "level": "notification",
+        "channel": "in-band",
+        "method": "ui-prompt"
+      }
+    },
+    {
+      "action": "purchase",
+      "schemaOrgType": "BuyAction",
+      "effect": "commercial",
+      "allowed": true,
+      "oversight": {
+        "level": "confirmation",
+        "channel": "in-band",
+        "method": "ui-prompt",
+        "timeout": "PT3M",
+        "onTimeout": "abort"
+      },
+      "rateLimit": "checkout-default",
+      "conditions": [
+        {
+          "kind": "amount-above",
+          "value": 500,
+          "currency": "EUR",
+          "escalateTo": "handover"
+        }
+      ]
+    },
+    {
+      "action": "subscribe",
+      "schemaOrgType": "SubscribeAction",
+      "effect": "commercial",
+      "allowed": true,
+      "oversight": {
+        "level": "confirmation",
+        "channel": "in-band",
+        "method": "ui-prompt"
+      }
+    },
+    {
+      "action": "review",
+      "schemaOrgType": "ReviewAction",
+      "effect": "state-changing",
+      "allowed": true,
+      "oversight": {
+        "level": "notification",
+        "channel": "in-band",
+        "method": "ui-prompt"
+      }
+    },
+    {
+      "action": "account-delete",
+      "schemaOrgType": "DeleteAction",
+      "effect": "state-changing",
+      "allowed": true,
+      "oversight": {
+        "level": "handover",
+        "channel": "out-of-band",
+        "method": "email"
+      }
+    }
+  ],
+  "oversight": {
+    "oversightDefaults": {
+      "read-only": { "level": "autonomous" },
+      "state-changing": {
+        "level": "notification",
+        "channel": "in-band",
+        "method": "ui-prompt"
+      },
+      "commercial": {
+        "level": "confirmation",
+        "channel": "in-band",
+        "method": "ui-prompt",
+        "timeout": "PT3M",
+        "onTimeout": "abort"
+      },
+      "regulated": {
+        "level": "handover",
+        "channel": "out-of-band",
+        "method": "email"
+      }
+    },
+    "fallback": { "level": "handover", "channel": "out-of-band", "method": "email" }
+  },
+  "rateLimits": {
+    "default": { "perAgent": "60/min", "perOrigin": "600/min" },
+    "search-default": { "perAgent": "120/min", "perOrigin": "1200/min" },
+    "checkout-default": { "perAgent": "5/min", "perOrigin": "30/min" }
+  },
+  "discovery": {
+    "cache": { "maxAge": "PT1H", "mustRevalidate": false },
+    "legacyPathSupported": true,
+    "rotationPolicy": "publish-then-deprecate"
+  },
+  "jurisdictions": [
+    {
+      "region": "EU",
+      "isoCountry": ["AT", "DE"],
+      "applicableLaws": [
+        { "id": "https://w3id.org/a2wf/laws/eu/gdpr", "shortName": "GDPR" },
+        { "id": "https://w3id.org/a2wf/laws/eu/digital-services-act", "shortName": "Digital Services Act" }
+      ],
+      "establishmentPrimary": true
+    }
+  ],
+  "incidentReporting": {
+    "contactEmail": "abuse@wienerberg-outdoor.example",
+    "endpoint": "https://shop.wienerberg-outdoor.example/.well-known/a2wf/incident",
+    "responseTime": "P3D",
+    "languages": ["de", "en"]
+  },
+  "relatedSignals": {
+    "robotsTxt": "https://shop.wienerberg-outdoor.example/robots.txt",
+    "sitemap": "https://shop.wienerberg-outdoor.example/sitemap.xml",
+    "securityTxt": "https://shop.wienerberg-outdoor.example/.well-known/security.txt"
+  },
+  "metadata": {
+    "lastUpdated": "2026-05-16",
+    "language": "de",
+    "documentURI": "https://shop.wienerberg-outdoor.example/.well-known/a2wf/siteai.json"
+  }
+}

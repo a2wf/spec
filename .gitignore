@@ -1,0 +1,12 @@
+node_modules/
+package-lock.json
+
+# Local-only working files
+*.bak-*
+.DS_Store
+
+# Local decision log (not committed)
+A2WF.md
+
+# Superseded earlier draft (kept locally as reference)
+spec/specification-v1.1-draft.md

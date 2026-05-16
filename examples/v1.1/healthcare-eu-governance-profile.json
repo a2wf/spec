@@ -1,0 +1,241 @@
+{
+  "specVersion": "1.1",
+  "identity": {
+    "legalName": "Donau Privatklinik AG",
+    "contactEmail": "ai-policy@donau-klinik.example",
+    "siteName": "Donau Privatklinik",
+    "siteURL": "https://donau-klinik.example",
+    "jurisdictionPrimary": "AT",
+    "legalEntityIdentifier": "lei:529900XXXXX1234567",
+    "representatives": [
+      { "name": "Dr. K. Steiner", "role": "DPO", "email": "dpo@donau-klinik.example" },
+      { "name": "Mag. F. Achleitner", "role": "AI-Compliance-Officer", "email": "ai-compliance@donau-klinik.example" }
+    ]
+  },
+  "conformance": {
+    "level": "standard",
+    "moduleClaims": [
+      "jurisdictions",
+      "dataHandling",
+      "agentIdentification",
+      "auditTrail",
+      "incidentReporting",
+      "discoverabilityHints"
+    ],
+    "profileClaims": [
+      "https://a2wf.org/profiles/eu-governance-starter/v1"
+    ],
+    "claimedFeatures": [
+      "agent-identification.did",
+      "data-handling.dpv-2"
+    ]
+  },
+  "permissions": [
+    {
+      "action": "view",
+      "schemaOrgType": "ViewAction",
+      "effect": "read-only",
+      "allowed": true,
+      "notes": "Öffentliche Informationsseiten."
+    },
+    {
+      "action": "search",
+      "schemaOrgType": "SearchAction",
+      "effect": "read-only",
+      "allowed": true,
+      "rateLimit": "search-default"
+    },
+    {
+      "action": "book",
+      "schemaOrgType": "ReserveAction",
+      "effect": "commercial",
+      "allowed": true,
+      "oversight": {
+        "level": "confirmation",
+        "channel": "in-band",
+        "method": "ui-prompt"
+      }
+    },
+    {
+      "action": "medical-record-access",
+      "schemaOrgType": "ViewAction",
+      "effect": "regulated",
+      "allowed": true,
+      "oversight": {
+        "level": "handover",
+        "channel": "out-of-band",
+        "method": "two-factor",
+        "timeout": "PT10M",
+        "onTimeout": "abort"
+      },
+      "conditions": [
+        {
+          "kind": "user-type-equals",
+          "value": "anonymous",
+          "escalateTo": "handover"
+        }
+      ]
+    },
+    {
+      "action": "data-export",
+      "schemaOrgType": "DownloadAction",
+      "effect": "regulated",
+      "allowed": true,
+      "oversight": {
+        "level": "handover",
+        "channel": "out-of-band",
+        "method": "email"
+      }
+    },
+    {
+      "action": "consent",
+      "schemaOrgType": "AgreeAction",
+      "effect": "regulated",
+      "allowed": true,
+      "oversight": {
+        "level": "handover",
+        "channel": "in-band",
+        "method": "ui-prompt"
+      },
+      "notes": "Einwilligungen werden ausschließlich von der betroffenen Person abgegeben."
+    }
+  ],
+  "oversight": {
+    "oversightDefaults": {
+      "read-only": { "level": "autonomous" },
+      "state-changing": {
+        "level": "notification",
+        "channel": "in-band",
+        "method": "ui-prompt"
+      },
+      "commercial": {
+        "level": "confirmation",
+        "channel": "in-band",
+        "method": "ui-prompt",
+        "timeout": "PT5M"
+      },
+      "regulated": {
+        "level": "handover",
+        "channel": "out-of-band",
+        "method": "two-factor"
+      }
+    },
+    "fallback": { "level": "handover", "channel": "out-of-band", "method": "email" }
+  },
+  "rateLimits": {
+    "default": { "perAgent": "30/min", "perOrigin": "300/min" },
+    "search-default": { "perAgent": "60/min", "perOrigin": "600/min" }
+  },
+  "discovery": {
+    "cache": { "maxAge": "PT30M", "mustRevalidate": true },
+    "legacyPathSupported": false,
+    "rotationPolicy": "publish-then-deprecate"
+  },
+  "jurisdictions": [
+    {
+      "region": "EU",
+      "isoCountry": ["AT"],
+      "applicableLaws": [
+        { "id": "https://w3id.org/a2wf/laws/eu/gdpr", "shortName": "GDPR" },
+        { "id": "https://w3id.org/a2wf/laws/eu/ai-act", "shortName": "EU AI Act" },
+        { "id": "https://w3id.org/a2wf/laws/at/dsg", "shortName": "Datenschutzgesetz Austria" },
+        { "id": "https://w3id.org/a2wf/laws/eu/mdr", "shortName": "Medical Device Regulation" }
+      ],
+      "establishmentPrimary": true
+    }
+  ],
+  "dataHandling": {
+    "dpvProfileURI": "https://w3id.org/dpv/2.0",
+    "processing": [
+      {
+        "categories": ["dpv:HealthData", "dpv:Name", "dpv:Email", "dpv:DateOfBirth"],
+        "purposes": ["dpv:HealthcareProvision", "dpv:Billing"],
+        "lawfulBasis": ["dpv:Contract", "dpv:VitalInterest"],
+        "retention": "P10Y",
+        "recipients": ["dpv:Controller", "dpv:HealthAuthority"],
+        "transfers": ["dpv:WithinEU"]
+      },
+      {
+        "categories": ["dpv:Email", "dpv:Name"],
+        "purposes": ["dpv:Marketing"],
+        "lawfulBasis": ["dpv:Consent"],
+        "retention": "P24M",
+        "recipients": ["dpv:Controller"],
+        "transfers": ["dpv:WithinEU"]
+      }
+    ],
+    "controller": {
+      "name": "Donau Privatklinik AG",
+      "contactEmail": "dpo@donau-klinik.example"
+    }
+  },
+  "agentIdentification": {
+    "acceptedProtocols": [
+      {
+        "id": "did-core-1.0",
+        "name": "W3C Decentralized Identifiers (DIDs) v1.0",
+        "specification": "https://www.w3.org/TR/did-core/",
+        "status": "stable",
+        "purpose": "identifier-resolution"
+      },
+      {
+        "id": "vc-data-model-2.0",
+        "name": "W3C Verifiable Credentials Data Model 2.0",
+        "specification": "https://www.w3.org/TR/vc-data-model-2.0/",
+        "status": "stable",
+        "purpose": "credential-presentation"
+      },
+      {
+        "id": "http-message-signatures",
+        "name": "HTTP Message Signatures",
+        "specification": "https://www.rfc-editor.org/rfc/rfc9421",
+        "status": "stable",
+        "purpose": "request-authentication"
+      }
+    ],
+    "requiredFor": ["regulated"]
+  },
+  "auditTrail": {
+    "enabled": true,
+    "events": [
+      "policy-discovered",
+      "policy-evaluated",
+      "permission-decision",
+      "oversight-requested",
+      "oversight-completed",
+      "agent-authentication-attempted",
+      "incident-reported"
+    ],
+    "retention": "P5Y",
+    "exportFormats": ["application/x-ndjson"],
+    "accessEndpoint": "https://donau-klinik.example/.well-known/a2wf/audit-export",
+    "privacy": { "pseudonymise": true, "minimise": true },
+    "integrity": "http-message-signature",
+    "profiles": []
+  },
+  "incidentReporting": {
+    "contactEmail": "abuse@donau-klinik.example",
+    "endpoint": "https://donau-klinik.example/.well-known/a2wf/incident",
+    "responseTime": "P1D",
+    "languages": ["de", "en"]
+  },
+  "discoverabilityHints": {
+    "sitemapURI": "https://donau-klinik.example/sitemap.xml",
+    "schemaOrgActions": [
+      "https://donau-klinik.example/#book-action",
+      "https://donau-klinik.example/#search-action"
+    ],
+    "aiPreferencesURI": "https://donau-klinik.example/.well-known/ai.txt"
+  },
+  "relatedSignals": {
+    "robotsTxt": "https://donau-klinik.example/robots.txt",
+    "sitemap": "https://donau-klinik.example/sitemap.xml",
+    "securityTxt": "https://donau-klinik.example/.well-known/security.txt",
+    "aiPreferences": "https://donau-klinik.example/.well-known/ai.txt"
+  },
+  "metadata": {
+    "lastUpdated": "2026-05-16",
+    "language": "de",
+    "documentURI": "https://donau-klinik.example/.well-known/a2wf/siteai.json"
+  }
+}
