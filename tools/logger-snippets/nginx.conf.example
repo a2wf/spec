@@ -1,0 +1,107 @@
+# A2WF logger snippet for nginx
+#
+# Records a minimal log line every time a client fetches /.well-known/a2wf/siteai.json.
+# The log line is JSON-formatted and matches a2wf-log-event-v1.schema.json.
+#
+# Defaults are privacy-preserving:
+#   - No IP, no cookies, no Authorization, no query strings, no full Referer.
+#   - Raw User-Agent is NOT logged; only a category derived from a map (see below).
+#
+# To enable optional fields, change the map below.
+#
+# Place these directives in your nginx http {} block or in a site-specific server block.
+
+# 1. Classify the User-Agent into an A2WF category. Heuristic, NOT proof of identity.
+#    Extend this map to match agent-signatures.json in tools/logger-snippets/.
+#    Order is significant: more specific patterns first so that nginx's first-match
+#    semantics produce the correct category. Applebot-Extended MUST come before Applebot.
+map $http_user_agent $a2wf_agent_category {
+    default                     "unknown";
+    "~*GPTBot"                  "openai";
+    "~*ChatGPT-User"            "openai";
+    "~*OAI-SearchBot"           "openai";
+    "~*ClaudeBot"               "anthropic";
+    "~*Claude-User"             "anthropic";
+    "~*Claude-Web"              "anthropic";
+    "~*Claude-SearchBot"        "anthropic";
+    "~*anthropic-ai"            "anthropic";
+    "~*PerplexityBot"           "perplexity";
+    "~*Perplexity-User"         "perplexity";
+    "~*Google-Extended"         "google";
+    "~*Google-CloudVertexBot"   "google";
+    "~*GoogleOther"             "google";
+    "~*Bytespider"              "bytedance";
+    "~*CCBot"                   "common-crawl";
+    "~*cohere-ai"               "cohere";
+    "~*bingbot"                 "microsoft";
+    "~*Meta-ExternalAgent"      "meta";
+    "~*Meta-ExternalFetcher"    "meta";
+    "~*FacebookBot"             "meta";
+    "~*Applebot-Extended"       "apple";
+    "~*Applebot"                "apple";
+    "~*MistralAI-User"          "mistral";
+    "~*Diffbot"                 "diffbot";
+    "~*YouBot"                  "you";
+    "~*Amazonbot"               "amazon";
+    "~*YandexBot"               "yandex";
+    "~*Baiduspider"             "baidu";
+    "~*PetalBot"                "huawei";
+    "~*DuckAssistBot"           "duckduckgo";
+    "~*DuckDuckBot"             "duckduckgo";
+}
+
+# 2. The signature ID corresponding to the matched category (best-effort).
+map $a2wf_agent_category $a2wf_signature_id {
+    default                "unknown";
+    "openai"               "openai-multi";
+    "anthropic"            "anthropic-multi";
+    "perplexity"           "perplexity-multi";
+    "google"               "google-multi";
+    "bytedance"            "bytedance-spider";
+    "common-crawl"         "commoncrawl";
+    "cohere"               "cohere-ai";
+    "meta"                 "meta-multi";
+    "apple"                "apple-multi";
+    "mistral"              "mistral";
+    "diffbot"              "diffbot";
+    "you"                  "youbot";
+}
+
+# 3. The log line itself, JSON-formatted.
+log_format a2wf_log escape=json
+    '{"a2wfLogVersion":"1.0",'
+    '"schemaURI":"https://a2wf.org/schema/a2wf-log-event-v1.json",'
+    '"timestamp":"$time_iso8601",'
+    '"method":"$request_method",'
+    '"observedPath":"$uri",'
+    '"statusCode":$status,'
+    '"responseBytes":$body_bytes_sent,'
+    '"userAgentCategory":"$a2wf_agent_category",'
+    '"matchedSignatureId":"$a2wf_signature_id",'
+    '"agentDeclared":false,'
+    '"agentVerified":false,'
+    '"collectionMode":"local",'
+    '"rawFieldsIncluded":[]}';
+
+# 4. Emit the log only for the A2WF discovery paths.
+#    Place this inside the server {} block for your site.
+#
+# server {
+#     location = /.well-known/a2wf/siteai.json {
+#         access_log /var/log/nginx/a2wf-access.log a2wf_log;
+#         add_header Cache-Control "public, max-age=3600";
+#         try_files $uri =404;
+#     }
+#     # Legacy v1.0 path (optional). v1.1 Consumers fall back to it with a warning.
+#     location = /siteai.json {
+#         access_log /var/log/nginx/a2wf-access.log a2wf_log;
+#         add_header Cache-Control "public, max-age=3600";
+#         try_files $uri =404;
+#     }
+# }
+#
+# Rotate /var/log/nginx/a2wf-access.log via logrotate or your platform's standard tooling.
+#
+# Forwarding to an external endpoint is NOT done from nginx directly. Use a sidecar
+# (logstash, vector, fluent-bit) that reads the file and forwards if A2WF_LOG_ENDPOINT
+# is set in your environment.

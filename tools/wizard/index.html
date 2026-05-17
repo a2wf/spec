@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="index,follow">
+<title>A2WF Wizard  -  Generate an A2WF v1.1 document</title>
+<meta name="description" content="Reference wizard for generating A2WF v1.1 site policy documents. Static, client-side, no telemetry.">
+<link rel="stylesheet" href="../vendor/a2wf-tools.css">
+</head>
+<body>
+
+<div class="draft-banner">
+  This wizard targets the A2WF v1.1.0-draft.2 specification (Editor's Draft, not stable).
+</div>
+
+<header class="app-header">
+  <div class="inner">
+    <h1>A2WF Wizard</h1>
+    <nav>
+      <a href="../index.html">Tools</a>
+      <a href="../validator-web/index.html">Validator</a>
+      <a href="https://github.com/a2wf/spec" target="_blank" rel="noopener">Repository</a>
+    </nav>
+  </div>
+</header>
+
+<main x-data="wizardApp()" x-init="init()">
+
+  <p class="muted" style="font-size: 0.875rem;">
+    This wizard helps you produce a syntactically valid A2WF v1.1 document.
+    It is a reference implementation, not legal advice, and does not certify compliance.
+    Everything runs locally in your browser  -  no telemetry, no upload.
+  </p>
+
+  <!-- Step indicator -->
+  <div class="steps">
+    <span class="step" :class="{ current: step === 'preset' }">1. Preset</span>
+    <span class="step" :class="{ current: step === 'identity' }">2. Identity</span>
+    <span class="step" :class="{ current: step === 'permissions' }">3. Permissions</span>
+    <span class="step" :class="{ current: step === 'modules', 'hidden': !expert }">4. Modules</span>
+    <span class="step" :class="{ current: step === 'review' }" x-text="expert ? '5. Review' : '4. Review'"></span>
+  </div>
+
+  <!-- Step 1: Preset -->
+  <section x-show="step === 'preset'">
+    <h2>1. Pick a starting preset</h2>
+    <p>Choose the site type closest to yours. The preset gives you a starting document; you can change everything in the next steps.</p>
+
+    <div class="preset-grid">
+      <template x-for="p in presets" :key="p.id">
+        <button class="preset-card" :class="{ selected: selectedPresetId === p.id }" @click="selectPreset(p.id)">
+          <h4 x-text="p.label"></h4>
+          <p x-text="p.description"></p>
+          <small class="muted">Starting level: <span x-text="p.starting_level"></span></small>
+        </button>
+      </template>
+    </div>
+
+    <template x-if="currentPresetWarnings.length">
+      <div class="disclaimer" style="margin-top: 1rem;">
+        <strong>Heads-up for this preset:</strong>
+        <ul style="margin: 0.5rem 0 0; padding-left: 1.25rem;">
+          <template x-for="w in currentPresetWarnings"><li x-text="w"></li></template>
+        </ul>
+      </div>
+    </template>
+
+    <div class="card" style="margin-top: 1.5rem;">
+      <label class="toggle">
+        <input type="checkbox" x-model="expert">
+        <span class="label">Expert mode</span>
+        <span class="desc">Show module toggles, oversight defaults editor, and advanced fields. Recommended only if you have read the specification.</span>
+      </label>
+    </div>
+
+    <div class="card" style="margin-top: 1rem;">
+      <label class="toggle">
+        <input type="checkbox" @change="importExisting()">
+        <span class="label">Import an existing siteai.json instead</span>
+        <span class="desc">Paste or load a v1.0 or v1.1 document and continue editing.</span>
+      </label>
+      <textarea x-show="importMode" x-model="importText" placeholder="Paste JSON here" style="margin-top: 0.5rem;"></textarea>
+      <button x-show="importMode" class="secondary" @click="applyImport()" style="margin-top: 0.5rem;">Apply import</button>
+      <p x-show="importError" class="muted" style="color: var(--fail); margin-top: 0.5rem;" x-text="importError"></p>
+    </div>
+
+    <div class="button-row">
+      <span></span>
+      <button @click="goTo('identity')" :disabled="!selectedPresetId">Continue &rarr;</button>
+    </div>
+  </section>
+
+  <!-- Step 2: Identity -->
+  <section x-show="step === 'identity'">
+    <h2>2. Site identity</h2>
+    <p>Who owns this site? These fields end up in <code>identity</code>.</p>
+
+    <div class="field">
+      <label>Legal name <span class="hint">(required)</span></label>
+      <input type="text" x-model="doc.identity.legalName" placeholder="Acme GmbH" required>
+    </div>
+    <div class="field">
+      <label>Contact e-mail <span class="hint">(required, prefer a role address like privacy@...)</span></label>
+      <input type="email" x-model="doc.identity.contactEmail" placeholder="ai-policy@acme.example" required>
+    </div>
+    <div class="field-row">
+      <div>
+        <label>Site name</label>
+        <input type="text" x-model="doc.identity.siteName" placeholder="Acme Online Store">
+      </div>
+      <div>
+        <label>Site URL</label>
+        <input type="url" x-model="doc.identity.siteURL" placeholder="https://shop.acme.example">
+      </div>
+    </div>
+    <div class="field-row">
+      <div>
+        <label>Primary jurisdiction <span class="hint">(ISO 3166-1 alpha-2)</span></label>
+        <input type="text" x-model="doc.identity.jurisdictionPrimary" placeholder="AT" maxlength="2" style="text-transform: uppercase;">
+      </div>
+      <div>
+        <label>Document language <span class="hint">(BCP 47)</span></label>
+        <input type="text" x-model="doc.metadata.language" placeholder="en" maxlength="10">
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button class="secondary" @click="goTo('preset')">&larr; Back</button>
+      <button @click="goTo('permissions')">Continue &rarr;</button>
+    </div>
+  </section>
+
+  <!-- Step 3: Permissions -->
+  <section x-show="step === 'permissions'">
+    <h2>3. Permissions</h2>
+    <p>Each entry describes one action category your site exposes to AI agents. Adjust what an agent may do and what oversight applies.</p>
+
+    <template x-for="(p, idx) in doc.permissions" :key="idx">
+      <div class="permission-card">
+        <header>
+          <div>
+            <strong x-text="p.action"></strong>
+            <span class="effect-tag" x-text="p.effect || '(no effect)'"></span>
+          </div>
+          <div class="actions">
+            <button class="secondary" @click="editPermission(idx)">Edit</button>
+            <button class="secondary" @click="removePermission(idx)">Remove</button>
+          </div>
+        </header>
+        <div>
+          <span x-text="p.allowed ? 'allowed' : 'NOT allowed'"></span>
+          <template x-if="p.schemaOrgType"><span>, Schema.org: <code x-text="p.schemaOrgType"></code></span></template>
+          <template x-if="p.oversight"><span>, inline oversight: <code x-text="p.oversight.level"></code></span></template>
+        </div>
+      </div>
+    </template>
+
+    <button class="secondary" @click="addPermission()" style="margin-top: 0.5rem;">+ Add permission</button>
+
+    <!-- Permission editor modal-like -->
+    <div x-show="editingIdx !== null" class="card" style="margin-top: 1rem; border-color: var(--accent);">
+      <h3>Edit permission #<span x-text="editingIdx + 1"></span></h3>
+      <div class="field-row">
+        <div>
+          <label>Action <span class="hint">(short identifier)</span></label>
+          <select x-model="editing.action" @change="onActionChange()">
+            <template x-for="a in actionVocabulary" :key="a.id">
+              <option :value="a.id" x-text="a.id + '  -  ' + a.schemaOrgType"></option>
+            </template>
+            <option value="custom">custom URI...</option>
+          </select>
+          <input x-show="editing.action === 'custom'" type="text" x-model="editing.customAction" placeholder="https://acme.example/actions/my-action" style="margin-top: 0.5rem;">
+        </div>
+        <div>
+          <label>Schema.org type</label>
+          <input type="text" x-model="editing.schemaOrgType" placeholder="BuyAction">
+        </div>
+      </div>
+      <div class="field-row">
+        <div>
+          <label>Effect</label>
+          <select x-model="editing.effect">
+            <option value="read-only">read-only</option>
+            <option value="state-changing">state-changing</option>
+            <option value="commercial">commercial</option>
+            <option value="regulated">regulated</option>
+          </select>
+        </div>
+        <div>
+          <label>Allowed?</label>
+          <select x-model.boolean="editing.allowed">
+            <option :value="true">Yes</option>
+            <option :value="false">No</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Notes (optional)</label>
+        <textarea x-model="editing.notes" placeholder="Free-text notes for implementers"></textarea>
+      </div>
+      <details>
+        <summary style="cursor: pointer; font-size: 0.875rem; color: var(--accent);">Override oversight inline (advanced)</summary>
+        <p class="muted" style="font-size: 0.8125rem;">If you leave this blank, the action inherits oversight from <code>oversightDefaults[effect]</code>.</p>
+        <div class="field-row">
+          <div>
+            <label>Level</label>
+            <select x-model="editing.oversightLevel">
+              <option value="">(inherit)</option>
+              <option value="autonomous">autonomous</option>
+              <option value="notification">notification</option>
+              <option value="confirmation">confirmation</option>
+              <option value="handover">handover</option>
+            </select>
+          </div>
+          <div>
+            <label>Channel</label>
+            <select x-model="editing.oversightChannel">
+              <option value="">(none)</option>
+              <option value="in-band">in-band</option>
+              <option value="out-of-band">out-of-band</option>
+              <option value="either">either</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div>
+            <label>Method</label>
+            <select x-model="editing.oversightMethod">
+              <option value="">(none)</option>
+              <option value="ui-prompt">ui-prompt</option>
+              <option value="email">email</option>
+              <option value="sms">sms</option>
+              <option value="phone">phone</option>
+              <option value="two-factor">two-factor</option>
+              <option value="callback">callback</option>
+              <option value="webhook">webhook</option>
+            </select>
+          </div>
+          <div>
+            <label>Timeout <span class="hint">(ISO 8601, e.g. PT3M)</span></label>
+            <input type="text" x-model="editing.oversightTimeout" placeholder="PT3M">
+          </div>
+        </div>
+      </details>
+      <div class="button-row">
+        <button class="secondary" @click="cancelEdit()">Cancel</button>
+        <button @click="saveEdit()">Save</button>
+      </div>
+    </div>
+
+    <div class="button-row">
+      <button class="secondary" @click="goTo('identity')">&larr; Back</button>
+      <button @click="goTo(expert ? 'modules' : 'review')">Continue &rarr;</button>
+    </div>
+  </section>
+
+  <!-- Step 4: Modules (Expert) -->
+  <section x-show="step === 'modules'">
+    <h2>4. Optional modules</h2>
+    <p>Each module adds one capability to your document. Enable only what you actually publish. The validator will check that enabled modules contain the required fields.</p>
+
+    <div class="disclaimer">
+      Enabling a module does NOT make you compliant with any regulation. It declares that you publish machine-readable metadata of a certain kind.
+    </div>
+
+    <div class="card">
+      <div class="toggle-row">
+        <div>
+          <div class="label">jurisdictions</div>
+          <div class="desc">Declare which legal regimes you consider applicable. Publisher self-declaration only.</div>
+        </div>
+        <label class="toggle"><input type="checkbox" x-model="modules.jurisdictions"></label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="label">dataHandling (DPV)</div>
+          <div class="desc">Machine-readable data-processing declarations using the DPV vocabulary.</div>
+        </div>
+        <label class="toggle"><input type="checkbox" x-model="modules.dataHandling"></label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="label">agentIdentification</div>
+          <div class="desc">Which identity protocols you accept from agents (DID, VC, HTTP Message Signatures, OAuth).</div>
+        </div>
+        <label class="toggle"><input type="checkbox" x-model="modules.agentIdentification"></label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="label">auditTrail (light)</div>
+          <div class="desc">Declare WHETHER you log agent interactions and what categories of events. Capability declaration, NOT forensic evidence.</div>
+        </div>
+        <label class="toggle"><input type="checkbox" x-model="modules.auditTrail"></label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="label">incidentReporting</div>
+          <div class="desc">Endpoint or address where A2WF-related incidents should be reported.</div>
+        </div>
+        <label class="toggle"><input type="checkbox" x-model="modules.incidentReporting"></label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="label">discoverabilityHints</div>
+          <div class="desc">Pointers to sitemap.xml, Schema.org actions, llms.txt, AI preferences. Advisory only.</div>
+        </div>
+        <label class="toggle"><input type="checkbox" x-model="modules.discoverabilityHints"></label>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="label">codeOfPracticeAlignment</div>
+          <div class="desc">Only for actual GPAI providers under the EU AI Act. Do NOT enable unless you are one.</div>
+        </div>
+        <label class="toggle"><input type="checkbox" x-model="modules.codeOfPracticeAlignment"></label>
+      </div>
+    </div>
+
+    <p class="muted" style="font-size: 0.875rem;">Module field editors are intentionally minimal in this wizard. After download, refine the JSON in your editor.</p>
+
+    <div class="button-row">
+      <button class="secondary" @click="goTo('permissions')">&larr; Back</button>
+      <button @click="goTo('review')">Continue &rarr;</button>
+    </div>
+  </section>
+
+  <!-- Step 5: Review -->
+  <section x-show="step === 'review'">
+    <h2 x-text="expert ? '5. Review and download' : '4. Review and download'"></h2>
+
+    <div class="summary-row">
+      <span class="pill pass" x-text="'pass ' + summary.pass"></span>
+      <span class="pill warn" x-text="'warn ' + summary.warn"></span>
+      <span class="pill fail" x-text="'fail ' + summary.fail"></span>
+      <span class="pill" x-text="'level ' + (doc.conformance && doc.conformance.level)"></span>
+    </div>
+
+    <h3>Findings</h3>
+    <p x-show="!findings.length" class="muted">No findings yet. Save and download below, then run the validator.</p>
+    <table x-show="findings.length">
+      <thead><tr><th>Severity</th><th>Path</th><th>Section</th><th>Message</th></tr></thead>
+      <tbody>
+        <template x-for="(f, i) in findings" :key="i">
+          <tr>
+            <td><span class="severity" :class="'severity-' + f.severity" x-text="f.severity"></span></td>
+            <td><code x-text="f.path"></code></td>
+            <td><code x-text="f.specSection"></code></td>
+            <td x-text="f.message"></td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top: 1.5rem;">JSON preview</h3>
+    <pre x-text="docJSON"></pre>
+
+    <div class="button-row">
+      <button class="secondary" @click="goTo(expert ? 'modules' : 'permissions')">&larr; Back</button>
+      <div>
+        <button class="secondary" @click="copyJSON()">Copy to clipboard</button>
+        <button @click="downloadJSON()">Download siteai.json</button>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 2rem;">Deploy</h3>
+    <p>Serve the downloaded file at:</p>
+    <pre>https://your-site.example/.well-known/a2wf/siteai.json</pre>
+    <p>Required and recommended response headers:</p>
+    <ul>
+      <li><code>Content-Type: application/json</code> (required)</li>
+      <li><code>Cache-Control: public, max-age=3600</code> (or match your <code>discovery.cache.maxAge</code>)</li>
+      <li><code>ETag</code> or <code>Last-Modified</code> (recommended, helps consumers cache efficiently)</li>
+    </ul>
+    <p>
+      Serve the file over HTTPS, do not require authentication, and do not include query strings
+      in the discovery URL. If you previously published a v1.0 document at <code>/siteai.json</code>,
+      keep serving the same content at that legacy path for at least one consumer caching cycle.
+      v1.1 consumers will warn if they have to fall back, but accept it.
+    </p>
+    <p>After deploy, sanity-check with <code>curl -sI https://your-site.example/.well-known/a2wf/siteai.json</code>
+      to confirm headers, then run the file through the
+      <a href="../validator-web/">validator</a> one more time.</p>
+    <p>Snippets for nginx, Apache, Cloudflare Workers and Express live under <a href="../logger-snippets/">tools/logger-snippets/</a>.</p>
+  </section>
+
+  <p class="muted" style="font-size: 0.8125rem; margin-top: 3rem;">
+    This wizard runs entirely in your browser. Your inputs never leave this page.
+    The wizard does not certify legal compliance with GDPR, the EU AI Act, or any other regulation.
+  </p>
+
+</main>
+
+<footer class="app-footer">
+  <p>
+    A2WF Reference Tools, MIT-licensed, distributed with the
+    <a href="https://github.com/a2wf/spec" target="_blank" rel="noopener">A2WF specification</a>.
+  </p>
+</footer>
+
+<script src="../vendor/ajv-browser-bundle.js"></script>
+<script>
+  // Defer Alpine auto-init until the wizard app module has registered window.wizardApp.
+  window.deferLoadingAlpine = function (callback) {
+    window.__a2wfStartAlpine = callback;
+    // Alpine is ready now. Try to start; if the module is not loaded yet, the module
+    // will call __a2wfTryStart on its own.
+    window.__a2wfTryStart();
+  };
+  window.__a2wfTryStart = function () {
+    if (window.__a2wfStartAlpine && window.wizardApp) {
+      window.__a2wfStartAlpine();
+      window.__a2wfStartAlpine = null;
+    }
+  };
+</script>
+<script type="module" src="./app.js"></script>
+<script src="../vendor/alpine.min.js" defer></script>
+
+</body>
+</html>

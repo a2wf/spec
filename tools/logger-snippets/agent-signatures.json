@@ -1,0 +1,50 @@
+{
+  "schema": {
+    "version": "1.0",
+    "description": "Signatures for classifying AI-agent User-Agent strings observed at the /.well-known/a2wf/siteai.json endpoint. These are HEURISTIC: a User-Agent string can be forged. Operators MUST NOT treat a category as proof of agent identity. To establish identity, use the A2WF agentIdentification module (DID, VC, HTTP Message Signatures).",
+    "matching": "Patterns are matched case-insensitively as substrings against the User-Agent header. Order matters: more specific patterns (e.g. Applebot-Extended) appear before the more generic parent (Applebot) so that a naive in-order matcher classifies them correctly.",
+    "contributions": "To add or correct a signature, open a Pull Request against this file in the a2wf/spec repository."
+  },
+  "categories": [
+    "openai", "anthropic", "perplexity", "google", "bytedance", "common-crawl",
+    "cohere", "microsoft", "meta", "apple", "mistral", "diffbot", "you",
+    "amazon", "yandex", "baidu", "huawei", "duckduckgo", "unknown"
+  ],
+  "signatures": [
+    { "id": "openai-gptbot",          "category": "openai",       "pattern": "GPTBot",                "notes": "OpenAI training crawler" },
+    { "id": "openai-chatgpt-user",    "category": "openai",       "pattern": "ChatGPT-User",          "notes": "ChatGPT browsing on behalf of a user" },
+    { "id": "openai-searchbot",       "category": "openai",       "pattern": "OAI-SearchBot",         "notes": "OpenAI search index" },
+    { "id": "anthropic-claudebot",    "category": "anthropic",    "pattern": "ClaudeBot",             "notes": "Anthropic training crawler" },
+    { "id": "anthropic-claude-user",  "category": "anthropic",    "pattern": "Claude-User",           "notes": "Claude browsing on behalf of a user" },
+    { "id": "anthropic-claude-web",   "category": "anthropic",    "pattern": "Claude-Web",            "notes": "Claude web access" },
+    { "id": "anthropic-claude-search","category": "anthropic",    "pattern": "Claude-SearchBot",      "notes": "Claude search agent (provisional)" },
+    { "id": "anthropic-ai",           "category": "anthropic",    "pattern": "anthropic-ai",          "notes": "Generic Anthropic user-agent label" },
+    { "id": "perplexity-bot",         "category": "perplexity",   "pattern": "PerplexityBot",         "notes": "Perplexity search index" },
+    { "id": "perplexity-user",        "category": "perplexity",   "pattern": "Perplexity-User",       "notes": "Perplexity browsing on behalf of a user" },
+    { "id": "google-extended",        "category": "google",       "pattern": "Google-Extended",       "notes": "Google AI training opt-out token" },
+    { "id": "google-cloudvertexbot",  "category": "google",       "pattern": "Google-CloudVertexBot", "notes": "Google Cloud Vertex AI crawler" },
+    { "id": "google-other",           "category": "google",       "pattern": "GoogleOther",           "notes": "Google internal crawlers other than search" },
+    { "id": "bytedance-spider",       "category": "bytedance",    "pattern": "Bytespider",            "notes": "ByteDance AI crawler" },
+    { "id": "commoncrawl",            "category": "common-crawl", "pattern": "CCBot",                 "notes": "Common Crawl, used as a training-data source by many model providers" },
+    { "id": "cohere-ai",              "category": "cohere",       "pattern": "cohere-ai",             "notes": "Cohere" },
+    { "id": "microsoft-bingbot",      "category": "microsoft",    "pattern": "bingbot",               "notes": "Bing search crawler (matched case-insensitively)" },
+    { "id": "meta-externalagent",    "category": "meta",         "pattern": "Meta-ExternalAgent",    "notes": "Meta AI external agent" },
+    { "id": "meta-externalfetcher",  "category": "meta",         "pattern": "Meta-ExternalFetcher",  "notes": "Meta AI external fetcher" },
+    { "id": "facebookbot",            "category": "meta",         "pattern": "FacebookBot",           "notes": "Facebook training crawler" },
+    { "id": "apple-applebot-extended","category": "apple",        "pattern": "Applebot-Extended",     "notes": "Apple AI training opt-out token. Must be checked BEFORE Applebot." },
+    { "id": "apple-applebot",         "category": "apple",        "pattern": "Applebot",              "notes": "Apple search crawler" },
+    { "id": "mistral",                "category": "mistral",      "pattern": "MistralAI-User",        "notes": "Mistral browsing on behalf of a user" },
+    { "id": "diffbot",                "category": "diffbot",      "pattern": "Diffbot",               "notes": "Diffbot, used by various model trainers" },
+    { "id": "youbot",                 "category": "you",          "pattern": "YouBot",                "notes": "You.com" },
+    { "id": "amazon-amazonbot",       "category": "amazon",       "pattern": "Amazonbot",             "notes": "Amazon AI crawler" },
+    { "id": "yandex-bot",             "category": "yandex",       "pattern": "YandexBot",             "notes": "Yandex search crawler" },
+    { "id": "baidu-spider",           "category": "baidu",        "pattern": "Baiduspider",           "notes": "Baidu search crawler" },
+    { "id": "huawei-petalbot",        "category": "huawei",       "pattern": "PetalBot",              "notes": "Huawei AI/search crawler" },
+    { "id": "duckduckgo-bot",         "category": "duckduckgo",   "pattern": "DuckDuckBot",           "notes": "DuckDuckGo search crawler" },
+    { "id": "duckassist-bot",         "category": "duckduckgo",   "pattern": "DuckAssistBot",         "notes": "DuckDuckGo DuckAssist AI" }
+  ],
+  "unknown": {
+    "category": "unknown",
+    "notes": "Records that did not match any signature are emitted with userAgentCategory \"unknown\" and matchedSignatureId \"unknown\". This is a deliberate reserved value, not an error."
+  }
+}

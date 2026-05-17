@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2WF Reference Tools</title>
+<meta name="description" content="Reference tools for the A2WF v1.1 specification: wizard, validator, logger snippets.">
+<link rel="stylesheet" href="vendor/a2wf-tools.css">
+</head>
+<body>
+
+<div class="draft-banner">
+  These tools target the A2WF v1.1.0-draft.2 specification (Editor's Draft, not stable).
+</div>
+
+<header class="app-header">
+  <div class="inner">
+    <h1>A2WF Reference Tools</h1>
+    <nav>
+      <a href="https://github.com/a2wf/spec" target="_blank" rel="noopener">Repository</a>
+      <a href="https://github.com/a2wf/spec/blob/v1.1-draft/spec/specification-v1.1-draft.2.md" target="_blank" rel="noopener">Specification</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <h1>A2WF Reference Tools</h1>
+
+  <p>
+    Three open-source tools that work directly against the A2WF v1.1 specification.
+    They are static, self-hosted, and run entirely in your browser or on your own server.
+    No telemetry, no analytics, no upload of your documents.
+  </p>
+
+  <div class="preset-grid">
+    <a class="preset-card" href="wizard/index.html">
+      <h4>Wizard</h4>
+      <p>Generate a v1.1 A2WF document with a guided form. Six branch presets, Simple and Expert modes, live validation.</p>
+    </a>
+    <a class="preset-card" href="validator-web/index.html">
+      <h4>Validator</h4>
+      <p>Drag a JSON document onto the page and see PASS, WARN, FAIL findings with the relevant spec sections.</p>
+    </a>
+    <a class="preset-card" href="logger-snippets/">
+      <h4>Logger snippets</h4>
+      <p>Server-side snippets (nginx, Apache, Cloudflare Workers, Express, WordPress) that record which AI agents fetch your A2WF policy. Privacy-preserving by default.</p>
+    </a>
+  </div>
+
+  <h2>Status and scope</h2>
+  <ul>
+    <li>The tools target A2WF v1.1.0-draft.2, an Editor's Draft. The specification is not yet stable.</li>
+    <li>The tools do not certify legal compliance with any regulation.</li>
+    <li>The tools are MIT-licensed and free to fork or rebrand.</li>
+    <li>Issues and pull requests: <a href="https://github.com/a2wf/spec" target="_blank" rel="noopener">github.com/a2wf/spec</a>.</li>
+  </ul>
+
+  <h2>How the pieces fit together</h2>
+  <ol>
+    <li>Use the <a href="wizard/index.html">Wizard</a> to produce a <code>siteai.json</code>.</li>
+    <li>Run it through the <a href="validator-web/index.html">Validator</a> until findings are clean.</li>
+    <li>Publish it at <code>/.well-known/a2wf/siteai.json</code> on your origin.</li>
+    <li>Optionally enable one of the <a href="logger-snippets/">logger snippets</a> to observe which AI agents request the file.</li>
+  </ol>
+
+  <h2>Privacy</h2>
+  <p>
+    The Wizard and Validator run entirely in your browser. No content leaves the page; there is no
+    server backend, no analytics, no third-party tracker on this site.
+  </p>
+  <p>
+    The logger snippets run on your own infrastructure and write minimal log records that exclude
+    IPs, cookies, query strings, and raw User-Agent. Forwarding to an external endpoint is
+    opt-in and operator-configured.
+  </p>
+
+</main>
+
+<footer class="app-footer">
+  <p>
+    A2WF Reference Tools, MIT-licensed, distributed with the
+    <a href="https://github.com/a2wf/spec" target="_blank" rel="noopener">A2WF specification</a>.
+  </p>
+</footer>
+
+</body>
+</html>

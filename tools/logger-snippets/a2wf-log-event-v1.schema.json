@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2wf.org/schema/a2wf-log-event-v1.json",
+  "title": "A2WF Log Event v1",
+  "description": "Versioned schema for log records emitted by reference logger snippets when an AI agent or other client fetches /.well-known/a2wf/siteai.json. Records are intended to be data-minimised and operator-controlled. Operators are responsible for legal basis, retention, and notices.",
+  "type": "object",
+  "required": ["a2wfLogVersion", "schemaURI", "timestamp", "observedPath", "method", "collectionMode"],
+  "properties": {
+    "a2wfLogVersion": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Version identifier for this log-event schema. Stable across the 1.x line."
+    },
+    "schemaURI": {
+      "type": "string",
+      "format": "uri",
+      "const": "https://a2wf.org/schema/a2wf-log-event-v1.json"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp of the request."
+    },
+    "method": {
+      "type": "string",
+      "enum": ["GET", "HEAD"],
+      "description": "HTTP method observed."
+    },
+    "observedPath": {
+      "type": "string",
+      "description": "The path of the request, normalised to the canonical A2WF discovery path or a documented legacy path. Query strings MUST NOT be included."
+    },
+    "statusCode": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 599,
+      "description": "HTTP status code returned by the origin."
+    },
+    "responseBytes": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Optional. Response body size in bytes."
+    },
+    "userAgentCategory": {
+      "type": "string",
+      "description": "Operator-assigned category derived from the User-Agent string (e.g. 'openai', 'anthropic', 'unknown'). Heuristic only; not an identity claim."
+    },
+    "matchedSignatureId": {
+      "type": "string",
+      "description": "Stable identifier of the signature that produced the category, from agent-signatures.json."
+    },
+    "userAgentRaw": {
+      "type": "string",
+      "description": "Optional. The raw User-Agent string. DEFAULT OFF. Browsers and other normal clients can be identifying via this field. Only enable when classification is uncertain and an operator has a clear legal basis."
+    },
+    "agentDeclared": {
+      "type": "boolean",
+      "description": "Whether the request carried an A2WF-recognised agent declaration (e.g. an Identity header or A2WF Agent-Identity payload). True does not equal verified."
+    },
+    "agentVerified": {
+      "type": "boolean",
+      "description": "Whether the agent declaration was cryptographically verified (e.g. HTTP Message Signature with a known key, valid VC). Only true when the operator's stack performed verification."
+    },
+    "collectionMode": {
+      "type": "string",
+      "enum": ["local", "forwarded", "platform-only"],
+      "description": "'local' means the record was written to a file or table the operator controls. 'forwarded' means the record was also POSTed to an external endpoint configured by the operator. 'platform-only' means the record exists only in the hosting platform's logs (e.g. Cloudflare Worker logs) and is not separately collected by the operator."
+    },
+    "forwardingEndpointOrigin": {
+      "type": "string",
+      "format": "uri",
+      "description": "Optional. ORIGIN (scheme + host [+ port]) of the endpoint the operator forwarded the record to. Full URL paths, query strings, and credentials MUST NOT be included to avoid leaking tenant IDs or tokens in log records."
+    },
+    "rawFieldsIncluded": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of optional fields that the operator chose to include (e.g. ['userAgentRaw']). Use this to document which fields are part of the record so downstream consumers can apply retention rules consistently."
+    }
+  },
+  "additionalProperties": false
+}

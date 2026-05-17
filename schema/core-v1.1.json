@@ -1,0 +1,478 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2wf.org/schema/core-v1.1.json",
+  "title": "A2WF Core Schema v1.1",
+  "description": "JSON Schema for A2WF v1.1 documents. Covers Core (Sections 1-12) and structural validation of Optional Normative Modules (Sections 13-19). Module-specific validation is enforced by validators that recognise moduleClaims entries.",
+  "type": "object",
+  "required": ["specVersion", "identity", "conformance", "permissions"],
+  "additionalProperties": true,
+  "properties": {
+    "specVersion": {
+      "type": "string",
+      "enum": ["1.0", "1.1"],
+      "description": "1.1 for current documents; 1.0 for legacy documents under backward-compat rules."
+    },
+    "identity": { "$ref": "#/$defs/identity" },
+    "conformance": { "$ref": "#/$defs/conformance" },
+    "permissions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/permissionEntry" }
+    },
+    "oversight": { "$ref": "#/$defs/oversightRoot" },
+    "rateLimits": { "$ref": "#/$defs/rateLimits" },
+    "discovery": { "$ref": "#/$defs/discovery" },
+    "security": { "$ref": "#/$defs/security" },
+    "privacy": { "$ref": "#/$defs/privacy" },
+    "legacyCompat": { "$ref": "#/$defs/legacyCompat" },
+    "jurisdictions": { "$ref": "#/$defs/jurisdictions" },
+    "dataHandling": { "$ref": "#/$defs/dataHandling" },
+    "agentIdentification": { "$ref": "#/$defs/agentIdentification" },
+    "auditTrail": { "$ref": "#/$defs/auditTrail" },
+    "incidentReporting": { "$ref": "#/$defs/incidentReporting" },
+    "discoverabilityHints": { "$ref": "#/$defs/discoverabilityHints" },
+    "codeOfPracticeAlignment": { "$ref": "#/$defs/codeOfPracticeAlignment" },
+    "relatedSignals": { "$ref": "#/$defs/relatedSignals" },
+    "metadata": { "$ref": "#/$defs/metadata" }
+  },
+  "$defs": {
+    "identity": {
+      "type": "object",
+      "required": ["legalName", "contactEmail"],
+      "properties": {
+        "legalName": { "type": "string", "minLength": 1 },
+        "contactEmail": { "type": "string", "format": "email" },
+        "siteName": { "type": "string" },
+        "siteURL": { "type": "string", "format": "uri" },
+        "jurisdictionPrimary": { "type": "string", "pattern": "^[A-Z]{2}$" },
+        "legalEntityIdentifier": { "type": "string" },
+        "addressURI": { "type": "string", "format": "uri" },
+        "representatives": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "email"],
+            "properties": {
+              "name": { "type": "string" },
+              "role": { "type": "string" },
+              "email": { "type": "string", "format": "email" }
+            }
+          }
+        }
+      }
+    },
+    "conformance": {
+      "type": "object",
+      "required": ["level"],
+      "properties": {
+        "level": { "type": "string", "enum": ["basic", "standard"] },
+        "moduleClaims": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "jurisdictions",
+              "dataHandling",
+              "agentIdentification",
+              "auditTrail",
+              "incidentReporting",
+              "discoverabilityHints",
+              "codeOfPracticeAlignment"
+            ]
+          }
+        },
+        "profileClaims": {
+          "type": "array",
+          "items": { "type": "string", "format": "uri" }
+        },
+        "strictUnknown": { "type": "boolean", "default": false },
+        "claimedFeatures": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "permissionEntry": {
+      "type": "object",
+      "required": ["action", "allowed"],
+      "properties": {
+        "action": { "type": "string", "minLength": 1 },
+        "schemaOrgType": { "type": "string" },
+        "effect": {
+          "type": "string",
+          "enum": ["read-only", "state-changing", "commercial", "regulated"]
+        },
+        "allowed": { "type": "boolean" },
+        "oversight": { "$ref": "#/$defs/oversightDirective" },
+        "rateLimit": { "type": "string" },
+        "conditions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/condition" }
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "condition": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "type": "string" },
+        "value": {},
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "unit": { "type": "string" },
+        "outside": { "type": "string" },
+        "timezone": { "type": "string" },
+        "escalateTo": {
+          "type": "string",
+          "enum": ["autonomous", "notification", "confirmation", "handover"]
+        },
+        "deEscalateTo": {
+          "type": "string",
+          "enum": ["autonomous", "notification", "confirmation", "handover"]
+        }
+      }
+    },
+    "oversightDirective": {
+      "type": "object",
+      "required": ["level"],
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["autonomous", "notification", "confirmation", "handover"]
+        },
+        "channel": {
+          "type": "string",
+          "enum": ["in-band", "out-of-band", "either"]
+        },
+        "method": {
+          "type": "string",
+          "enum": [
+            "ui-prompt", "email", "sms", "callback",
+            "webhook", "phone", "two-factor", "publisher-defined"
+          ]
+        },
+        "methodURI": { "type": "string", "format": "uri" },
+        "timeout": { "type": "string" },
+        "onTimeout": {
+          "type": "string",
+          "enum": ["abort", "escalate", "proceed-with-notification"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "properties": { "level": { "const": "confirmation" } },
+            "required": ["level"]
+          },
+          "then": { "required": ["channel"] }
+        },
+        {
+          "if": {
+            "type": "object",
+            "properties": { "level": { "const": "handover" } },
+            "required": ["level"]
+          },
+          "then": { "required": ["channel"] }
+        },
+        {
+          "if": {
+            "type": "object",
+            "properties": { "method": { "const": "publisher-defined" } },
+            "required": ["method"]
+          },
+          "then": { "required": ["methodURI"] }
+        }
+      ]
+    },
+    "oversightRoot": {
+      "type": "object",
+      "properties": {
+        "oversightDefaults": {
+          "type": "object",
+          "properties": {
+            "read-only": { "$ref": "#/$defs/oversightDirective" },
+            "state-changing": { "$ref": "#/$defs/oversightDirective" },
+            "commercial": { "$ref": "#/$defs/oversightDirective" },
+            "regulated": { "$ref": "#/$defs/oversightDirective" }
+          }
+        },
+        "fallback": { "$ref": "#/$defs/oversightDirective" }
+      }
+    },
+    "rateLimits": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "perAgent": { "type": "string", "pattern": "^[0-9]+/(sec|min|hour|day)$" },
+          "perOrigin": { "type": "string", "pattern": "^[0-9]+/(sec|min|hour|day)$" }
+        },
+        "additionalProperties": true
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "properties": {
+        "cache": {
+          "type": "object",
+          "properties": {
+            "maxAge": { "type": "string" },
+            "mustRevalidate": { "type": "boolean" }
+          }
+        },
+        "legacyPathSupported": { "type": "boolean" },
+        "rotationPolicy": { "type": "string" }
+      }
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "securityTxtURI": { "type": "string", "format": "uri" },
+        "contactEmail": { "type": "string", "format": "email" }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "properties": {
+        "privacyPolicyURI": { "type": "string", "format": "uri" },
+        "contactEmail": { "type": "string", "format": "email" }
+      }
+    },
+    "legacyCompat": {
+      "type": "object",
+      "properties": {
+        "fromVersion": { "type": "string" },
+        "migrationNotes": { "type": "string" }
+      }
+    },
+    "jurisdictions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["region"],
+        "properties": {
+          "region": { "type": "string" },
+          "isoCountry": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^[A-Z]{2}$" }
+          },
+          "applicableLaws": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id"],
+              "properties": {
+                "id": { "type": "string", "format": "uri" },
+                "shortName": { "type": "string" }
+              }
+            }
+          },
+          "establishmentPrimary": { "type": "boolean" }
+        }
+      }
+    },
+    "dataHandling": {
+      "type": "object",
+      "required": ["processing"],
+      "properties": {
+        "dpvProfileURI": { "type": "string", "format": "uri" },
+        "processing": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["categories", "purposes"],
+            "properties": {
+              "categories": {
+                "type": "array", "minItems": 1,
+                "items": { "type": "string" }
+              },
+              "purposes": {
+                "type": "array", "minItems": 1,
+                "items": { "type": "string" }
+              },
+              "lawfulBasis": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "retention": { "type": "string" },
+              "recipients": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "transfers": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        },
+        "controller": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "contactEmail": { "type": "string", "format": "email" }
+          }
+        }
+      }
+    },
+    "agentIdentification": {
+      "type": "object",
+      "required": ["acceptedProtocols"],
+      "properties": {
+        "acceptedProtocols": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["id", "status"],
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "specification": { "type": "string", "format": "uri" },
+              "status": {
+                "type": "string",
+                "enum": ["stable", "experimental", "deprecated"]
+              },
+              "purpose": {
+                "type": "string",
+                "enum": [
+                  "identifier-resolution",
+                  "credential-presentation",
+                  "request-authentication",
+                  "delegated-authorization",
+                  "agent-identity",
+                  "publisher-defined"
+                ]
+              },
+              "version": { "type": "string" },
+              "expiry": { "type": "string", "format": "date" }
+            },
+            "allOf": [
+              {
+                "if": { "properties": { "status": { "const": "experimental" } }, "required": ["status"] },
+                "then": { "required": ["version"] }
+              }
+            ]
+          }
+        },
+        "requiredFor": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["read-only", "state-changing", "commercial", "regulated"]
+          }
+        }
+      }
+    },
+    "auditTrail": {
+      "type": "object",
+      "required": ["enabled"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "events": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "retention": { "type": "string" },
+        "exportFormats": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "accessEndpoint": { "type": "string", "format": "uri" },
+        "privacy": {
+          "type": "object",
+          "properties": {
+            "pseudonymise": { "type": "boolean" },
+            "minimise": { "type": "boolean" }
+          }
+        },
+        "integrity": {
+          "type": "string",
+          "enum": [
+            "none", "http-message-signature",
+            "w3c-data-integrity", "aivs-compatible",
+            "publisher-defined"
+          ]
+        },
+        "profiles": {
+          "type": "array",
+          "items": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "incidentReporting": {
+      "type": "object",
+      "required": ["contactEmail"],
+      "properties": {
+        "contactEmail": { "type": "string", "format": "email" },
+        "endpoint": { "type": "string", "format": "uri" },
+        "responseTime": { "type": "string" },
+        "languages": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "discoverabilityHints": {
+      "type": "object",
+      "anyOf": [
+        { "required": ["sitemapURI"] },
+        { "required": ["schemaOrgActions"] },
+        { "required": ["llmsTxtURI"] },
+        { "required": ["aiPreferencesURI"] },
+        { "required": ["tdmReservationURI"] }
+      ],
+      "properties": {
+        "sitemapURI": { "type": "string", "format": "uri" },
+        "schemaOrgActions": {
+          "type": "array",
+          "items": { "type": "string", "format": "uri" }
+        },
+        "llmsTxtURI": { "type": "string", "format": "uri" },
+        "aiPreferencesURI": { "type": "string", "format": "uri" },
+        "tdmReservationURI": { "type": "string", "format": "uri" }
+      }
+    },
+    "codeOfPracticeAlignment": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["codeId"],
+        "properties": {
+          "codeId": { "type": "string", "format": "uri" },
+          "shortName": { "type": "string" },
+          "claimedSections": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "version": { "type": "string" },
+          "statementURI": { "type": "string", "format": "uri" }
+        }
+      }
+    },
+    "relatedSignals": {
+      "type": "object",
+      "properties": {
+        "robotsTxt": { "type": "string", "format": "uri" },
+        "llmsTxt": { "type": "string", "format": "uri" },
+        "securityTxt": { "type": "string", "format": "uri" },
+        "aiPreferences": { "type": "string", "format": "uri" },
+        "tdmRep": { "type": "string", "format": "uri" },
+        "sitemap": { "type": "string", "format": "uri" }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "lastUpdated": { "type": "string" },
+        "language": { "type": "string" },
+        "documentURI": { "type": "string", "format": "uri" },
+        "previousVersionURI": { "type": "string", "format": "uri" }
+      }
+    }
+  }
+}

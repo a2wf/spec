@@ -1,0 +1,59 @@
+# A2WF logger snippet for Apache 2.4+
+#
+# Place this in your virtual host configuration or in a top-level conf.d file.
+# This snippet records a JSON log line every time a client fetches
+# /.well-known/a2wf/siteai.json. The record matches a2wf-log-event-v1.schema.json.
+#
+# Defaults are privacy-preserving: no IP, no cookies, no Authorization,
+# no query strings, no full Referer, no raw User-Agent.
+
+# 1. Classify the User-Agent. Heuristic, NOT proof of identity.
+#    Order matters: more specific patterns first.
+SetEnvIf User-Agent "GPTBot"               A2WF_CATEGORY=openai
+SetEnvIf User-Agent "ChatGPT-User"         A2WF_CATEGORY=openai
+SetEnvIf User-Agent "OAI-SearchBot"        A2WF_CATEGORY=openai
+SetEnvIf User-Agent "ClaudeBot"            A2WF_CATEGORY=anthropic
+SetEnvIf User-Agent "Claude-User"          A2WF_CATEGORY=anthropic
+SetEnvIf User-Agent "Claude-Web"           A2WF_CATEGORY=anthropic
+SetEnvIf User-Agent "Claude-SearchBot"     A2WF_CATEGORY=anthropic
+SetEnvIf User-Agent "anthropic-ai"         A2WF_CATEGORY=anthropic
+SetEnvIf User-Agent "PerplexityBot"        A2WF_CATEGORY=perplexity
+SetEnvIf User-Agent "Perplexity-User"      A2WF_CATEGORY=perplexity
+SetEnvIf User-Agent "Google-Extended"      A2WF_CATEGORY=google
+SetEnvIf User-Agent "Google-CloudVertexBot" A2WF_CATEGORY=google
+SetEnvIf User-Agent "GoogleOther"          A2WF_CATEGORY=google
+SetEnvIf User-Agent "Bytespider"           A2WF_CATEGORY=bytedance
+SetEnvIf User-Agent "CCBot"                A2WF_CATEGORY=common-crawl
+SetEnvIf User-Agent "cohere-ai"            A2WF_CATEGORY=cohere
+SetEnvIfNoCase User-Agent "bingbot"        A2WF_CATEGORY=microsoft
+SetEnvIf User-Agent "Meta-ExternalAgent"   A2WF_CATEGORY=meta
+SetEnvIf User-Agent "Meta-ExternalFetcher" A2WF_CATEGORY=meta
+SetEnvIf User-Agent "FacebookBot"          A2WF_CATEGORY=meta
+SetEnvIf User-Agent "Applebot-Extended"    A2WF_CATEGORY=apple
+SetEnvIf User-Agent "Applebot"             A2WF_CATEGORY=apple
+SetEnvIf User-Agent "MistralAI-User"       A2WF_CATEGORY=mistral
+SetEnvIf User-Agent "Diffbot"              A2WF_CATEGORY=diffbot
+SetEnvIf User-Agent "YouBot"               A2WF_CATEGORY=you
+SetEnvIf User-Agent "Amazonbot"            A2WF_CATEGORY=amazon
+SetEnvIf User-Agent "YandexBot"            A2WF_CATEGORY=yandex
+SetEnvIf User-Agent "Baiduspider"          A2WF_CATEGORY=baidu
+SetEnvIf User-Agent "PetalBot"             A2WF_CATEGORY=huawei
+SetEnvIf User-Agent "DuckAssistBot"        A2WF_CATEGORY=duckduckgo
+SetEnvIf User-Agent "DuckDuckBot"          A2WF_CATEGORY=duckduckgo
+SetEnvIfNoCase User-Agent ".+" A2WF_CATEGORY=unknown env=!A2WF_CATEGORY
+
+# 2. Mark requests to the A2WF discovery paths.
+SetEnvIf Request_URI "^/\.well-known/a2wf/siteai\.json$" A2WF_REQUEST=primary
+SetEnvIf Request_URI "^/siteai\.json$"                   A2WF_REQUEST=legacy
+
+# 3. Define a JSON log format. %t is wrapped to ISO 8601 separately if needed.
+LogFormat "{\"a2wfLogVersion\":\"1.0\",\"schemaURI\":\"https://a2wf.org/schema/a2wf-log-event-v1.json\",\"timestamp\":\"%{%FT%T%z}t\",\"method\":\"%m\",\"observedPath\":\"%U\",\"statusCode\":%>s,\"responseBytes\":%B,\"userAgentCategory\":\"%{A2WF_CATEGORY}e\",\"matchedSignatureId\":\"unknown\",\"agentDeclared\":false,\"agentVerified\":false,\"collectionMode\":\"local\",\"rawFieldsIncluded\":[]}" a2wf_log
+
+# 4. Emit only on A2WF requests, into a dedicated log file.
+CustomLog /var/log/apache2/a2wf-access.log a2wf_log env=A2WF_REQUEST
+
+# Rotate /var/log/apache2/a2wf-access.log via logrotate.
+#
+# Forwarding to an external endpoint is NOT done from Apache directly. Use a sidecar
+# (logstash, vector, fluent-bit) that tails this file and POSTs each line to
+# A2WF_LOG_ENDPOINT if you have one configured in your environment.
