@@ -2,9 +2,11 @@
 
 **Date:** 2026-05-27
 **Editor:** Wolfgang Wimmer (SSC)
-**Status:** Pre-Community-Group Editor's Draft (v1.1.0-draft.2)
+**Status:** Editor's Draft (v1.1.0-draft.2), not stable, not W3C-endorsed
+**Community Group:** Proposed, not yet chartered
 **Repo:** https://github.com/a2wf/spec
 **Live tools:** https://a2wf.github.io/spec/tools/
+**Live slides:** https://a2wf.github.io/spec/slides/cg-meeting-2026-05-27/
 
 ---
 
@@ -13,16 +15,17 @@
 **Agent-to-Website Framework v1.1**
 *A machine-readable policy format for AI-agent governance on websites*
 
+- A2WF pre-Community-Group community review (2026-05-27)
+- **Status:** Editor's Draft (v1.1.0-draft.2), not stable, not W3C-endorsed
+- The A2WF Community Group is *proposed*, not yet chartered
 - v1.0 has been published as informational reference (https://a2wf.org)
-- v1.1 is a pre-Community-Group Editor's Draft - NOT a W3C Recommendation
-- This meeting is the first formal community review
-- Repository: github.com/a2wf/spec, branch `v1.1-draft`
 - All artefacts under MIT licence
 
 Speaker notes:
 - Frame this as "we have done the homework, now we want community ownership"
 - Be explicit: A2WF Community Group is "proposed", not yet chartered
 - Acknowledge prior input from Paola Di Maio (AIKR CG) and Ian Jacobs (W3C)
+- Press S for speaker view
 
 ---
 
@@ -35,17 +38,14 @@ What v1.0 could not express:
 - Machine-readable jurisdictional declarations (`jurisdictions.applicableLaws`)
 - Agent identification protocols (DID, VC, HTTP Message Signatures, OAuth)
 - Data-handling transparency (DPV alignment)
-- Incident-reporting contact and timeframe
+- Incident-reporting contact and intended timeframe
 - Discovery hints (Schema.org Actions, sitemap, rate limits)
 - Audit-trail declarations
+- Security, Privacy, Internationalisation, and Accessibility Considerations (Sections 10/11)
 
 Liaison feedback that drove v1.1:
 - Paola Di Maio (W3C AIKR CG): "use ODRL, reuse Schema.org, link to agent-identity standards"
 - Ian Jacobs (W3C Staff): "discovery via /.well-known, not site root"
-
-Speaker notes:
-- Show concrete example: v1.0 humanVerification=true vs v1.1 oversight.oversightDefaults.regulated.level=handover
-- The Paola/Ian quotes are real input from earlier rounds; reference them visibly
 
 ---
 
@@ -61,16 +61,18 @@ Speaker notes:
 +----------------------------------+
 ```
 
-**Precedent:** This is the same shape as ODRL Core + Profiles, WCAG Levels A/AA/AAA, DID Core + Method Specs, WebAuthn Core + Extensions. The W3C-CG-Process explicitly supports this pattern (per ODRL CG outcomes).
+**Related precedents in W3C and adjacent ecosystems:**
+ODRL Core + Profiles, DID Core + Method Specs, WebAuthn Core + Extensions, WCAG Levels.
+W3C specs commonly use related variability patterns; the W3C QA Framework recognises profiles, modules, and levels as legitimate techniques.
 
 Why three layers and not flat?
 - Core stays small enough to be implementable by every operator
 - Modules are opt-in and bring domain depth where needed
-- Profiles bundle modules for specific markets (EU, accessibility, finance) without forcing global complexity
+- Profiles bundle modules for specific markets without forcing global complexity
 
 Speaker notes:
-- This is the most important structural decision; it is what made GPT-5.5 review say "go ahead"
-- Be ready for the question "why not just use ODRL directly?" - answer: ODRL vocabulary is content-licensing oriented; A2WF vocabulary is site-action oriented. ODRL profile of A2WF planned for v1.2 (open issue D-1).
+- Be ready for "why not just use ODRL directly?" - answer: ODRL is a strong abstract policy model; A2WF is a low-friction website declaration format. A normative ODRL profile of A2WF is a v1.2 candidate.
+- Do not oversell WCAG as a "module" precedent - it is a Levels precedent only.
 
 ---
 
@@ -78,24 +80,20 @@ Speaker notes:
 
 A2WF v1.1 references and aligns with:
 
-| Standard | Used for | Status in A2WF |
+| Standard | Used for | Status in A2WF v1.1 |
 |---|---|---|
 | Schema.org Actions | `permissions[].schemaOrgType` | Conditional normative |
-| W3C DID Core | Agent identity resolution | Stable, referenced |
-| W3C VC Data Model 2.0 | Agent credentials | Stable, referenced |
-| HTTP Message Signatures (RFC 9421) | Request authentication | Stable, referenced |
-| OAuth 2.0 (RFC 6749) | Delegated authorisation | Stable, referenced |
-| W3C ODRL 2.2 | Architectural precedent | Future profile (v1.2) |
-| W3C DPV 2.0 | Data-handling vocabulary | Module-level referenced |
-| llmstxt.org | Discovery hint, not replaced | Compatibility note |
-| IETF AIP (draft) | Agent identity protocol | Experimental |
-| RFC 8615 / RFC 9309 | Discovery path, robots.txt | Stable, normative |
+| W3C DID Core | Agent identity resolution | Conditional normative (agentIdentification) |
+| W3C VC Data Model 2.0 | Agent credentials | Conditional normative (agentIdentification) |
+| HTTP Message Signatures (RFC 9421) | Request authentication | Conditional normative (agentIdentification, auditTrail) |
+| OAuth 2.0 (RFC 6749) | Delegated authorisation | Conditional normative (agentIdentification) |
+| W3C ODRL 2.2 | Architectural precedent | Informative; companion profile is a v1.2 candidate |
+| W3C DPV 2.x | Data-handling vocabulary | Conditional normative (dataHandling) |
+| llmstxt.org | Discovery hint, not replaced | Informative compatibility note |
+| AIP (IETF Internet-Draft) | Agent identity protocol | Experimental, optional |
+| RFC 8615 (.well-known) / RFC 9309 (robots) | Discovery path | Normative |
 
-**A2WF v1.1 defines no new identity protocol, no new policy language, no new vocabulary. Everything is a thin coordination layer.**
-
-Speaker notes:
-- This slide directly addresses Paola's three tips from the earlier round
-- Make sure to read this aloud: "no new identity, no new policy language, no new vocabulary"
+**A2WF v1.1 is a website declaration envelope. It reuses external vocabularies wherever stable, and adds only the minimum new shape it needs (permissions, oversight, conformance metadata).**
 
 ---
 
@@ -113,15 +111,11 @@ Speaker notes:
 
 Modules are independent. A document can claim zero, one, or all seven via `conformance.moduleClaims`. The Core does not require any module.
 
-Speaker notes:
-- Stress: "the seven modules are not seven things you have to do; they are seven shapes of declarations you can make if they apply to you"
-- Highlight `dataHandling` aligns with DPV - that is the Paola hook
-
 ---
 
 ## Slide 6 - EU Governance Starter Profile
 
-**A neutral example profile, published alongside the spec, bundling six modules for EU-operating sites.**
+**A neutral example profile, published alongside the spec.**
 
 Profile URI: `https://a2wf.org/profiles/eu-governance-starter/v1`
 
@@ -139,28 +133,23 @@ Requires the following module claims to be present and minimally populated:
 - NOT a legal claim
 - NOT endorsed by any EU institution
 
-Vendors are welcome to wrap and brand this profile for their customers, with the constraint that they MUST not claim W3C/A2WF endorsement.
-
-Speaker notes:
-- Anticipate the question "Is this a back door to a paid certification market?"
-- Answer: profile claim is publisher-declared; vendor reports MUST disclaim. We have built the disclaimer into the reference tools so vendors who use them get it for free.
+Any vendor may build tools around this profile. The constraints are:
+- no W3C / A2WF endorsement claims
+- no "certified compliant"
+- operator keeps the raw JSON portable and can switch vendors at any time
 
 ---
 
 ## Slide 7 - Reference tools, live
 
-Three browser-based tools live at https://a2wf.github.io/spec/tools/
+Three browser tools plus a set of server snippets, all under MIT at https://a2wf.github.io/spec/tools/
 
 - **Wizard** - generate a v1.1 document with six branch presets, Simple and Expert modes, live validation, JSON download. Imports v1.0 and v1.1 documents.
 - **Validator** - drag-and-drop validator producing PASS / WARN / FAIL findings with spec section references. Loads the three reference examples.
-- **EU Governance Readiness Checker** - fetches a live site's A2WF policy and maps declarations to EU AI Act and GDPR anchors. Produces a vendor "Declaration Coverage Score" (NOT a compliance score). Vendor-brandable via URL parameters.
+- **EU Governance Readiness Checker** - fetches a live site's A2WF policy and maps declarations to EU AI Act and GDPR anchors. Produces a vendor "Declaration Coverage Score" (NOT a compliance score).
 - **Logger Snippets** - server-side snippets (nginx, Apache, Cloudflare Workers, Express, WordPress) that record AI-agent fetches of the A2WF policy. Privacy-preserving defaults; opt-in forwarding.
 
-All tools are MIT, static, self-hosted, no telemetry. Shared validator core (`validator/v1_1/core.js`) ensures CLI and browser tools agree.
-
-Speaker notes:
-- If demo permits, switch to a browser tab with the Wizard and pick the "regulated sector" preset
-- For the Readiness Checker, run it against https://a2wf.org itself to show v1.0 detection + migration recommendations
+All tools are MIT, static, self-hosted, no telemetry. Shared validator core (`validator/v1_1/core.js`) ensures CLI and browser tools agree. The tools include hooks so third parties can wrap them with their own branding via URL parameters; wrapped instances must disclaim "not A2WF-endorsed".
 
 ---
 
@@ -170,38 +159,30 @@ A2WF v1.1 conformance is qualitative, not numeric.
 
 - A document validates to one of: `valid` (PASS), `valid with warnings` (PASS+WARN), `invalid` (FAIL)
 - There is NO 0-100 conformance score in the specification
-- Vendor tools MAY publish their own scoring products (e.g. the reference checker's "Declaration Coverage Score" or industry vendors' own metrics) - these are vendor metrics, not A2WF conformance signals
+- Vendor tools MAY publish their own scoring products (e.g. the reference checker's "Declaration Coverage Score") - these are vendor metrics, NOT A2WF conformance signals
 - Validator findings carry severity (pass/warn/fail), a section reference, and an explanatory message
 - Conformance levels: `basic` and `standard`; profile claims add a third axis
 
 This was a deliberate choice after a 0-100-score model was reviewed and rejected: numeric scores invite false-equivalence claims ("we are at 85, that means compliant") that the framework cannot underwrite.
 
-Speaker notes:
-- This is a strong, defensible position - lean into it
-- Mention that a vendor score in our own reference tool is capped at 59 on validation failure, which is the discipline we ask other vendors to apply too
-
 ---
 
 ## Slide 9 - Open questions for the CG
 
-Five issues we want the CG to chew on:
+Five questions we want directional CG input on. These are not requests for resolution in this call; they are framings for the next ~6 weeks of issue tracking. We will open them as labelled GitHub issues within 48 hours of this meeting.
 
-1. **ODRL profile of A2WF (D-1)** - should v1.2 include a normative export to ODRL, or keep architectural alignment only? (Paola's tip 1)
-2. **Trigger expression language (D-3)** - permissions can have `conditions`; should the expression syntax be JSONLogic, ODRL Constraints, SHACL, or undefined? Currently undefined.
-3. **Schema.org Action vocabulary curation (D-5)** - we curate ~20 Schema.org Actions; should the CG maintain the curated set, or open it?
-4. **Discovery cache directives (D-4)** - cache TTL declared in the document vs HTTP headers - which wins on conflict?
-5. **Multi-region jurisdictional posture (D-2)** - sites operating in multiple EU member states declare one `jurisdictions.primary` but applicableLaws are union. Sufficient?
-
-Speaker notes:
-- These five issues are deliberately scoped to be discussable in one CG-call cycle (~6 weeks)
-- We will open them as GitHub issues on the repo within 48h of this meeting and link them from the call notes
+1. **ODRL profile of A2WF** - should v1.2 include a normative export to ODRL, or keep architectural alignment only? (Paola's first tip)
+2. **Trigger expression language** - permissions may carry `conditions`; should the expression syntax be JSONLogic, ODRL Constraints, SHACL, or remain undefined? Currently undefined.
+3. **Schema.org Action vocabulary curation** - we curate ~20 Schema.org Actions; should the CG maintain the curated set, or open it to community submissions?
+4. **Cache directive precedence** - the spec currently says HTTP Cache-Control / ETag / Last-Modified win, with the document-internal `discovery.cache` as fallback. Is this the right ordering?
+5. **Multi-region jurisdictional posture** - sites operating in multiple EU member states declare one `jurisdictions.primary` with an applicableLaws union. Sufficient?
 
 ---
 
 ## Slide 10 - Roadmap and how to participate
 
 **v1.1 trajectory:**
-- v1.1.0-draft.2 today (Editor's Draft, this CG call)
+- v1.1.0-draft.2 today (this CG call)
 - v1.1.0-draft.3 after this meeting's feedback (target end of June 2026)
 - First CG candidate release Q3 2026
 
@@ -213,19 +194,17 @@ Speaker notes:
 
 **How to participate:**
 - Repo issues: github.com/a2wf/spec/issues
-- The five open questions will become labeled issues
+- The five open questions will become labelled issues
 - Pull requests welcome on tools/ and on profile drafts
 - Office hours: TBD by CG charter
 
 **Liaisons we are tracking:**
-- W3C AIKR CG (Paola Di Maio) - inventory of standards intersections
-- W3C Agent Identity Protocol CG - DID/VC alignment
-- DPVCG - DPV vocabulary use
-- ODRL CG - profile precedent
+- W3C AIKR CG (Paola Di Maio)
+- W3C Agent Identity Protocol CG
+- DPVCG
+- ODRL CG
 
-Speaker notes:
-- Last slide is "what's next + how to help" - end on an invitation, not a closing statement
-- Be prepared for the meta-question "should A2WF become a W3C CG and eventually a Working Group?" - answer: that is exactly what this meeting is for
+*Tracked for review only; no formal endorsement or reciprocal liaison agreement yet.*
 
 ---
 
@@ -245,4 +224,5 @@ For attendees who want to skim before next meeting:
 - [ ] Have the three example JSONs at hand (sme-basic, ecommerce-standard, healthcare-eu-governance-profile)
 - [ ] Have the ODRL CG outputs page open in a tab for the "why three layers" question
 - [ ] Have a fall-back: if a tool demo fails live, switch to the JSON files
+- [ ] Open speaker view via Reveal (press S key)
 - [ ] Bring water; this is 25-30 minutes of speaking plus 15 of Q&A

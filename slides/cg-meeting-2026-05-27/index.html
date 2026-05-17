@@ -51,13 +51,15 @@
   <h1>Agent-to-Website Framework v1.1</h1>
   <p class="subtitle">A machine-readable policy format for AI-agent governance on websites</p>
   <p class="status-line">
-    W3C Community Group meeting &middot; 2026-05-27<br>
-    Editor: Wolfgang Wimmer (SSC) &middot; Status: pre-Community-Group Editor's Draft (v1.1.0-draft.2)<br>
+    A2WF pre-Community-Group community review &middot; 2026-05-27<br>
+    <strong>Status:</strong> Editor's Draft (v1.1.0-draft.2), not stable, not W3C-endorsed.<br>
+    The A2WF Community Group is <em>proposed</em>, not yet chartered.<br>
+    Editor: Wolfgang Wimmer (SSC) &middot;
     Repository: <a href="https://github.com/a2wf/spec" target="_blank">github.com/a2wf/spec</a> &middot;
     Live tools: <a href="https://a2wf.github.io/spec/tools/" target="_blank">a2wf.github.io/spec/tools/</a>
   </p>
   <aside class="notes">
-    Frame this as: "we have done the homework, now we want community ownership". Be explicit that the A2WF Community Group is "proposed", not yet chartered. Acknowledge prior input from Paola Di Maio (AIKR CG) and Ian Jacobs (W3C).
+    Frame this as: "we have done the homework, now we want community ownership". Be explicit that the A2WF Community Group is "proposed", not yet chartered. Acknowledge prior input from Paola Di Maio (AIKR CG) and Ian Jacobs (W3C). Press S for speaker view.
   </aside>
 </section>
 
@@ -75,6 +77,7 @@
     <li>Incident-reporting contact and intended timeframe</li>
     <li>Discovery hints (Schema.org Actions, sitemap, rate limits)</li>
     <li>Audit-trail declarations</li>
+    <li>Security, Privacy, Internationalisation, and Accessibility Considerations (Sections 10/11)</li>
   </ul>
 
   <h3>Liaison input that drove v1.1</h3>
@@ -83,7 +86,7 @@
     <li><strong>Ian Jacobs (W3C Staff):</strong> discovery via <code>/.well-known/</code>, not site root</li>
   </ul>
   <aside class="notes">
-    Concrete example to mention: v1.0 humanVerification=true vs v1.1 oversight.oversightDefaults.regulated.level=handover. The Paola/Ian quotes are real input from earlier rounds; reference them visibly.
+    Concrete example to mention: v1.0 humanVerification=true vs v1.1 oversight.oversightDefaults.regulated.level=handover. The Paola/Ian quotes are real input from earlier rounds; reference them visibly. Security/Privacy/i18n/a11y are first-class sections in the spec; mention briefly.
   </aside>
 </section>
 
@@ -102,8 +105,9 @@
   </div>
 
   <p style="margin-top: 1em;">
-    <strong>Precedent:</strong> ODRL Core + Profiles, WCAG Levels A/AA/AAA, DID Core + Method Specs, WebAuthn Core + Extensions.
-    The W3C-CG Process explicitly supports this pattern.
+    <strong>Related precedents in W3C and adjacent ecosystems:</strong>
+    ODRL Core + Profiles, DID Core + Method Specs, WebAuthn Core + Extensions, WCAG Levels.
+    W3C specs commonly use related variability patterns; the W3C QA Framework recognises profiles, modules, and levels as legitimate techniques.
   </p>
 
   <h3>Why three layers</h3>
@@ -113,7 +117,7 @@
     <li>Profiles bundle modules for specific markets without forcing global complexity</li>
   </ul>
   <aside class="notes">
-    Be ready for "why not just use ODRL directly?" - answer: ODRL vocabulary is content-licensing oriented; A2WF vocabulary is site-action oriented. ODRL profile of A2WF planned for v1.2 (open issue D-1).
+    Be ready for "why not just use ODRL directly?" - answer: ODRL is a strong abstract policy model; A2WF is a low-friction website declaration format. A normative ODRL profile of A2WF is a v1.2 candidate. Do not oversell WCAG as a "module" precedent - it is a Levels precedent only.
   </aside>
 </section>
 
@@ -121,26 +125,26 @@
 <section>
   <h2>Standards re-use, not re-invention</h2>
   <table>
-    <thead><tr><th>Standard</th><th>Used for</th><th>Status in A2WF</th></tr></thead>
+    <thead><tr><th>Standard</th><th>Used for</th><th>Status in A2WF v1.1</th></tr></thead>
     <tbody>
       <tr><td>Schema.org Actions</td><td><code>permissions[].schemaOrgType</code></td><td>Conditional normative</td></tr>
-      <tr><td>W3C DID Core</td><td>Agent identity resolution</td><td>Stable, referenced</td></tr>
-      <tr><td>W3C VC Data Model 2.0</td><td>Agent credentials</td><td>Stable, referenced</td></tr>
-      <tr><td>HTTP Message Signatures (RFC 9421)</td><td>Request authentication</td><td>Stable, referenced</td></tr>
-      <tr><td>OAuth 2.0 (RFC 6749)</td><td>Delegated authorisation</td><td>Stable, referenced</td></tr>
-      <tr><td>W3C ODRL 2.2</td><td>Architectural precedent</td><td>Future profile (v1.2)</td></tr>
-      <tr><td>W3C DPV 2.0</td><td>Data-handling vocabulary</td><td>Module-level referenced</td></tr>
-      <tr><td>llmstxt.org</td><td>Discovery hint, not replaced</td><td>Compatibility note</td></tr>
-      <tr><td>IETF AIP (draft)</td><td>Agent identity protocol</td><td>Experimental</td></tr>
-      <tr><td>RFC 8615 / RFC 9309</td><td>Discovery path, robots.txt</td><td>Stable, normative</td></tr>
+      <tr><td>W3C DID Core</td><td>Agent identity resolution</td><td>Conditional normative (agentIdentification)</td></tr>
+      <tr><td>W3C VC Data Model 2.0</td><td>Agent credentials</td><td>Conditional normative (agentIdentification)</td></tr>
+      <tr><td>HTTP Message Signatures (RFC 9421)</td><td>Request authentication</td><td>Conditional normative (agentIdentification, auditTrail)</td></tr>
+      <tr><td>OAuth 2.0 (RFC 6749)</td><td>Delegated authorisation</td><td>Conditional normative (agentIdentification)</td></tr>
+      <tr><td>W3C ODRL 2.2</td><td>Architectural precedent</td><td>Informative; companion profile is a v1.2 candidate</td></tr>
+      <tr><td>W3C DPV 2.x</td><td>Data-handling vocabulary</td><td>Conditional normative (dataHandling)</td></tr>
+      <tr><td>llmstxt.org</td><td>Discovery hint, not replaced</td><td>Informative compatibility note</td></tr>
+      <tr><td>AIP (IETF Internet-Draft)</td><td>Agent identity protocol</td><td>Experimental, optional</td></tr>
+      <tr><td>RFC 8615 (.well-known) / RFC 9309 (robots)</td><td>Discovery path</td><td>Normative</td></tr>
     </tbody>
   </table>
 
   <blockquote>
-    A2WF v1.1 defines no new identity protocol, no new policy language, no new vocabulary. Everything is a thin coordination layer.
+    A2WF v1.1 is a website declaration envelope. It reuses external vocabularies wherever stable, and adds only the minimum new shape it needs (permissions, oversight, conformance metadata).
   </blockquote>
   <aside class="notes">
-    This slide directly addresses Paola's three tips from the earlier round. Read the quote aloud.
+    This slide directly addresses Paola's three tips. Be ready to defend: "no NEW agent identity protocol, no NEW data-handling vocabulary, no NEW action vocabulary". The thing A2WF adds is the envelope that glues these together at a single well-known URL.
   </aside>
 </section>
 
@@ -191,28 +195,36 @@
     <span class="pill pill-fail">NOT</span> a legal claim &middot;
     <span class="pill pill-fail">NOT</span> endorsed by any EU institution
   </p>
-  <p style="margin-top: 0.8em;">Vendors may wrap and brand this profile, with the constraint that they MUST NOT claim W3C / A2WF endorsement.</p>
+  <p style="margin-top: 0.8em;">
+    Any vendor may build tools around this profile. The constraints are:
+    <strong>no W3C / A2WF endorsement claims</strong>;
+    <strong>no "certified compliant"</strong>;
+    operator keeps the raw JSON portable and can switch vendors at any time.
+  </p>
   <aside class="notes">
-    Anticipate "is this a back door to a paid certification market?" Answer: profile claim is publisher-declared; vendor reports MUST disclaim. The reference tools enforce this through built-in disclaimers.
+    Anticipate "is this a back door to a paid certification market?" Answer: profile claim is publisher-declared; vendor reports MUST disclaim. The reference tools enforce this through built-in disclaimers. Customer-portability via raw JSON is the anti-lock-in protection.
   </aside>
 </section>
 
 <!-- Slide 7 - Reference tools live -->
 <section>
   <h2>Reference tools, live</h2>
-  <p>Three browser tools + one set of server snippets, all at <a href="https://a2wf.github.io/spec/tools/" target="_blank">a2wf.github.io/spec/tools/</a></p>
+  <p>Three browser tools plus a set of server snippets, all under MIT at <a href="https://a2wf.github.io/spec/tools/" target="_blank">a2wf.github.io/spec/tools/</a></p>
   <table>
     <thead><tr><th>Tool</th><th>What it does</th></tr></thead>
     <tbody>
       <tr><td><strong>Wizard</strong></td><td>Generate a v1.1 document. 6 branch presets, Simple + Expert, live validation, JSON download. Imports v1.0 and v1.1.</td></tr>
       <tr><td><strong>Validator</strong></td><td>Drag-and-drop validator. PASS / WARN / FAIL findings with spec section references. Three reference examples.</td></tr>
-      <tr><td><strong>EU Governance Readiness Checker</strong></td><td>Fetch a live site's A2WF policy. Map declarations to EU AI Act + GDPR anchors. Vendor "Declaration Coverage Score" (NOT compliance score). Vendor-brandable.</td></tr>
+      <tr><td><strong>EU Governance Readiness Checker</strong></td><td>Fetch a live site's A2WF policy. Map declarations to EU AI Act + GDPR anchors. Produces a vendor "Declaration Coverage Score" (NOT a compliance score).</td></tr>
       <tr><td><strong>Logger Snippets</strong></td><td>Server-side snippets (nginx, Apache, Cloudflare Workers, Express, WordPress). Privacy-preserving by default; opt-in forwarding.</td></tr>
     </tbody>
   </table>
-  <p style="margin-top: 1em;">All tools are MIT, static, self-hosted, no telemetry. Shared validator core (<code>validator/v1_1/core.js</code>) ensures CLI and browser agree.</p>
+  <p style="margin-top: 1em; font-size: 0.55em;">
+    All tools are MIT, static, self-hosted, no telemetry. Shared validator core (<code>validator/v1_1/core.js</code>) ensures CLI and browser agree.
+    The tools include hooks so third parties can wrap them with their own branding via URL parameters; wrapped instances must disclaim "not A2WF-endorsed".
+  </p>
   <aside class="notes">
-    If demo permits, switch to a browser tab with the Wizard ("regulated sector" preset) and the EU Readiness Checker (run against https://a2wf.org to show v1.0 detection + migration recommendations).
+    If demo permits, switch to a browser tab with the Wizard ("regulated sector" preset) and the EU Readiness Checker (run against https://a2wf.org to show v1.0 detection + migration recommendations). CORS fallback: if a live fetch fails on stage, switch to the downloaded JSON files.
   </aside>
 </section>
 
@@ -240,16 +252,16 @@
 <!-- Slide 9 - Open questions -->
 <section>
   <h2>Open questions for the CG</h2>
-  <p>Five issues we want the CG to chew on:</p>
+  <p>Five questions we want directional CG input on. These are not requests for resolution in this call; they are framings for the next ~6 weeks of issue tracking. We will open them as labelled GitHub issues within 48 hours of this meeting.</p>
   <ol>
-    <li><strong>ODRL profile of A2WF (D-1)</strong> &mdash; should v1.2 include a normative export to ODRL, or keep architectural alignment only? <em>(Paola's tip 1)</em></li>
-    <li><strong>Trigger expression language (D-3)</strong> &mdash; permissions can have <code>conditions</code>; JSONLogic, ODRL Constraints, SHACL, or undefined? Currently undefined.</li>
-    <li><strong>Schema.org Action vocabulary curation (D-5)</strong> &mdash; we curate ~20 actions; should the CG maintain the curated set, or open it?</li>
-    <li><strong>Discovery cache directives (D-4)</strong> &mdash; cache TTL declared in the document vs HTTP headers - which wins on conflict?</li>
-    <li><strong>Multi-region jurisdictional posture (D-2)</strong> &mdash; sites in multiple EU member states declare one <code>jurisdictions.primary</code> but applicableLaws are union. Sufficient?</li>
+    <li><strong>ODRL profile of A2WF</strong> &mdash; should v1.2 include a normative export to ODRL, or keep architectural alignment only? <em>(Paola's first tip)</em></li>
+    <li><strong>Trigger expression language</strong> &mdash; permissions may carry <code>conditions</code>; should the expression syntax be JSONLogic, ODRL Constraints, SHACL, or remain undefined? Currently undefined.</li>
+    <li><strong>Schema.org Action vocabulary curation</strong> &mdash; we curate ~20 actions; should the CG maintain the curated set, or open it to community submissions?</li>
+    <li><strong>Cache directive precedence</strong> &mdash; the spec (Section 9.4) currently says HTTP Cache-Control / ETag / Last-Modified win, with the document-internal <code>discovery.cache</code> as fallback. Is this the right ordering?</li>
+    <li><strong>Multi-region jurisdictional posture</strong> &mdash; sites in multiple EU member states declare one <code>jurisdictions.primary</code> with an applicableLaws union. Sufficient?</li>
   </ol>
   <aside class="notes">
-    These five are scoped to be discussable in one CG-call cycle (~6 weeks). We will open them as GitHub issues within 48h of this meeting and link them from the call notes.
+    Frame as "directional input over six weeks", not "resolution in one call". ODRL and trigger language especially need follow-up discussions; do not try to settle them on stage. The cache question is already partly decided in the spec; this is a check that the decision is acceptable.
   </aside>
 </section>
 
@@ -286,6 +298,7 @@
         <li>DPVCG</li>
         <li>ODRL CG</li>
       </ul>
+      <p style="font-size: 0.5em; color: #666;">Tracked for review only; no formal endorsement or reciprocal liaison agreement yet.</p>
     </div>
   </div>
   <aside class="notes">
@@ -316,6 +329,7 @@
 </div>
 
 <script src="vendor/reveal.js"></script>
+<script src="vendor/notes.js"></script>
 <script>
   Reveal.initialize({
     hash: true,
@@ -332,6 +346,7 @@
     maxScale: 1.5,
     overview: true,
     keyboard: true,
+    plugins: [ RevealNotes ],
   });
 </script>
 
