@@ -29,6 +29,7 @@ async function loadValidator() {
 }
 
 window.validatorApp = function validatorApp() {
+  const MAX_DOC_BYTES = 2 * 1024 * 1024; // 2 MB
   return {
     dragover: false,
     pasteMode: false,
@@ -61,11 +62,21 @@ window.validatorApp = function validatorApp() {
 
     async readFile(file) {
       this.error = '';
+      if (file.size > MAX_DOC_BYTES) {
+        this.error = `File is ${(file.size / 1024 / 1024).toFixed(2)} MB. The browser validator only accepts files up to ${MAX_DOC_BYTES / 1024 / 1024} MB. Use the CLI validator (validator/v1_1/cli.js) for larger documents.`;
+        this.result = null;
+        return;
+      }
       const text = await file.text();
       this.validateText(text, file.name);
     },
 
     async validatePaste() {
+      if (this.pasteText.length > MAX_DOC_BYTES) {
+        this.error = `Pasted content is too large. The browser validator only accepts up to ${MAX_DOC_BYTES / 1024 / 1024} MB.`;
+        this.result = null;
+        return;
+      }
       this.validateText(this.pasteText, 'pasted document');
     },
 

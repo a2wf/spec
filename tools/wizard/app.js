@@ -140,6 +140,22 @@ window.wizardApp = function wizardApp() {
 
     goTo(s) { this.step = s; window.scrollTo({ top: 0, behavior: 'smooth' }); },
 
+    identityValid() {
+      const id = this.doc && this.doc.identity;
+      if (!id) return false;
+      const name = (id.legalName || '').trim();
+      const email = (id.contactEmail || '').trim();
+      // Minimal sanity: name has at least 2 non-whitespace chars; email matches a
+      // simple shape (we leave deep e-mail validation to the JSON Schema/Ajv).
+      if (name.length < 2) return false;
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
+      return true;
+    },
+
+    continueFromIdentity() {
+      if (this.identityValid()) this.goTo('permissions');
+    },
+
     addPermission() {
       this.editingIdx = this.doc.permissions.length;
       this.editing = emptyEditing();
@@ -295,6 +311,7 @@ window.wizardApp = function wizardApp() {
     },
 
     async copyJSON() {
+      if (this.summary.fail > 0) return;
       try {
         await navigator.clipboard.writeText(this.docJSON);
         alert('JSON copied to clipboard.');
@@ -304,6 +321,7 @@ window.wizardApp = function wizardApp() {
     },
 
     downloadJSON() {
+      if (this.summary.fail > 0) return;
       const blob = new Blob([this.docJSON], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');

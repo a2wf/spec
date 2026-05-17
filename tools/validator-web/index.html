@@ -35,13 +35,18 @@
 
   <div class="card">
     <div class="dropzone"
+         role="button"
+         tabindex="0"
+         aria-label="Drop a JSON file here or press Enter to open the file picker"
          :class="{ dragover: dragover }"
          @dragover.prevent="dragover = true"
          @dragleave.prevent="dragover = false"
          @drop.prevent="onDrop($event)"
-         @click="$refs.file.click()">
+         @click="$refs.file.click()"
+         @keydown.enter.prevent="$refs.file.click()"
+         @keydown.space.prevent="$refs.file.click()">
       <p><strong>Drag a JSON file here</strong></p>
-      <p class="muted">or click to pick a file from your device</p>
+      <p class="muted">or click (or press Enter) to pick a file from your device</p>
       <input type="file" x-ref="file" accept="application/json,.json" @change="onFile($event)">
     </div>
     <p style="font-size: 0.875rem; margin-top: 1rem;">
@@ -70,10 +75,10 @@
 
     <div class="summary-row">
       <span class="pill" x-text="'spec ' + (result?.specVersion || '?')"></span>
-      <span class="pill pass" x-text="'pass ' + (result?.summary?.pass || 0)"></span>
-      <span class="pill warn" x-text="'warn ' + (result?.summary?.warn || 0)"></span>
-      <span class="pill fail" x-text="'fail ' + (result?.summary?.fail || 0)"></span>
-      <span class="pill" :class="result?.valid ? 'pass' : 'fail'" x-text="result?.valid ? 'SYNTAX OK' : 'SYNTAX FAIL'"></span>
+      <template x-if="(result?.summary?.warn || 0) > 0"><span class="pill warn" x-text="'warn ' + (result?.summary?.warn || 0)"></span></template>
+      <template x-if="(result?.summary?.fail || 0) > 0"><span class="pill fail" x-text="'fail ' + (result?.summary?.fail || 0)"></span></template>
+      <template x-if="result?.valid && (result?.summary?.warn || 0) === 0"><span class="pill pass">no issues found</span></template>
+      <span class="pill" :class="result?.valid ? 'pass' : 'fail'" x-text="result?.valid ? 'OVERALL: PASS' : 'OVERALL: FAIL'"></span>
     </div>
 
     <div class="button-row" style="margin-top: 0; justify-content: flex-start;">

@@ -34,13 +34,13 @@
   </p>
 
   <!-- Step indicator -->
-  <div class="steps">
-    <span class="step" :class="{ current: step === 'preset' }">1. Preset</span>
-    <span class="step" :class="{ current: step === 'identity' }">2. Identity</span>
-    <span class="step" :class="{ current: step === 'permissions' }">3. Permissions</span>
-    <span class="step" :class="{ current: step === 'modules', 'hidden': !expert }">4. Modules</span>
-    <span class="step" :class="{ current: step === 'review' }" x-text="expert ? '5. Review' : '4. Review'"></span>
-  </div>
+  <nav class="steps" aria-label="Wizard progress">
+    <span class="step" :class="{ current: step === 'preset' }" :aria-current="step === 'preset' ? 'step' : null">1. Preset</span>
+    <span class="step" :class="{ current: step === 'identity' }" :aria-current="step === 'identity' ? 'step' : null">2. Identity</span>
+    <span class="step" :class="{ current: step === 'permissions' }" :aria-current="step === 'permissions' ? 'step' : null">3. Permissions</span>
+    <span class="step" :class="{ current: step === 'modules', 'hidden': !expert }" :aria-current="step === 'modules' ? 'step' : null">4. Modules</span>
+    <span class="step" :class="{ current: step === 'review' }" :aria-current="step === 'review' ? 'step' : null" x-text="expert ? '5. Review' : '4. Review'"></span>
+  </nav>
 
   <!-- Step 1: Preset -->
   <section x-show="step === 'preset'">
@@ -97,38 +97,41 @@
     <p>Who owns this site? These fields end up in <code>identity</code>.</p>
 
     <div class="field">
-      <label>Legal name <span class="hint">(required)</span></label>
-      <input type="text" x-model="doc.identity.legalName" placeholder="Acme GmbH" required>
+      <label for="wiz-legal-name">Legal name <span class="hint">(required)</span></label>
+      <input id="wiz-legal-name" type="text" x-model="doc.identity.legalName" placeholder="Acme GmbH" required>
     </div>
     <div class="field">
-      <label>Contact e-mail <span class="hint">(required, prefer a role address like privacy@...)</span></label>
-      <input type="email" x-model="doc.identity.contactEmail" placeholder="ai-policy@acme.example" required>
+      <label for="wiz-contact-email">Contact e-mail <span class="hint">(required, prefer a role address like privacy@...)</span></label>
+      <input id="wiz-contact-email" type="email" x-model="doc.identity.contactEmail" placeholder="ai-policy@acme.example" required>
     </div>
     <div class="field-row">
       <div>
-        <label>Site name</label>
-        <input type="text" x-model="doc.identity.siteName" placeholder="Acme Online Store">
+        <label for="wiz-site-name">Site name</label>
+        <input id="wiz-site-name" type="text" x-model="doc.identity.siteName" placeholder="Acme Online Store">
       </div>
       <div>
-        <label>Site URL</label>
-        <input type="url" x-model="doc.identity.siteURL" placeholder="https://shop.acme.example">
+        <label for="wiz-site-url">Site URL</label>
+        <input id="wiz-site-url" type="url" x-model="doc.identity.siteURL" placeholder="https://shop.acme.example">
       </div>
     </div>
     <div class="field-row">
       <div>
-        <label>Primary jurisdiction <span class="hint">(ISO 3166-1 alpha-2)</span></label>
-        <input type="text" x-model="doc.identity.jurisdictionPrimary" placeholder="AT" maxlength="2" style="text-transform: uppercase;">
+        <label for="wiz-jurisdiction">Primary jurisdiction <span class="hint">(ISO 3166-1 alpha-2)</span></label>
+        <input id="wiz-jurisdiction" type="text" x-model="doc.identity.jurisdictionPrimary" placeholder="AT" maxlength="2" style="text-transform: uppercase;">
       </div>
       <div>
-        <label>Document language <span class="hint">(BCP 47)</span></label>
-        <input type="text" x-model="doc.metadata.language" placeholder="en" maxlength="10">
+        <label for="wiz-language">Document language <span class="hint">(BCP 47)</span></label>
+        <input id="wiz-language" type="text" x-model="doc.metadata.language" placeholder="en" maxlength="10">
       </div>
     </div>
 
     <div class="button-row">
       <button class="secondary" @click="goTo('preset')">&larr; Back</button>
-      <button @click="goTo('permissions')">Continue &rarr;</button>
+      <button @click="continueFromIdentity()" :disabled="!identityValid()">Continue &rarr;</button>
     </div>
+    <p x-show="!identityValid()" class="muted" style="font-size: 0.875rem; color: var(--fail);">
+      Legal name and a contact e-mail are required to continue.
+    </p>
   </section>
 
   <!-- Step 3: Permissions -->
@@ -357,10 +360,15 @@
     <div class="button-row">
       <button class="secondary" @click="goTo(expert ? 'modules' : 'permissions')">&larr; Back</button>
       <div>
-        <button class="secondary" @click="copyJSON()">Copy to clipboard</button>
-        <button @click="downloadJSON()">Download siteai.json</button>
+        <button class="secondary" @click="copyJSON()" :disabled="summary.fail > 0">Copy to clipboard</button>
+        <button @click="downloadJSON()" :disabled="summary.fail > 0">Download siteai.json</button>
       </div>
     </div>
+    <p x-show="summary.fail > 0" class="disclaimer" style="margin-top: 1rem;">
+      <strong>Document has <span x-text="summary.fail"></span> validation failure(s).</strong>
+      Fix the failures above before downloading. The Reference Wizard does not export documents
+      that fail validation, because they would not be usable by Consumers.
+    </p>
 
     <h3 style="margin-top: 2rem;">Deploy</h3>
     <p>Serve the downloaded file at:</p>

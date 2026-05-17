@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A2WF Logger Snippets</title>
+<meta name="description" content="Server-side snippets for logging AI agent requests to A2WF policy documents. Privacy-first.">
+<link rel="stylesheet" href="../vendor/a2wf-tools.css">
+</head>
+<body>
+
+<div class="draft-banner">
+  These snippets target the A2WF v1.1.0-draft.2 specification (Editor's Draft, not stable).
+</div>
+
+<header class="app-header">
+  <div class="inner">
+    <h1>A2WF Logger Snippets</h1>
+    <nav>
+      <a href="../index.html">Tools</a>
+      <a href="../wizard/index.html">Wizard</a>
+      <a href="../validator-web/index.html">Validator</a>
+      <a href="https://github.com/a2wf/spec" target="_blank" rel="noopener">Repository</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <h1>Logger Snippets</h1>
+
+  <p>
+    Drop-in server snippets that record which AI agents fetch your A2WF policy. Privacy-preserving
+    by default: no IP, no cookies, no query strings, no full Referer, no raw User-Agent. Optional
+    opt-in forwarding to an operator-configured endpoint.
+  </p>
+
+  <h2>Pick the snippet for your stack</h2>
+
+  <div class="preset-grid">
+    <a class="preset-card" href="nginx.conf.example">
+      <h4>nginx</h4>
+      <p>JSON-formatted access log directive for nginx. Drop into your <code>server {}</code> block.</p>
+    </a>
+    <a class="preset-card" href="apache-htaccess.example">
+      <h4>Apache</h4>
+      <p>CustomLog + LogFormat directives for Apache 2.4+. Drop into your virtual host config.</p>
+    </a>
+    <a class="preset-card" href="cloudflare-worker.js">
+      <h4>Cloudflare Worker</h4>
+      <p>Transparent passthrough worker that proxies the A2WF document and records each fetch.</p>
+    </a>
+    <a class="preset-card" href="express-middleware.js">
+      <h4>Express.js</h4>
+      <p>Node.js middleware that emits one JSON line per request. Optional async forwarding.</p>
+    </a>
+    <a class="preset-card" href="wordpress-snippet.php">
+      <h4>WordPress / PHP</h4>
+      <p>Drop-in PHP function that hooks into <code>init</code>. Recommends a dedicated log file.</p>
+    </a>
+  </div>
+
+  <h2>Supporting files</h2>
+  <ul>
+    <li><a href="a2wf-log-event-v1.schema.json"><code>a2wf-log-event-v1.schema.json</code></a> - versioned JSON Schema for the log event format.</li>
+    <li><a href="agent-signatures.json"><code>agent-signatures.json</code></a> - community-maintained list of AI agent User-Agent patterns.</li>
+    <li><a href="README.md"><code>README.md</code></a> - the long-form documentation as raw Markdown.</li>
+  </ul>
+
+  <h2>What gets logged</h2>
+  <p>Every snippet writes records that match the same log event schema:</p>
+  <pre>{
+  "a2wfLogVersion": "1.0",
+  "schemaURI": "https://a2wf.org/schema/a2wf-log-event-v1.json",
+  "timestamp": "2026-05-17T10:30:00Z",
+  "method": "GET",
+  "observedPath": "/.well-known/a2wf/siteai.json",
+  "statusCode": 200,
+  "userAgentCategory": "openai",
+  "matchedSignatureId": "openai-gptbot",
+  "agentDeclared": false,
+  "agentVerified": false,
+  "collectionMode": "local",
+  "rawFieldsIncluded": []
+}</pre>
+
+  <h2>Privacy posture</h2>
+  <ul>
+    <li><strong>By default</strong>: no IP address, no cookies, no <code>Authorization</code> header, no query strings, no request body, no full <code>Referer</code>, no raw <code>User-Agent</code>.</li>
+    <li>The User-Agent is reduced to a heuristic category from <code>agent-signatures.json</code>. The category is not proof of identity.</li>
+    <li>External forwarding (<code>A2WF_LOG_ENDPOINT</code>) is opt-in. When enabled, only the endpoint's origin is recorded, never the full URL with tenant IDs or tokens.</li>
+    <li>You (the operator) remain responsible for legal basis, retention, and notices. These snippets do not establish a data-processing agreement on your behalf.</li>
+  </ul>
+
+  <h2>Retention</h2>
+  <p>
+    The snippets do not enforce a retention period. A reasonable starting point for operators
+    without a specific regulatory constraint is 90 days with daily rotation. Operators in
+    regulated sectors should align retention with their sector's requirements.
+  </p>
+
+</main>
+
+<footer class="app-footer">
+  <p>
+    A2WF Reference Tools, MIT-licensed, distributed with the
+    <a href="https://github.com/a2wf/spec" target="_blank" rel="noopener">A2WF specification</a>.
+  </p>
+</footer>
+
+</body>
+</html>

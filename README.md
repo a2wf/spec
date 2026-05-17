@@ -24,6 +24,17 @@
 
 ---
 
+## v1.1 draft tools preview
+
+The `tools/` directory on this branch contains a preview of the next-generation reference tools (wizard, validator, logger snippets) that target the in-development v1.1 specification.
+
+- Live tools: https://a2wf.github.io/spec/tools/
+- v1.1 draft specification: see the [`v1.1-draft`](https://github.com/a2wf/spec/tree/v1.1-draft) branch.
+
+The v1.1 specification text is intentionally still on its draft branch. Only the supporting JSON Schema (`schema/core-v1.1.json`), reference examples (`examples/v1.1/`), and the browser-compatible validator core (`validator/v1_1/core.js`) live on `main` so that GitHub Pages can serve the tool set without making the v1.1 specification text appear stable. The v1.0 specification described below is still the authoritative published version.
+
+---
+
 ## What is A2WF?
 
 A2WF (Agent-to-Web Framework) provides a machine-readable way for website operators to publish a `siteai.json` policy for AI agents.
