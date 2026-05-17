@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<meta name="robots" content="index,follow">
+<title>A2WF v1.1 - W3C Community Group Meeting 2026-05-27</title>
+<meta name="description" content="Slides for the W3C CG presentation of A2WF v1.1.0-draft.2.">
+
+<link rel="stylesheet" href="vendor/reveal.css">
+<link rel="stylesheet" href="vendor/theme-white.css" id="theme">
+
+<style>
+  .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  .reveal h1, .reveal h2, .reveal h3, .reveal h4 { font-family: inherit; font-weight: 600; text-transform: none; letter-spacing: normal; }
+  .reveal h1 { font-size: 1.6em; }
+  .reveal h2 { font-size: 1.25em; margin-bottom: 0.5em; }
+  .reveal h3 { font-size: 1.0em; margin-top: 0.8em; margin-bottom: 0.3em; }
+  .reveal p, .reveal li, .reveal td, .reveal th { font-size: 0.55em; line-height: 1.45; }
+  .reveal ul, .reveal ol { margin: 0.3em 0; padding-left: 1.5em; }
+  .reveal ul li, .reveal ol li { margin-bottom: 0.15em; }
+  .reveal pre { font-size: 0.45em; line-height: 1.3; box-shadow: none; border: 1px solid #ccc; border-radius: 0.3em; margin: 0.5em 0; }
+  .reveal code { font-size: 0.95em; background: #f4f4f4; padding: 0.1em 0.3em; border-radius: 0.2em; }
+  .reveal pre code { background: transparent; padding: 0; }
+  .reveal table { font-size: 0.5em; border-collapse: collapse; width: 100%; margin: 0.6em 0; }
+  .reveal table th, .reveal table td { padding: 0.3em 0.5em; border-bottom: 1px solid #ddd; text-align: left; vertical-align: top; }
+  .reveal table th { background: #f8f8f8; font-weight: 600; }
+  .reveal .status-line { font-size: 0.5em; color: #666; margin-top: 1.5em; border-top: 1px solid #eee; padding-top: 0.8em; }
+  .reveal .pill { display: inline-block; padding: 0.1em 0.5em; border-radius: 1em; font-size: 0.7em; font-weight: 600; }
+  .reveal .pill-pass { background: #d4edda; color: #155724; }
+  .reveal .pill-warn { background: #fff3cd; color: #856404; }
+  .reveal .pill-fail { background: #f8d7da; color: #721c24; }
+  .reveal .pill-info { background: #d1ecf1; color: #0c5460; }
+  .reveal blockquote { border-left: 4px solid #0d7377; background: #f4fbfb; padding: 0.4em 0.8em; font-style: normal; font-size: 0.6em; margin: 0.6em 0; line-height: 1.45; }
+  .reveal .arch-diagram { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.55em; line-height: 1.4; text-align: left; background: #f8f8f8; padding: 0.8em 1.2em; border-radius: 0.4em; border: 1px solid #ddd; display: inline-block; margin: 0; }
+  .reveal .speaker-note-inline { font-size: 0.45em; color: #777; margin-top: 0.8em; font-style: italic; }
+  .reveal section.title-slide h1 { font-size: 1.9em; margin-bottom: 0.3em; }
+  .reveal section.title-slide .subtitle { font-size: 0.7em; color: #555; }
+  .reveal a { color: #0d7377; }
+  .reveal section { padding: 0.5em 0; }
+</style>
+</head>
+
+<body>
+
+<div class="reveal">
+<div class="slides">
+
+<!-- Slide 1 - Title -->
+<section class="title-slide">
+  <h1>Agent-to-Website Framework v1.1</h1>
+  <p class="subtitle">A machine-readable policy format for AI-agent governance on websites</p>
+  <p class="status-line">
+    W3C Community Group meeting &middot; 2026-05-27<br>
+    Editor: Wolfgang Wimmer (SSC) &middot; Status: pre-Community-Group Editor's Draft (v1.1.0-draft.2)<br>
+    Repository: <a href="https://github.com/a2wf/spec" target="_blank">github.com/a2wf/spec</a> &middot;
+    Live tools: <a href="https://a2wf.github.io/spec/tools/" target="_blank">a2wf.github.io/spec/tools/</a>
+  </p>
+  <aside class="notes">
+    Frame this as: "we have done the homework, now we want community ownership". Be explicit that the A2WF Community Group is "proposed", not yet chartered. Acknowledge prior input from Paola Di Maio (AIKR CG) and Ian Jacobs (W3C).
+  </aside>
+</section>
+
+<!-- Slide 2 - Why v1.1? -->
+<section>
+  <h2>Why v1.1?</h2>
+  <p><em>v1.0 was a one-page declaration. v1.1 makes it operational.</em></p>
+
+  <h3 style="margin-top: 1em;">What v1.0 could not express</h3>
+  <ul>
+    <li>Nuanced human oversight (autonomous / confirmation / notification / handover)</li>
+    <li>Machine-readable jurisdictional declarations (applicable laws)</li>
+    <li>Agent identification protocols (DID, VC, HTTP Message Signatures, OAuth)</li>
+    <li>Data-handling transparency (DPV alignment)</li>
+    <li>Incident-reporting contact and intended timeframe</li>
+    <li>Discovery hints (Schema.org Actions, sitemap, rate limits)</li>
+    <li>Audit-trail declarations</li>
+  </ul>
+
+  <h3>Liaison input that drove v1.1</h3>
+  <ul>
+    <li><strong>Paola Di Maio (AIKR CG):</strong> use ODRL, reuse Schema.org, link to agent-identity standards</li>
+    <li><strong>Ian Jacobs (W3C Staff):</strong> discovery via <code>/.well-known/</code>, not site root</li>
+  </ul>
+  <aside class="notes">
+    Concrete example to mention: v1.0 humanVerification=true vs v1.1 oversight.oversightDefaults.regulated.level=handover. The Paola/Ian quotes are real input from earlier rounds; reference them visibly.
+  </aside>
+</section>
+
+<!-- Slide 3 - Three-layer architecture -->
+<section>
+  <h2>Three-layer architecture</h2>
+  <div class="arch-diagram">
++------------------------------------------------+
+|  Profiles    (e.g. EU Governance Starter)      |
++------------------------------------------------+
+|  Modules     (7 optional, normative)           |
++------------------------------------------------+
+|  Core        (identity, permissions, oversight,|
+|               discovery, conformance)          |
++------------------------------------------------+
+  </div>
+
+  <p style="margin-top: 1em;">
+    <strong>Precedent:</strong> ODRL Core + Profiles, WCAG Levels A/AA/AAA, DID Core + Method Specs, WebAuthn Core + Extensions.
+    The W3C-CG Process explicitly supports this pattern.
+  </p>
+
+  <h3>Why three layers</h3>
+  <ul>
+    <li>Core stays small enough that every operator can implement it</li>
+    <li>Modules are opt-in and bring domain depth where needed</li>
+    <li>Profiles bundle modules for specific markets without forcing global complexity</li>
+  </ul>
+  <aside class="notes">
+    Be ready for "why not just use ODRL directly?" - answer: ODRL vocabulary is content-licensing oriented; A2WF vocabulary is site-action oriented. ODRL profile of A2WF planned for v1.2 (open issue D-1).
+  </aside>
+</section>
+
+<!-- Slide 4 - Standards re-use -->
+<section>
+  <h2>Standards re-use, not re-invention</h2>
+  <table>
+    <thead><tr><th>Standard</th><th>Used for</th><th>Status in A2WF</th></tr></thead>
+    <tbody>
+      <tr><td>Schema.org Actions</td><td><code>permissions[].schemaOrgType</code></td><td>Conditional normative</td></tr>
+      <tr><td>W3C DID Core</td><td>Agent identity resolution</td><td>Stable, referenced</td></tr>
+      <tr><td>W3C VC Data Model 2.0</td><td>Agent credentials</td><td>Stable, referenced</td></tr>
+      <tr><td>HTTP Message Signatures (RFC 9421)</td><td>Request authentication</td><td>Stable, referenced</td></tr>
+      <tr><td>OAuth 2.0 (RFC 6749)</td><td>Delegated authorisation</td><td>Stable, referenced</td></tr>
+      <tr><td>W3C ODRL 2.2</td><td>Architectural precedent</td><td>Future profile (v1.2)</td></tr>
+      <tr><td>W3C DPV 2.0</td><td>Data-handling vocabulary</td><td>Module-level referenced</td></tr>
+      <tr><td>llmstxt.org</td><td>Discovery hint, not replaced</td><td>Compatibility note</td></tr>
+      <tr><td>IETF AIP (draft)</td><td>Agent identity protocol</td><td>Experimental</td></tr>
+      <tr><td>RFC 8615 / RFC 9309</td><td>Discovery path, robots.txt</td><td>Stable, normative</td></tr>
+    </tbody>
+  </table>
+
+  <blockquote>
+    A2WF v1.1 defines no new identity protocol, no new policy language, no new vocabulary. Everything is a thin coordination layer.
+  </blockquote>
+  <aside class="notes">
+    This slide directly addresses Paola's three tips from the earlier round. Read the quote aloud.
+  </aside>
+</section>
+
+<!-- Slide 5 - Seven Modules -->
+<section>
+  <h2>The seven Modules in v1.1</h2>
+  <table>
+    <thead><tr><th>Module</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>dataHandling</code></td><td>Purposes, retention, lawful basis, controller (DPV-aligned)</td></tr>
+      <tr><td><code>agentIdentification</code></td><td>Accepted identity protocols and credential types</td></tr>
+      <tr><td><code>auditTrail</code></td><td>Lightweight audit posture, retention, accessibility</td></tr>
+      <tr><td><code>incidentReporting</code></td><td>Contact + intended acknowledgement timeframe</td></tr>
+      <tr><td><code>discoverabilityHints</code></td><td>Sitemap, Schema.org Action endpoints, rate-limit hints</td></tr>
+      <tr><td><code>jurisdictions</code></td><td>Region, applicable laws (EU AI Act, GDPR, ...)</td></tr>
+      <tr><td><code>codeOfPracticeAlignment</code></td><td>Alignment with industry codes (not certification)</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 1em;">
+    Modules are independent. A document can claim zero, one, or all seven via <code>conformance.moduleClaims</code>.
+    The Core does not require any module.
+  </p>
+  <aside class="notes">
+    "The seven modules are not seven things you have to do; they are seven shapes of declarations you can make if they apply to you." Highlight dataHandling aligns with DPV - that is the Paola hook.
+  </aside>
+</section>
+
+<!-- Slide 6 - EU Governance Starter Profile -->
+<section>
+  <h2>EU Governance Starter Profile</h2>
+  <p>A neutral example profile, published alongside the spec.</p>
+  <p>URI: <code>https://a2wf.org/profiles/eu-governance-starter/v1</code></p>
+
+  <h3>Requires these six module claims, minimally populated:</h3>
+  <ul style="columns: 2; column-gap: 2em;">
+    <li><code>jurisdictions</code> (region: EU, applicableLaws)</li>
+    <li><code>dataHandling</code> (purposes + retention + lawful basis + controller)</li>
+    <li><code>agentIdentification</code> (>= 1 protocol)</li>
+    <li><code>auditTrail</code> (enabled + retention)</li>
+    <li><code>incidentReporting</code> (contactEmail + responseTime)</li>
+    <li><code>discoverabilityHints</code> (sitemap or actions)</li>
+  </ul>
+
+  <h3>What the profile is NOT</h3>
+  <p>
+    <span class="pill pill-fail">NOT</span> a certification &middot;
+    <span class="pill pill-fail">NOT</span> a compliance audit &middot;
+    <span class="pill pill-fail">NOT</span> a legal claim &middot;
+    <span class="pill pill-fail">NOT</span> endorsed by any EU institution
+  </p>
+  <p style="margin-top: 0.8em;">Vendors may wrap and brand this profile, with the constraint that they MUST NOT claim W3C / A2WF endorsement.</p>
+  <aside class="notes">
+    Anticipate "is this a back door to a paid certification market?" Answer: profile claim is publisher-declared; vendor reports MUST disclaim. The reference tools enforce this through built-in disclaimers.
+  </aside>
+</section>
+
+<!-- Slide 7 - Reference tools live -->
+<section>
+  <h2>Reference tools, live</h2>
+  <p>Three browser tools + one set of server snippets, all at <a href="https://a2wf.github.io/spec/tools/" target="_blank">a2wf.github.io/spec/tools/</a></p>
+  <table>
+    <thead><tr><th>Tool</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Wizard</strong></td><td>Generate a v1.1 document. 6 branch presets, Simple + Expert, live validation, JSON download. Imports v1.0 and v1.1.</td></tr>
+      <tr><td><strong>Validator</strong></td><td>Drag-and-drop validator. PASS / WARN / FAIL findings with spec section references. Three reference examples.</td></tr>
+      <tr><td><strong>EU Governance Readiness Checker</strong></td><td>Fetch a live site's A2WF policy. Map declarations to EU AI Act + GDPR anchors. Vendor "Declaration Coverage Score" (NOT compliance score). Vendor-brandable.</td></tr>
+      <tr><td><strong>Logger Snippets</strong></td><td>Server-side snippets (nginx, Apache, Cloudflare Workers, Express, WordPress). Privacy-preserving by default; opt-in forwarding.</td></tr>
+    </tbody>
+  </table>
+  <p style="margin-top: 1em;">All tools are MIT, static, self-hosted, no telemetry. Shared validator core (<code>validator/v1_1/core.js</code>) ensures CLI and browser agree.</p>
+  <aside class="notes">
+    If demo permits, switch to a browser tab with the Wizard ("regulated sector" preset) and the EU Readiness Checker (run against https://a2wf.org to show v1.0 detection + migration recommendations).
+  </aside>
+</section>
+
+<!-- Slide 8 - Conformance model -->
+<section>
+  <h2>Conformance model</h2>
+  <p><strong>A2WF v1.1 conformance is qualitative, not numeric.</strong></p>
+
+  <ul>
+    <li>A document validates to <span class="pill pill-pass">PASS</span>, <span class="pill pill-warn">PASS+WARN</span>, or <span class="pill pill-fail">FAIL</span></li>
+    <li>There is <strong>no 0-100 conformance score</strong> in the specification</li>
+    <li>Vendor tools MAY publish their own scoring products - these are vendor metrics, NOT A2WF conformance signals</li>
+    <li>Validator findings carry severity, a section reference, and an explanatory message</li>
+    <li>Conformance levels: <code>basic</code> and <code>standard</code>; profile claims add a third axis</li>
+  </ul>
+
+  <blockquote>
+    This was a deliberate choice. Numeric scores invite false-equivalence claims ("we are at 85, that means compliant") that the framework cannot underwrite.
+  </blockquote>
+  <aside class="notes">
+    Strong defensible position. Mention the reference checker's score is capped at 59 on validation failure - that is the discipline we ask other vendors to apply too.
+  </aside>
+</section>
+
+<!-- Slide 9 - Open questions -->
+<section>
+  <h2>Open questions for the CG</h2>
+  <p>Five issues we want the CG to chew on:</p>
+  <ol>
+    <li><strong>ODRL profile of A2WF (D-1)</strong> &mdash; should v1.2 include a normative export to ODRL, or keep architectural alignment only? <em>(Paola's tip 1)</em></li>
+    <li><strong>Trigger expression language (D-3)</strong> &mdash; permissions can have <code>conditions</code>; JSONLogic, ODRL Constraints, SHACL, or undefined? Currently undefined.</li>
+    <li><strong>Schema.org Action vocabulary curation (D-5)</strong> &mdash; we curate ~20 actions; should the CG maintain the curated set, or open it?</li>
+    <li><strong>Discovery cache directives (D-4)</strong> &mdash; cache TTL declared in the document vs HTTP headers - which wins on conflict?</li>
+    <li><strong>Multi-region jurisdictional posture (D-2)</strong> &mdash; sites in multiple EU member states declare one <code>jurisdictions.primary</code> but applicableLaws are union. Sufficient?</li>
+  </ol>
+  <aside class="notes">
+    These five are scoped to be discussable in one CG-call cycle (~6 weeks). We will open them as GitHub issues within 48h of this meeting and link them from the call notes.
+  </aside>
+</section>
+
+<!-- Slide 10 - Roadmap + Get involved -->
+<section>
+  <h2>Roadmap and how to participate</h2>
+  <div style="display: flex; gap: 2em;">
+    <div style="flex: 1;">
+      <h3>v1.1 trajectory</h3>
+      <ul>
+        <li>v1.1.0-draft.2 today (this CG call)</li>
+        <li>v1.1.0-draft.3 after feedback (end June)</li>
+        <li>First CG candidate Q3 2026</li>
+      </ul>
+      <h3>v1.2 candidates</h3>
+      <ul>
+        <li>ODRL profile (companion spec)</li>
+        <li>AIP integration when IETF stabilises</li>
+        <li>DPV 2.x updates</li>
+        <li>Profile maintenance + registry</li>
+      </ul>
+    </div>
+    <div style="flex: 1;">
+      <h3>How to participate</h3>
+      <ul>
+        <li>Repo issues: <a href="https://github.com/a2wf/spec/issues" target="_blank">github.com/a2wf/spec/issues</a></li>
+        <li>Pull requests welcome on <code>tools/</code> and profile drafts</li>
+        <li>Office hours: TBD by CG charter</li>
+      </ul>
+      <h3>Liaisons tracked</h3>
+      <ul>
+        <li>W3C AIKR CG (Paola Di Maio)</li>
+        <li>W3C Agent Identity Protocol CG</li>
+        <li>DPVCG</li>
+        <li>ODRL CG</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    End on an invitation. Be ready for "should A2WF become a chartered CG and eventually a Working Group?" - answer: that is what this meeting is for.
+  </aside>
+</section>
+
+<!-- Appendix - Reading list -->
+<section>
+  <h2>Appendix: reading list</h2>
+  <ul>
+    <li><a href="https://github.com/a2wf/spec/blob/v1.1-draft/spec/specification-v1.1-draft.2.md" target="_blank">A2WF v1.1.0-draft.2 specification</a></li>
+    <li><a href="https://github.com/a2wf/spec/blob/v1.1-draft/profiles/eu-governance-starter.md" target="_blank">EU Governance Starter Profile</a></li>
+    <li><a href="https://github.com/a2wf/spec/blob/v1.1-draft/docs/agent-implementer-guide-v1.1.md" target="_blank">Implementer Guide</a></li>
+    <li><a href="https://a2wf.github.io/spec/tools/" target="_blank">Live tools landing</a></li>
+    <li><a href="https://a2wf.github.io/spec/tools/wizard/" target="_blank">Wizard</a></li>
+    <li><a href="https://a2wf.github.io/spec/tools/validator-web/" target="_blank">Validator</a></li>
+    <li><a href="https://a2wf.github.io/spec/tools/eu-governance-checker/" target="_blank">EU Readiness Checker</a></li>
+    <li><a href="https://a2wf.github.io/spec/tools/logger-snippets/" target="_blank">Logger snippets</a></li>
+  </ul>
+  <p class="status-line">
+    Slides: <a href="https://a2wf.github.io/spec/slides/cg-meeting-2026-05-27/" target="_blank">a2wf.github.io/spec/slides/cg-meeting-2026-05-27/</a>
+    &middot; Markdown source: <a href="https://github.com/a2wf/spec/blob/main/slides/cg-meeting-2026-05-27.md" target="_blank">on repo</a>
+  </p>
+</section>
+
+</div>
+</div>
+
+<script src="vendor/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'slide',
+    history: true,
+    controls: true,
+    progress: true,
+    center: true,
+    width: 1280,
+    height: 800,
+    margin: 0.04,
+    minScale: 0.2,
+    maxScale: 1.5,
+    overview: true,
+    keyboard: true,
+  });
+</script>
+
+</body>
+</html>
