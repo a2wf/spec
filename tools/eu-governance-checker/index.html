@@ -71,9 +71,48 @@
       </button>
     </div>
     <p x-show="error" class="disclaimer" style="margin-top: 1rem;" x-text="error"></p>
+    <details style="margin-top: 1rem;">
+      <summary style="cursor: pointer; font-weight: 600; font-size: 0.875rem;">CORS-blocked? Show how the site operator can enable cross-origin access</summary>
+      <div style="margin-top: 0.5rem;">
+        <p style="font-size: 0.875rem;">
+          If the check fails with a CORS error, the target site does not yet allow cross-origin access to its A2WF endpoint.
+          Most sites can fix this by adding the following header to the response for <code>/.well-known/a2wf/siteai.json</code>:
+        </p>
+        <pre style="font-size: 0.8125rem;">Access-Control-Allow-Origin: *</pre>
+        <p style="font-size: 0.875rem;"><strong>nginx</strong> (in the location block for the well-known path):</p>
+        <pre style="font-size: 0.8125rem;">location = /.well-known/a2wf/siteai.json {
+    add_header Access-Control-Allow-Origin "*" always;
+    add_header Content-Type "application/json";
+    try_files $uri =404;
+}</pre>
+        <p style="font-size: 0.875rem;"><strong>Apache</strong> (in .htaccess in the docroot):</p>
+        <pre style="font-size: 0.8125rem;">&lt;FilesMatch "^siteai\.json$"&gt;
+    Header set Access-Control-Allow-Origin "*"
+    Header set Content-Type "application/json"
+&lt;/FilesMatch&gt;</pre>
+        <p style="font-size: 0.875rem;"><strong>Cloudflare</strong> (Workers or Page Rules): set Response header
+          <code>Access-Control-Allow-Origin: *</code> on the path
+          <code>/.well-known/a2wf/siteai.json</code>.</p>
+        <p style="font-size: 0.875rem;"><strong>Alternative</strong>: download the file yourself, then validate it with the
+          <a href="https://a2wf.github.io/spec/tools/validator-web/" target="_blank" rel="noopener">A2WF Validator</a> instead.</p>
+      </div>
+    </details>
   </div>
 
   <section x-show="result">
+
+    <!-- Status banners (degraded validator, legacy v1.0) -->
+    <div class="disclaimer" x-show="result?.validatorDegraded" style="background: #fee; border-color: var(--fail); margin-bottom: 1rem;">
+      <strong>Validator running in degraded mode.</strong> The JSON Schema bundle could not be loaded.
+      Only semantic checks were performed; the Score is capped at 29. Reload the page or check the
+      browser console for details.
+    </div>
+    <div class="disclaimer" x-show="result?.specVersion === '1.0'" style="background: #fff7e6; border-color: var(--warn); margin-bottom: 1rem;">
+      <strong>Legacy A2WF v1.0 document detected.</strong> The site uses the older v1.0 shape and
+      the v1.1 EU Governance modules (dataHandling, agentIdentification, auditTrail,
+      incidentReporting, jurisdictions, discoverabilityHints) are not present. The Recommendations
+      below include migration guidance.
+    </div>
 
     <!-- Score Card -->
     <div class="card score-card">
@@ -160,6 +199,9 @@
 
     <!-- Recommendations -->
     <h2>Recommendations</h2>
+    <p class="muted" style="font-size: 0.875rem;">
+      Each example below shows the property to add or change at the top level of your <code>siteai.json</code> document.
+    </p>
     <template x-for="rec in result?.recommendations || []" :key="rec.id">
       <div class="recommendation">
         <strong x-text="rec.title"></strong>
@@ -233,7 +275,7 @@
 
 <footer class="app-footer no-print">
   <p>
-    EU Governance Compliance Checker, MIT-licensed reference tool. Distributed with the
+    A2WF EU Governance Readiness Checker, MIT-licensed reference tool. Distributed with the
     <a href="https://github.com/a2wf/spec" target="_blank" rel="noopener">A2WF specification</a>.
   </p>
 </footer>

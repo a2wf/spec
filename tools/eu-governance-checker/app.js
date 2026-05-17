@@ -92,10 +92,22 @@ function isHighRiskApplicable(doc) {
 
 function hasProhibitedLikeActions(doc) {
   const perms = Array.isArray(doc.permissions) ? doc.permissions : [];
-  return perms.some(p =>
-    p.allowed === true &&
-    /biometric|social[\s-]?scoring|emotion[\s-]?recognition|subliminal|exploit[\s-]?vulnerable|predictive[\s-]?policing/i.test(p.action || '')
-  );
+  return perms.some(p => {
+    if (p.allowed !== true) return false;
+    const a = (p.action || '').toLowerCase();
+    // Article 5 categories. Pattern is intentionally narrow: only triggers on
+    // action names that resemble the specific categories Article 5 enumerates.
+    // Plain "biometric-login" or "biometric-2fa" must NOT trigger - those are
+    // outside Article 5 scope. The check requires the modifier word too.
+    if (/remote[\s\-_]biometric|biometric[\s\-_]categorisation|biometric[\s\-_]categorization/i.test(a)) return true;
+    if (/emotion[\s\-_]recognition/i.test(a)) return true;
+    if (/social[\s\-_]scoring/i.test(a)) return true;
+    if (/subliminal/i.test(a)) return true;
+    if (/exploit[\s\-_]vulnerabilit/i.test(a)) return true;
+    if (/predictive[\s\-_]policing/i.test(a)) return true;
+    if (/facial[\s\-_]scraping|facial[\s\-_]image[\s\-_]scraping/i.test(a)) return true;
+    return false;
+  });
 }
 
 function isPersonalDataProcessingDeclared(doc) {
@@ -105,7 +117,8 @@ function isPersonalDataProcessingDeclared(doc) {
   // anchors as a gap.
   if (doc.dataHandling) return 'applicable';
   const perms = Array.isArray(doc.permissions) ? doc.permissions : [];
-  if (perms.some(p => /register|purchase|book|pay|profile|account/i.test(p.action || ''))) {
+  // Broad heuristic covering common e-commerce, SaaS, and lead-gen patterns.
+  if (perms.some(p => /register|signup|sign[\s\-_]up|purchase|buy|order|checkout|book|reserve|pay|payment|profile|account|login|sign[\s\-_]in|contact|message|newsletter|subscribe|email|lead|appointment|chat|support|upload|consent/i.test(p.action || ''))) {
     return 'possible';
   }
   return 'not_assessed';
@@ -567,6 +580,33 @@ window.checkerApp = function checkerApp() {
           example: '"jurisdictions": {\n  "region": "EU",\n  "primary": "AT",\n  "applicableLaws": [\n    "https://w3id.org/a2wf/laws/eu/gdpr",\n    "https://w3id.org/a2wf/laws/eu/ai-act"\n  ]\n}',
         });
       }
+
+      if (!doc.auditTrail || doc.auditTrail.enabled !== true) {
+        recs.push({
+          id: 'add-audit-trail',
+          title: 'Add the auditTrail module',
+          text: 'Expose an audit-trail declaration covering retention, accessibility, and privacy posture. Helps consumers and reviewers understand what is recorded about agent activity.',
+          example: '"auditTrail": {\n  "enabled": true,\n  "retention": "P90D",\n  "privacy": { "minimise": true }\n}',
+        });
+      }
+
+      // Legacy v1.0 migration recommendation - shown explicitly when the
+      // document is on the old spec version.
+      if (doc.specVersion === '1.0') {
+        recs.push({
+          id: 'migrate-v1.0-to-v1.1',
+          title: 'Migrate from A2WF v1.0 to v1.1',
+          text: 'The document declares specVersion "1.0". v1.1 adds the EU Governance Starter Profile and the modules required by it (dataHandling, agentIdentification, auditTrail, incidentReporting, jurisdictions, discoverabilityHints). Plan a migration: build a v1.1 document with the Wizard, publish at /.well-known/a2wf/siteai.json, keep the legacy /siteai.json for one caching cycle.',
+        });
+      }
+
+      // Deployment hygiene recommendation - always emitted as a reminder of the
+      // serving headers and discovery path expectations.
+      recs.push({
+        id: 'deployment-hygiene',
+        title: 'Deployment hygiene reminders',
+        text: 'Independently of the document contents, verify the deployment side: serve the file over HTTPS with Content-Type: application/json, set a reasonable Cache-Control (matching discovery.cache.maxAge), and add Access-Control-Allow-Origin: * if you want third-party checkers (including this tool) to reach the endpoint. Migrate any /siteai.json publication to /.well-known/a2wf/siteai.json for v1.1.',
+      });
 
       // Oversight defaults check
       const defReg = doc.oversight && doc.oversight.oversightDefaults && doc.oversight.oversightDefaults.regulated;

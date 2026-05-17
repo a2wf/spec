@@ -1,7 +1,7 @@
 {
   "schema": {
     "version": "1.0",
-    "description": "Heuristic mapping of A2WF v1.1 declarations to EU-relevant regulatory anchors. Used by the EU Governance Compliance Checker tool to produce educational guidance. NOT legal advice. The mapping reflects publicly-known regulation text as of 2026-05; a real legal review is the publisher's own responsibility.",
+    "description": "Heuristic mapping of A2WF v1.1 declarations to EU-relevant regulatory anchors. Used by the A2WF EU Governance Readiness Checker tool to produce educational guidance. NOT legal advice. The mapping reflects publicly-known regulation text as of 2026-05; a real legal review is the publisher's own responsibility.",
     "disclaimer": "This file describes WHERE in a published A2WF document a publisher's declarations align with which EU regulatory concepts. It does NOT certify compliance, does NOT cover every clause, and does NOT replace legal counsel. Operators must consult qualified legal advisors for binding statements."
   },
   "eu_ai_act_anchors": [
@@ -10,10 +10,9 @@
       "title": "Article 5 - Prohibited AI Practices",
       "scope": "All deployers and providers in the EU",
       "a2wf_signals": [
-        "permissions[].effect == 'regulated' with allowed=true and oversight.level == 'autonomous'",
-        "permissions[].action containing biometric-* or social-scoring-* with allowed=true"
+        "permissions[].action containing patterns associated with Article 5 categories: remote biometric identification, biometric categorisation by sensitive traits, emotion recognition in workplace or education, social scoring, subliminal techniques, exploitation of vulnerabilities, untargeted facial-image scraping, predictive policing of individuals"
       ],
-      "guidance": "If any regulated-effect action is allowed with autonomous oversight, the publisher should review whether the action falls under Article 5 prohibited practices.",
+      "guidance": "If a permission action name resembles one of the Article 5 categories, the publisher should review whether the practice is actually performed and whether it falls under the prohibitions or one of the narrow exemptions. A2WF declarations alone cannot determine Article 5 applicability; legal review is required.",
       "severity_when_triggered": "high"
     },
     {
@@ -139,10 +138,10 @@
       "metadata_freshness": 5
     },
     "bands": [
-      { "min": 0,   "max": 29,  "label": "Not assessed / degraded",          "colour": "fail" },
-      { "min": 30,  "max": 59,  "label": "Foundations",                       "colour": "warn" },
-      { "min": 60,  "max": 79,  "label": "Operational",                       "colour": "warn" },
-      { "min": 80,  "max": 100, "label": "Selected A2WF EU profile signals present", "colour": "pass" }
+      { "min": 0,   "max": 29,  "label": "Not assessed / degraded",                              "colour": "fail" },
+      { "min": 30,  "max": 59,  "label": "Foundations",                                           "colour": "warn" },
+      { "min": 60,  "max": 79,  "label": "Operational",                                           "colour": "warn" },
+      { "min": 80,  "max": 100, "label": "High declaration coverage - legal review still required", "colour": "pass" }
     ]
   }
 }
