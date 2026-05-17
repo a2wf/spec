@@ -1,0 +1,186 @@
+{
+  "schema": {
+    "version": "1.0",
+    "description": "A2WF v1.1 wizard presets. Each preset is a starting point, not a recommended compliance configuration. Operators are responsible for adapting the result to their actual site policy and legal context."
+  },
+  "presets": [
+    {
+      "id": "brochure-site",
+      "label": "Brochure or content site",
+      "description": "Small public-facing site, mostly read-only content. Examples: small business homepage, restaurant, local services.",
+      "starting_level": "basic",
+      "warnings": [],
+      "template": {
+        "specVersion": "1.1",
+        "identity": {
+          "legalName": "",
+          "contactEmail": ""
+        },
+        "conformance": { "level": "basic" },
+        "permissions": [
+          { "action": "view", "schemaOrgType": "ViewAction", "effect": "read-only", "allowed": true },
+          { "action": "search", "schemaOrgType": "SearchAction", "effect": "read-only", "allowed": true },
+          { "action": "comment", "schemaOrgType": "CommentAction", "effect": "state-changing", "allowed": false }
+        ],
+        "metadata": { "lastUpdated": "", "language": "en" }
+      }
+    },
+    {
+      "id": "ecommerce",
+      "label": "E-commerce shop",
+      "description": "Online shop with purchase, registration, and possibly subscriptions. Standard level recommended.",
+      "starting_level": "standard",
+      "warnings": [
+        "If you process customer personal data, review your privacy notice and consider enabling the Data Handling module.",
+        "Default oversight for purchases is set to 'confirmation' to reduce risk of unattended automated transactions."
+      ],
+      "template": {
+        "specVersion": "1.1",
+        "identity": {
+          "legalName": "",
+          "contactEmail": ""
+        },
+        "conformance": { "level": "standard" },
+        "permissions": [
+          { "action": "view", "schemaOrgType": "ViewAction", "effect": "read-only", "allowed": true },
+          { "action": "search", "schemaOrgType": "SearchAction", "effect": "read-only", "allowed": true, "rateLimit": "search-default" },
+          { "action": "register", "schemaOrgType": "RegisterAction", "effect": "state-changing", "allowed": true },
+          { "action": "purchase", "schemaOrgType": "BuyAction", "effect": "commercial", "allowed": true, "rateLimit": "checkout-default" },
+          { "action": "subscribe", "schemaOrgType": "SubscribeAction", "effect": "commercial", "allowed": true }
+        ],
+        "oversight": {
+          "oversightDefaults": {
+            "read-only":      { "level": "autonomous" },
+            "state-changing": { "level": "notification", "channel": "in-band", "method": "ui-prompt" },
+            "commercial":     { "level": "confirmation", "channel": "in-band", "method": "ui-prompt", "timeout": "PT3M", "onTimeout": "abort" },
+            "regulated":      { "level": "handover", "channel": "out-of-band", "method": "email" }
+          },
+          "fallback": { "level": "handover", "channel": "out-of-band", "method": "email" }
+        },
+        "rateLimits": {
+          "default": { "perAgent": "60/min", "perOrigin": "600/min" },
+          "search-default": { "perAgent": "120/min" },
+          "checkout-default": { "perAgent": "5/min" }
+        },
+        "discovery": { "cache": { "maxAge": "PT1H" } },
+        "metadata": { "lastUpdated": "", "language": "en" }
+      }
+    },
+    {
+      "id": "saas",
+      "label": "SaaS platform",
+      "description": "Software-as-a-service with accounts, subscriptions, and user-generated data.",
+      "starting_level": "standard",
+      "warnings": [
+        "Review whether the Data Handling module applies to your customer data.",
+        "Account-delete and data-export actions are pre-configured to require handover oversight."
+      ],
+      "template": {
+        "specVersion": "1.1",
+        "identity": { "legalName": "", "contactEmail": "" },
+        "conformance": { "level": "standard" },
+        "permissions": [
+          { "action": "view", "schemaOrgType": "ViewAction", "effect": "read-only", "allowed": true },
+          { "action": "register", "schemaOrgType": "RegisterAction", "effect": "state-changing", "allowed": true },
+          { "action": "subscribe", "schemaOrgType": "SubscribeAction", "effect": "commercial", "allowed": true },
+          { "action": "data-export", "schemaOrgType": "DownloadAction", "effect": "regulated", "allowed": true },
+          { "action": "account-delete", "schemaOrgType": "DeleteAction", "effect": "regulated", "allowed": true }
+        ],
+        "oversight": {
+          "oversightDefaults": {
+            "read-only":      { "level": "autonomous" },
+            "state-changing": { "level": "notification", "channel": "in-band", "method": "ui-prompt" },
+            "commercial":     { "level": "confirmation", "channel": "in-band", "method": "ui-prompt", "timeout": "PT3M" },
+            "regulated":      { "level": "handover", "channel": "out-of-band", "method": "email" }
+          },
+          "fallback": { "level": "handover", "channel": "out-of-band", "method": "email" }
+        },
+        "discovery": { "cache": { "maxAge": "PT1H" } },
+        "metadata": { "lastUpdated": "", "language": "en" }
+      }
+    },
+    {
+      "id": "booking",
+      "label": "Booking or reservation site",
+      "description": "Hotel, restaurant, clinic appointment booking, or other reservation flows.",
+      "starting_level": "standard",
+      "warnings": [
+        "Default oversight for booking is set to 'confirmation' so an agent cannot reserve unattended.",
+        "Cancellations are state-changing and inherit the oversight default."
+      ],
+      "template": {
+        "specVersion": "1.1",
+        "identity": { "legalName": "", "contactEmail": "" },
+        "conformance": { "level": "standard" },
+        "permissions": [
+          { "action": "view", "schemaOrgType": "ViewAction", "effect": "read-only", "allowed": true },
+          { "action": "search", "schemaOrgType": "SearchAction", "effect": "read-only", "allowed": true },
+          { "action": "book", "schemaOrgType": "ReserveAction", "effect": "commercial", "allowed": true },
+          { "action": "cancel", "schemaOrgType": "CancelAction", "effect": "state-changing", "allowed": true }
+        ],
+        "oversight": {
+          "oversightDefaults": {
+            "read-only":      { "level": "autonomous" },
+            "state-changing": { "level": "notification", "channel": "in-band", "method": "ui-prompt" },
+            "commercial":     { "level": "confirmation", "channel": "in-band", "method": "ui-prompt" },
+            "regulated":      { "level": "handover", "channel": "out-of-band", "method": "email" }
+          },
+          "fallback": { "level": "handover", "channel": "out-of-band", "method": "email" }
+        },
+        "discovery": { "cache": { "maxAge": "PT1H" } },
+        "metadata": { "lastUpdated": "", "language": "en" }
+      }
+    },
+    {
+      "id": "regulated-sector",
+      "label": "Regulated sector (health, finance, legal)",
+      "description": "Site that operates in a regulated sector. Defaults are conservative. Review with your legal team.",
+      "starting_level": "standard",
+      "warnings": [
+        "This template is a starting point only. It does not constitute legal advice or sector-specific compliance.",
+        "Regulated actions default to handover oversight. Review every entry against your sectoral rules.",
+        "Do not claim alignment with the EU GPAI Code of Practice unless your organisation is itself a GPAI provider."
+      ],
+      "template": {
+        "specVersion": "1.1",
+        "identity": { "legalName": "", "contactEmail": "" },
+        "conformance": { "level": "standard" },
+        "permissions": [
+          { "action": "view", "schemaOrgType": "ViewAction", "effect": "read-only", "allowed": true,
+            "notes": "Public information pages only." },
+          { "action": "search", "schemaOrgType": "SearchAction", "effect": "read-only", "allowed": true },
+          { "action": "book", "schemaOrgType": "ReserveAction", "effect": "commercial", "allowed": true },
+          { "action": "consent", "schemaOrgType": "AgreeAction", "effect": "regulated", "allowed": true,
+            "notes": "Consent must be given by the data subject; agents must hand over." }
+        ],
+        "oversight": {
+          "oversightDefaults": {
+            "read-only":      { "level": "autonomous" },
+            "state-changing": { "level": "notification", "channel": "in-band", "method": "ui-prompt" },
+            "commercial":     { "level": "confirmation", "channel": "in-band", "method": "ui-prompt" },
+            "regulated":      { "level": "handover", "channel": "out-of-band", "method": "two-factor" }
+          },
+          "fallback": { "level": "handover", "channel": "out-of-band", "method": "email" }
+        },
+        "discovery": { "cache": { "maxAge": "PT30M", "mustRevalidate": true } },
+        "metadata": { "lastUpdated": "", "language": "en" }
+      }
+    },
+    {
+      "id": "blank",
+      "label": "Blank document",
+      "description": "Start from scratch. Useful if you know the spec and prefer to fill in everything manually.",
+      "starting_level": "basic",
+      "warnings": [],
+      "template": {
+        "specVersion": "1.1",
+        "identity": { "legalName": "", "contactEmail": "" },
+        "conformance": { "level": "basic" },
+        "permissions": [
+          { "action": "view", "schemaOrgType": "ViewAction", "effect": "read-only", "allowed": true }
+        ],
+        "metadata": { "lastUpdated": "", "language": "en" }
+      }
+    }
+  ]
+}
