@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>A2WF EU Governance Readiness Checker</title>
+<meta name="description" content="Reference tool that fetches an A2WF policy from a live URL and produces an educational EU governance readiness report with anchor mapping to AI Act and GDPR.">
+<link rel="stylesheet" href="../vendor/a2wf-tools.css">
+<style>
+  .brand-bar { background: var(--accent); color: white; padding: 0.75rem 1rem; text-align: center; font-weight: 600; display: none; }
+  .brand-bar.visible { display: block; }
+  .score-card { text-align: center; padding: 1.5rem 1rem; }
+  .score-card .number { font-size: 4rem; font-weight: 700; line-height: 1; margin: 0; }
+  .score-card .label { font-size: 1.125rem; font-weight: 600; margin: 0.5rem 0 0; }
+  .score-card .band-pass { color: var(--pass); }
+  .score-card .band-warn { color: var(--warn); }
+  .score-card .band-fail { color: var(--fail); }
+  .anchor-card { border: 1px solid var(--border); border-radius: 0.5rem; padding: 1rem; margin-bottom: 0.75rem; background: var(--bg-alt); }
+  .anchor-card h4 { margin: 0 0 0.5rem; font-size: 1rem; }
+  .anchor-card .severity { float: right; margin-left: 0.5rem; }
+  .anchor-card .guidance { font-size: 0.875rem; color: var(--fg-muted); margin: 0.5rem 0 0; }
+  .recommendation { background: var(--bg-code); border-left: 3px solid var(--accent); padding: 0.75rem 1rem; margin: 0.5rem 0; font-size: 0.875rem; }
+  .recommendation strong { color: var(--accent); }
+  @media print {
+    .no-print, header.app-header, footer.app-footer, .draft-banner { display: none !important; }
+    body { background: white; }
+    .card, .anchor-card { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div id="brand-bar" class="brand-bar"></div>
+
+<div class="draft-banner no-print">
+  This checker targets the A2WF v1.1.0-draft.2 specification (Editor's Draft). Results are educational, not legal advice.
+</div>
+
+<header class="app-header no-print">
+  <div class="inner">
+    <h1>A2WF EU Governance Readiness Checker</h1>
+    <nav>
+      <a href="../index.html">Tools</a>
+      <a href="../wizard/index.html">Wizard</a>
+      <a href="../validator-web/index.html">Validator</a>
+    </nav>
+  </div>
+</header>
+
+<main x-data="checkerApp()" x-init="init()">
+
+  <p class="muted" style="font-size: 0.875rem;">
+    Enter the URL of a site. The checker fetches the site's published A2WF policy, validates it against the v1.1
+    specification, and produces a technical report mapping the declarations to EU AI Act and GDPR anchors.
+    This is a <strong>readiness check on declarations</strong>, not a compliance audit or legal certificate.
+  </p>
+
+  <div class="card">
+    <div class="field">
+      <label for="check-url">Site URL</label>
+      <input id="check-url" type="url" x-model="targetUrl" placeholder="https://example.eu" @keydown.enter.prevent="runCheck()">
+    </div>
+    <div class="button-row" style="margin: 0;">
+      <small class="muted">
+        The checker looks for <code>/.well-known/a2wf/siteai.json</code> and falls back to <code>/siteai.json</code> (v1.0 legacy).
+      </small>
+      <button @click="runCheck()" :disabled="!targetUrl || running">
+        <span x-show="!running">Run check</span>
+        <span x-show="running">Checking...</span>
+      </button>
+    </div>
+    <p x-show="error" class="disclaimer" style="margin-top: 1rem;" x-text="error"></p>
+  </div>
+
+  <section x-show="result">
+
+    <!-- Score Card -->
+    <div class="card score-card">
+      <p class="number" :class="'band-' + (result?.band?.colour || 'warn')" x-text="result?.score ?? '-'"></p>
+      <p class="label" :class="'band-' + (result?.band?.colour || 'warn')" x-text="result?.band?.label || ''"></p>
+      <p class="muted" style="font-size: 0.8125rem; margin: 0.5rem 0 0;">
+        A2WF Declaration Coverage Score by Reference Tool. NOT an A2WF conformance metric, NOT a compliance score, NOT legal advice. Capped at 59 when the document fails validation.
+      </p>
+    </div>
+
+    <!-- Site summary -->
+    <h2>Site checked</h2>
+    <table>
+      <tbody>
+        <tr><th>URL</th><td x-text="result?.targetUrl"></td></tr>
+        <tr><th>Discovery path</th><td><code x-text="result?.discoveryPath || 'not found'"></code></td></tr>
+        <tr><th>Spec version</th><td x-text="result?.specVersion || '-'"></td></tr>
+        <tr><th>Conformance level</th><td x-text="result?.conformanceLevel || '-'"></td></tr>
+        <tr><th>Profile claimed</th><td x-text="result?.profileClaimed ? 'EU Governance Starter Profile' : 'none'"></td></tr>
+        <tr><th>Modules declared</th><td x-text="(result?.modulesDeclared || []).join(', ') || 'none'"></td></tr>
+        <tr><th>Last updated</th><td x-text="result?.lastUpdated || '-'"></td></tr>
+      </tbody>
+    </table>
+
+    <!-- Validation Findings -->
+    <h2>Validation findings</h2>
+    <div class="summary-row">
+      <template x-if="(result?.validation?.summary?.warn || 0) > 0"><span class="pill warn" x-text="'warn ' + result.validation.summary.warn"></span></template>
+      <template x-if="(result?.validation?.summary?.fail || 0) > 0"><span class="pill fail" x-text="'fail ' + result.validation.summary.fail"></span></template>
+      <template x-if="result?.validation?.valid && (result?.validation?.summary?.warn || 0) === 0"><span class="pill pass">no issues found</span></template>
+      <span class="pill" :class="result?.validation?.valid ? 'pass' : 'fail'" x-text="result?.validation?.valid ? 'SYNTAX PASS' : 'SYNTAX FAIL'"></span>
+    </div>
+    <table x-show="(result?.validation?.findings || []).length">
+      <thead><tr><th>Severity</th><th>Path</th><th>Section</th><th>Message</th></tr></thead>
+      <tbody>
+        <template x-for="(f, i) in result?.validation?.findings || []" :key="i">
+          <tr>
+            <td><span class="severity" :class="'severity-' + f.severity" x-text="f.severity"></span></td>
+            <td><code x-text="f.path"></code></td>
+            <td><code x-text="f.specSection"></code></td>
+            <td x-text="f.message"></td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
+
+    <!-- EU AI Act Anchors -->
+    <h2>EU AI Act anchors</h2>
+    <p class="muted">Heuristic mapping of the published document to a small set of EU AI Act articles. Each finding is typed as <strong>support</strong> (declaration backs a relevant practice), <strong>gap</strong> (declaration missing where it would help), or <strong>risk</strong> (declaration may signal a problem). Educational only; not legal advice.</p>
+    <template x-for="anchor in result?.aiActFindings || []" :key="anchor.id">
+      <div class="anchor-card">
+        <h4>
+          <span x-text="anchor.title"></span>
+          <span class="severity" :class="'severity-' + (anchor.status === 'risk' ? 'fail' : (anchor.status === 'gap' ? 'warn' : 'pass'))" x-text="anchor.status"></span>
+        </h4>
+        <p class="muted" style="font-size: 0.8125rem; margin: 0;">
+          <strong>Scope:</strong> <span x-text="anchor.scope"></span> &middot;
+          <strong>Applicability:</strong> <span x-text="anchor.applicability"></span>
+        </p>
+        <p style="font-size: 0.875rem; margin: 0.5rem 0;"><strong>Observation:</strong> <span x-text="anchor.observation"></span></p>
+        <p class="guidance"><strong>Guidance:</strong> <span x-text="anchor.guidance"></span></p>
+      </div>
+    </template>
+    <p x-show="!(result?.aiActFindings || []).length" class="muted">No EU AI Act anchors triggered for this document.</p>
+
+    <!-- GDPR Anchors -->
+    <h2>GDPR anchors</h2>
+    <p class="muted">Heuristic mapping to a small set of GDPR articles, typed as support / gap / risk. Educational only; not legal advice. Many GDPR articles (6/9/22/28/30/32/35/44ff) are NOT covered.</p>
+    <template x-for="anchor in result?.gdprFindings || []" :key="anchor.id">
+      <div class="anchor-card">
+        <h4>
+          <span x-text="anchor.title"></span>
+          <span class="severity" :class="'severity-' + (anchor.status === 'risk' ? 'fail' : (anchor.status === 'gap' ? 'warn' : 'pass'))" x-text="anchor.status"></span>
+        </h4>
+        <p class="muted" style="font-size: 0.8125rem; margin: 0;">
+          <strong>Scope:</strong> <span x-text="anchor.scope"></span> &middot;
+          <strong>Applicability:</strong> <span x-text="anchor.applicability"></span>
+        </p>
+        <p style="font-size: 0.875rem; margin: 0.5rem 0;"><strong>Observation:</strong> <span x-text="anchor.observation"></span></p>
+        <p class="guidance"><strong>Guidance:</strong> <span x-text="anchor.guidance"></span></p>
+      </div>
+    </template>
+    <p x-show="!(result?.gdprFindings || []).length" class="muted">No GDPR anchors triggered for this document.</p>
+
+    <!-- Recommendations -->
+    <h2>Recommendations</h2>
+    <template x-for="rec in result?.recommendations || []" :key="rec.id">
+      <div class="recommendation">
+        <strong x-text="rec.title"></strong>
+        <p style="margin: 0.5rem 0 0; font-size: 0.875rem;" x-text="rec.text"></p>
+        <pre x-show="rec.example" x-text="rec.example" style="margin-top: 0.5rem;"></pre>
+      </div>
+    </template>
+    <p x-show="!(result?.recommendations || []).length" class="muted">No specific recommendations. Re-run the check after any document update.</p>
+
+    <!-- Actions -->
+    <div class="button-row no-print">
+      <button class="secondary" @click="downloadReport()">Download JSON report</button>
+      <button class="secondary" @click="window.print()">Print / Save as PDF</button>
+    </div>
+
+    <!-- Disclaimer block (always visible on print) -->
+    <div class="disclaimer" style="margin-top: 2rem;">
+      <strong>Disclaimer.</strong> This report checks machine-readable A2WF declarations only. It does NOT assess actual
+      operations, does NOT establish legal applicability of any regulation, does NOT verify contractual duties, and does NOT
+      certify regulatory compliance. The A2WF Declaration Coverage Score is a vendor metric defined by this tool and is NOT
+      an A2WF conformance metric. The EU AI Act and GDPR anchor mappings are heuristic orientation, not legal subsumption.
+      Operators are responsible for their own legal review.
+    </div>
+    <div class="disclaimer" style="margin-top: 0.5rem;" x-show="branding.brand">
+      <strong>Vendor wrapper notice.</strong> This page is shown under the brand "<span x-text="branding.brand"></span>" via
+      URL parameters. The underlying tool is the neutral A2WF reference checker and is NOT endorsed by, certified by, or
+      operated by <span x-text="branding.brand"></span>. The vendor is responsible for any additional claims it makes
+      around this report.
+    </div>
+  </section>
+
+  <!-- Footer about content -->
+  <h2 style="margin-top: 3rem;" class="no-print">What this checker does</h2>
+  <ul class="no-print">
+    <li>Fetches the site's A2WF policy from <code>/.well-known/a2wf/siteai.json</code> with fallback to <code>/siteai.json</code>.</li>
+    <li>Validates against the A2WF v1.1 JSON Schema and the EU Governance Starter Profile.</li>
+    <li>Maps declarations to a small set of EU AI Act articles (5, 6, 13, 14, 26, 50) and GDPR articles (5, 13/14, 25, 33) as orientation. Many other articles are NOT covered.</li>
+    <li>Produces a vendor "A2WF Declaration Coverage Score" 0-100 with bands and recommendations.</li>
+    <li>Allows operator branding via URL parameters (<code>?brand=&amp;logo=</code>) for vendors wrapping this tool.</li>
+  </ul>
+
+  <h2 class="no-print">What this checker does NOT do</h2>
+  <ul class="no-print">
+    <li>It does NOT certify legal compliance with any regulation (EU AI Act, GDPR, sector-specific law).</li>
+    <li>It does NOT assess the operator's actual practices, processes, or technical controls.</li>
+    <li>It does NOT cover all relevant articles. EU AI Act Annex III sector gating, Articles 4/12/15/16/17/25/27/72/73 and GDPR Articles 6/9/22/28/30/32/35/44ff are NOT covered.</li>
+    <li>It does NOT crawl the site beyond the A2WF discovery path.</li>
+    <li>It does NOT store URLs or results anywhere; everything happens in your browser.</li>
+    <li>The Score is NOT an A2WF conformance metric and NOT a regulatory readiness number.</li>
+  </ul>
+
+  <h2 class="no-print">Privacy notes</h2>
+  <ul class="no-print">
+    <li>The checker has no backend and does not store results.</li>
+    <li>Your browser sends a GET request to the target site. The target site sees your IP address, User-Agent, timestamp, and the requested A2WF path.</li>
+    <li>If a logo is configured via <code>?logo=</code>, your browser fetches the image from the logo host, which sees the same request metadata. Only HTTPS logo URLs are honoured.</li>
+    <li>Standard HTTP access logs may be produced by the host serving this page.</li>
+  </ul>
+
+  <h2 class="no-print">CORS note</h2>
+  <p class="no-print">
+    The browser fetches the policy directly from the target site. Many real sites do not yet return
+    <code>Access-Control-Allow-Origin</code> on their A2WF endpoint, in which case the browser blocks the fetch with a CORS error.
+    <strong>This does not mean the A2WF document is absent</strong> - it means cross-origin browser access is blocked.
+    Site operators who want third-party tools to reach their A2WF endpoint should add
+    <code>Access-Control-Allow-Origin: *</code> to the response for <code>/.well-known/a2wf/siteai.json</code>.
+    Alternatively, run this checker from the same origin as the target site (e.g. by hosting the tool yourself).
+  </p>
+
+</main>
+
+<footer class="app-footer no-print">
+  <p>
+    EU Governance Compliance Checker, MIT-licensed reference tool. Distributed with the
+    <a href="https://github.com/a2wf/spec" target="_blank" rel="noopener">A2WF specification</a>.
+  </p>
+</footer>
+
+<script src="../vendor/ajv-browser-bundle.js"></script>
+<script>
+  window.deferLoadingAlpine = function (callback) {
+    window.__a2wfStartAlpine = callback;
+    window.__a2wfTryStart();
+  };
+  window.__a2wfTryStart = function () {
+    if (window.__a2wfStartAlpine && window.checkerApp) {
+      window.__a2wfStartAlpine();
+      window.__a2wfStartAlpine = null;
+    }
+  };
+</script>
+<script type="module" src="./app.js"></script>
+<script src="../vendor/alpine.min.js" defer></script>
+
+</body>
+</html>

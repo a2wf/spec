@@ -1,0 +1,148 @@
+{
+  "schema": {
+    "version": "1.0",
+    "description": "Heuristic mapping of A2WF v1.1 declarations to EU-relevant regulatory anchors. Used by the EU Governance Compliance Checker tool to produce educational guidance. NOT legal advice. The mapping reflects publicly-known regulation text as of 2026-05; a real legal review is the publisher's own responsibility.",
+    "disclaimer": "This file describes WHERE in a published A2WF document a publisher's declarations align with which EU regulatory concepts. It does NOT certify compliance, does NOT cover every clause, and does NOT replace legal counsel. Operators must consult qualified legal advisors for binding statements."
+  },
+  "eu_ai_act_anchors": [
+    {
+      "id": "ai-act-art-5",
+      "title": "Article 5 - Prohibited AI Practices",
+      "scope": "All deployers and providers in the EU",
+      "a2wf_signals": [
+        "permissions[].effect == 'regulated' with allowed=true and oversight.level == 'autonomous'",
+        "permissions[].action containing biometric-* or social-scoring-* with allowed=true"
+      ],
+      "guidance": "If any regulated-effect action is allowed with autonomous oversight, the publisher should review whether the action falls under Article 5 prohibited practices.",
+      "severity_when_triggered": "high"
+    },
+    {
+      "id": "ai-act-art-6-high-risk",
+      "title": "Article 6 - High-Risk AI Systems",
+      "scope": "Providers and deployers of high-risk AI systems in the EU",
+      "a2wf_signals": [
+        "identity.category in ['healthcare', 'finance', 'employment', 'education', 'law-enforcement', 'critical-infrastructure']",
+        "permissions[].effect == 'regulated' with allowed=true"
+      ],
+      "guidance": "Sites in regulated sectors should declare auditTrail and dataHandling modules. Regulated actions should default to handover oversight unless the publisher can document a lawful basis for autonomous handling.",
+      "severity_when_triggered": "medium"
+    },
+    {
+      "id": "ai-act-art-13-transparency",
+      "title": "Article 13 - Transparency and Provision of Information to Deployers",
+      "scope": "Providers of high-risk AI systems",
+      "a2wf_signals": [
+        "agentIdentification.acceptedProtocols declared",
+        "discoverabilityHints declared"
+      ],
+      "guidance": "A2WF's agentIdentification and discoverabilityHints modules expose machine-readable transparency information. Helpful but not sufficient for Article 13 documentation requirements.",
+      "severity_when_triggered": "low"
+    },
+    {
+      "id": "ai-act-art-14-human-oversight",
+      "title": "Article 14 - Human Oversight",
+      "scope": "Providers of high-risk AI systems; deployers must respect oversight design",
+      "a2wf_signals": [
+        "oversight.oversightDefaults present",
+        "oversight.fallback has level handover or confirmation",
+        "permissions[].effect in (state-changing, commercial, regulated) AND resolves to oversight.level autonomous"
+      ],
+      "guidance": "A2WF's oversight model is a publisher-side declaration of the human-oversight mechanisms available for agent actions. The EU AI Act Article 14 requires EFFECTIVE oversight, not just declared oversight. Publishers should verify that the declared mechanisms actually function.",
+      "severity_when_triggered": "high"
+    },
+    {
+      "id": "ai-act-art-26-deployer-obligations",
+      "title": "Article 26 - Obligations of Deployers of High-Risk AI Systems",
+      "scope": "Deployers of high-risk AI systems",
+      "a2wf_signals": [
+        "auditTrail.enabled == true",
+        "incidentReporting declared"
+      ],
+      "guidance": "A2WF's auditTrail-light and incidentReporting modules give deployers a published surface for the record-keeping and incident-handling that Article 26 requires. The modules are declarations; actual record-keeping must happen in the operator's infrastructure.",
+      "severity_when_triggered": "medium"
+    },
+    {
+      "id": "ai-act-art-50-transparency-to-natural-persons",
+      "title": "Article 50 - Transparency Obligations for Providers and Deployers",
+      "scope": "Providers and deployers of certain AI systems",
+      "a2wf_signals": [
+        "agentIdentification.acceptedProtocols declared with stable protocols",
+        "identity.contactEmail present"
+      ],
+      "guidance": "Sites that interact with natural persons via AI agents may fall under Article 50 transparency. A2WF's agentIdentification module supports the machine-readable side of this transparency.",
+      "severity_when_triggered": "medium"
+    }
+  ],
+  "gdpr_anchors": [
+    {
+      "id": "gdpr-art-5-principles",
+      "title": "Article 5 - Principles relating to processing of personal data",
+      "scope": "Any controller processing EU residents' personal data",
+      "a2wf_signals": [
+        "dataHandling.processing[].purposes declared",
+        "dataHandling.processing[].retention declared",
+        "dataHandling.privacy.minimise == true"
+      ],
+      "guidance": "Sites processing personal data should declare a dataHandling module with explicit purposes, retention periods, and minimisation flag. A2WF declarations do not satisfy Article 5 by themselves; the controller must actually follow the declared principles.",
+      "severity_when_triggered": "high"
+    },
+    {
+      "id": "gdpr-art-13-14-information",
+      "title": "Articles 13-14 - Information to be provided to data subjects",
+      "scope": "Any controller collecting personal data",
+      "a2wf_signals": [
+        "dataHandling.controller.name present",
+        "dataHandling.controller.contactEmail present",
+        "dataHandling.processing[].lawfulBasis declared"
+      ],
+      "guidance": "A2WF's dataHandling module exposes the controller identity and lawful basis as machine-readable declarations. This complements - but does not replace - the human-readable privacy notice required by Articles 13-14.",
+      "severity_when_triggered": "medium"
+    },
+    {
+      "id": "gdpr-art-25-data-protection-by-design",
+      "title": "Article 25 - Data protection by design and by default",
+      "scope": "All controllers",
+      "a2wf_signals": [
+        "dataHandling.privacy.minimise == true",
+        "auditTrail.privacy.minimise == true",
+        "permissions[].effect == 'regulated' with handover oversight"
+      ],
+      "guidance": "Declaring minimisation and conservative oversight is consistent with a data-protection-by-design posture. The declaration is a signal, not proof.",
+      "severity_when_triggered": "low"
+    },
+    {
+      "id": "gdpr-art-33-breach-notification",
+      "title": "Article 33 - Notification of a personal data breach",
+      "scope": "Controllers in case of a personal data breach",
+      "a2wf_signals": [
+        "incidentReporting.contactEmail present",
+        "incidentReporting.responseTime declared"
+      ],
+      "guidance": "A2WF's incidentReporting module exposes a machine-readable contact for incident reports. The declared responseTime is the publisher's own intended acknowledgement timeframe and is explicitly NOT a statutory breach-notification deadline (compare GDPR Article 33's 72-hour rule).",
+      "severity_when_triggered": "medium"
+    }
+  ],
+  "readiness_score": {
+    "description": "The A2WF Declaration Coverage Score is a VENDOR METRIC produced by this reference checker. It measures how much of an opinionated baseline of A2WF declarations is present in a document. It is NOT an A2WF conformance metric, NOT a regulatory compliance score, NOT a legal readiness number. The score is capped at 59 on validation failure and at 29 when the validator runs in degraded mode without the JSON Schema bundle. Use it for tracking declaration coverage over time, not for legal claims.",
+    "max": 100,
+    "weights": {
+      "core_validity": 30,
+      "standard_level": 10,
+      "eu_governance_profile_claim": 10,
+      "data_handling_module": 10,
+      "audit_trail_module": 5,
+      "incident_reporting_module": 5,
+      "agent_identification_module": 5,
+      "discoverability_hints_module": 5,
+      "jurisdictions_module": 5,
+      "oversight_handover_for_regulated": 10,
+      "metadata_freshness": 5
+    },
+    "bands": [
+      { "min": 0,   "max": 29,  "label": "Not assessed / degraded",          "colour": "fail" },
+      { "min": 30,  "max": 59,  "label": "Foundations",                       "colour": "warn" },
+      { "min": 60,  "max": 79,  "label": "Operational",                       "colour": "warn" },
+      { "min": 80,  "max": 100, "label": "Selected A2WF EU profile signals present", "colour": "pass" }
+    ]
+  }
+}
