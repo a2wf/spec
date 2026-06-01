@@ -79,15 +79,20 @@ Speaker note: Credibility slide. We are not arriving with a sketch on a napkin -
 
 ---
 
-## Slide 5 - Your input required
+## Slide 5 - Reference tools
 
-Open prompts for round-robin. Pick whichever fits your perspective.
+Four open-source tools to make A2WF immediately usable. All MIT, all static, no telemetry.
 
-1. Where do you see A2WF helping or failing in your sector?
-2. Which existing standard or group should we connect with that we have missed?
-3. What would make you adopt or recommend siteai.json on a real site?
-4. What is the single biggest risk you see with this approach?
-5. Which area matters most to you personally - governance, audit, identity, privacy, discovery?
+| Tool | What it does |
+|---|---|
+| Wizard | Click-through generator: a site operator answers simple questions and gets a valid siteai.json file to download. |
+| Validator | Drag-and-drop checker: load any siteai.json and see pass, warn, or fail findings with references to the spec. |
+| EU Governance Readiness Checker | Fetches a live site's A2WF policy and maps it to EU AI Act and GDPR anchors. Produces a coverage view, not a compliance certificate. |
+| Logger snippets | Server-side code samples (nginx, Apache, Cloudflare, Express, WordPress) that record agent fetches with privacy-preserving defaults. |
+
+Live at https://a2wf.github.io/spec/tools/. Third parties may wrap them with their own branding, with the disclaimer "not A2WF-endorsed".
+
+Speaker note: Deliberate lower-the-bar move. A site operator should not need to read the spec to get a valid file. Tools also de-risk the spec.
 
 ---
 

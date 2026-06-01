@@ -125,19 +125,24 @@
   </aside>
 </section>
 
-<!-- Slide 5 - Your input -->
+<!-- Slide 5 - Reference tools -->
 <section>
-  <h2>Your input - what should we hear from you?</h2>
-  <p style="font-size: 0.55em; margin-bottom: 0.4em;">Open prompts for round-robin. Pick whichever fits your perspective.</p>
-  <ol>
-    <li>Where do you see A2WF helping or failing in your sector?</li>
-    <li>Which existing standard or group should we connect with that we have missed?</li>
-    <li>What would make you adopt or recommend siteai.json on a real site?</li>
-    <li>What is the single biggest risk you see with this approach?</li>
-    <li>Which open question above matters most to you personally?</li>
-  </ol>
+  <h2>Reference tools</h2>
+  <p style="font-size: 0.55em; margin-bottom: 0.4em;">Four open-source tools to make A2WF immediately usable. All MIT, all static, no telemetry.</p>
+  <table>
+    <thead>
+      <tr><th>Tool</th><th>What it does</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Wizard</td><td>Click-through generator: a site operator answers simple questions and gets a valid siteai.json file to download.</td></tr>
+      <tr><td>Validator</td><td>Drag-and-drop checker: load any siteai.json and see pass, warn, or fail findings with references to the spec.</td></tr>
+      <tr><td>EU Governance Readiness Checker</td><td>Fetches a live site's A2WF policy and maps it to EU AI Act and GDPR anchors. Produces a coverage view, not a compliance certificate.</td></tr>
+      <tr><td>Logger snippets</td><td>Server-side code samples (nginx, Apache, Cloudflare, Express, WordPress) that record agent fetches with privacy-preserving defaults.</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size: 0.55em; margin-top: 0.4em;">Live at <a href="https://a2wf.github.io/spec/tools/" target="_blank">a2wf.github.io/spec/tools/</a>. Third parties may wrap them with their own branding, with the disclaimer "not A2WF-endorsed".</p>
   <aside class="notes">
-    Frame as "directional input over six weeks", not "resolution in one call". ODRL and trigger language especially need follow-up discussions; do not try to settle them on stage. The cache question is already partly decided in the spec; this is a check that the decision is acceptable.
+    <p>The tools are a deliberate lower-the-bar move: a site operator should not need to read the spec to get a valid file. They also de-risk the spec: if the tools cannot produce a valid file, the spec is too hard. Vendor wrapping is allowed because reseller adoption is part of the plan.</p>
   </aside>
 </section>
 
