@@ -13,8 +13,10 @@
 <style>
   .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
   .reveal h1, .reveal h2, .reveal h3, .reveal h4 { font-family: inherit; font-weight: 600; text-transform: none; letter-spacing: normal; }
-  .reveal h1 { font-size: 1.6em; }
-  .reveal h2 { font-size: 1.25em; margin-bottom: 0.5em; }
+  .reveal h1 { font-size: 1.9em; text-align: left; margin: 0 0 0.4em 0; }
+  .reveal h2 { font-size: 1.7em; text-align: left; margin: 0 0 0.6em 0; padding-bottom: 0.25em; border-bottom: 2px solid #0d7377; }
+  .reveal .slides section { text-align: left; }
+  .reveal .slides section.title-slide { text-align: left; }
   .reveal h3 { font-size: 1.0em; margin-top: 0.8em; margin-bottom: 0.3em; }
   .reveal p, .reveal li, .reveal td, .reveal th { font-size: 0.55em; line-height: 1.45; }
   .reveal ul, .reveal ol { margin: 0.3em 0; padding-left: 1.5em; }
@@ -63,246 +65,117 @@
   </aside>
 </section>
 
-<!-- Slide 2 - Why v1.1? -->
+<!-- Slide 2 - Why I started A2WF -->
 <section>
-  <h2>Why v1.1?</h2>
-  <p><em>v1.0 was a one-page declaration. v1.1 makes it operational.</em></p>
+  <h2>Why I started A2WF</h2>
+  <p><em>From a practitioner's view, not a standards exercise.</em></p>
 
-  <h3 style="margin-top: 1em;">What v1.0 could not express</h3>
   <ul>
-    <li>Nuanced human oversight (autonomous / confirmation / notification / handover)</li>
-    <li>Machine-readable jurisdictional declarations (applicable laws)</li>
-    <li>Agent identification protocols (DID, VC, HTTP Message Signatures, OAuth)</li>
-    <li>Data-handling transparency (DPV alignment)</li>
-    <li>Incident-reporting contact and intended timeframe</li>
-    <li>Discovery hints (Schema.org Actions, sitemap, rate limits)</li>
-    <li>Audit-trail declarations</li>
-    <li>Security, Privacy, Internationalisation, and Accessibility Considerations (Sections 10/11)</li>
+    <li>AI agents already act on websites: filling forms, booking, ordering, checking out.</li>
+    <li>Operators have no machine-readable way to say what is allowed, what needs a human, who is liable.</li>
+    <li>robots.txt and AIPREF cover content use, not actions.</li>
+    <li>Regulation is coming (EU AI Act, EU Code of Practice, US NIST AI RMF and CAISI). Sites will need a clean answer to "what did your site permit?"</li>
+    <li>The pieces exist (Schema.org, ODRL, DPV, DID, VC). What was missing was the simple envelope.</li>
   </ul>
 
-  <h3>Liaison input that drove v1.1</h3>
-  <ul>
-    <li><strong>Paola Di Maio (AIKR CG):</strong> use ODRL, reuse Schema.org, link to agent-identity standards</li>
-    <li><strong>Ian Jacobs (W3C Staff):</strong> discovery via <code>/.well-known/</code>, not site root</li>
-  </ul>
+  <p style="margin-top: 0.6em;"><strong>That envelope is A2WF.</strong> One JSON file per site, at a fixed location, reusing existing standards.</p>
+
   <aside class="notes">
-    Concrete example to mention: v1.0 humanVerification=true vs v1.1 oversight.oversightDefaults.regulated.level=handover. The Paola/Ian quotes are real input from earlier rounds; reference them visibly. Security/Privacy/i18n/a11y are first-class sections in the spec; mention briefly.
+    Speak it plainly: I am an IT security practitioner. I kept seeing agents acting on customer sites with no rules. I looked for an existing standard, did not find one that fit the site-operator view, and started A2WF to fill that gap on top of what is already there.
   </aside>
 </section>
 
-<!-- Slide 3 - Three-layer architecture -->
+<!-- Slide 3 - What needs to happen for adoption -->
 <section>
-  <h2>Three-layer architecture</h2>
-  <div class="arch-diagram">
-+------------------------------------------------+
-|  Profiles    (e.g. EU Governance Starter)      |
-+------------------------------------------------+
-|  Modules     (7 optional, normative)           |
-+------------------------------------------------+
-|  Core        (identity, permissions, oversight,|
-|               discovery, conformance)          |
-+------------------------------------------------+
-  </div>
-
-  <p style="margin-top: 1em;">
-    <strong>Related precedents in W3C and adjacent ecosystems:</strong>
-    ODRL Core + Profiles, DID Core + Method Specs, WebAuthn Core + Extensions, WCAG Levels.
-    W3C specs commonly use related variability patterns; the W3C QA Framework recognises profiles, modules, and levels as legitimate techniques.
-  </p>
-
-  <h3>Why three layers</h3>
-  <ul>
-    <li>Core stays small enough that every operator can implement it</li>
-    <li>Modules are opt-in and bring domain depth where needed</li>
-    <li>Profiles bundle modules for specific markets without forcing global complexity</li>
-  </ul>
-  <aside class="notes">
-    Be ready for "why not just use ODRL directly?" - answer: ODRL is a strong abstract policy model; A2WF is a low-friction website declaration format. A normative ODRL profile of A2WF is a v1.2 candidate. Do not oversell WCAG as a "module" precedent - it is a Levels precedent only.
-  </aside>
-</section>
-
-<!-- Slide 4 - Standards re-use -->
-<section>
-  <h2>Standards re-use, not re-invention</h2>
+  <h2>What needs to happen for adoption</h2>
+  <p style="font-size: 0.55em; margin-bottom: 0.4em;">A2WF only works if four pieces move together.</p>
   <table>
-    <thead><tr><th>Standard</th><th>Used for</th><th>Status in A2WF v1.1</th></tr></thead>
+    <thead>
+      <tr><th>Pillar</th><th>What has to change</th><th>Who moves it</th></tr>
+    </thead>
     <tbody>
-      <tr><td>Schema.org Actions</td><td><code>permissions[].schemaOrgType</code></td><td>Conditional normative</td></tr>
-      <tr><td>W3C DID Core</td><td>Agent identity resolution</td><td>Conditional normative (agentIdentification)</td></tr>
-      <tr><td>W3C VC Data Model 2.0</td><td>Agent credentials</td><td>Conditional normative (agentIdentification)</td></tr>
-      <tr><td>HTTP Message Signatures (RFC 9421)</td><td>Request authentication</td><td>Conditional normative (agentIdentification, auditTrail)</td></tr>
-      <tr><td>OAuth 2.0 (RFC 6749)</td><td>Delegated authorisation</td><td>Conditional normative (agentIdentification)</td></tr>
-      <tr><td>W3C ODRL 2.2</td><td>Architectural precedent</td><td>Informative; companion profile is a v1.2 candidate</td></tr>
-      <tr><td>W3C DPV 2.x</td><td>Data-handling vocabulary</td><td>Conditional normative (dataHandling)</td></tr>
-      <tr><td>llmstxt.org</td><td>Discovery hint, not replaced</td><td>Informative compatibility note</td></tr>
-      <tr><td>AIP (IETF Internet-Draft)</td><td>Agent identity protocol</td><td>Experimental, optional</td></tr>
-      <tr><td>RFC 8615 (.well-known) / RFC 9309 (robots)</td><td>Discovery path</td><td>Normative</td></tr>
+      <tr><td>Agent identification</td><td>Agent frameworks identify themselves on requests instead of mimicking generic browsers.</td><td>OpenAI, Anthropic, Google, browser-automation vendors</td></tr>
+      <tr><td>Policy consumption</td><td>Agents fetch and respect siteai.json before acting; oversight levels honoured.</td><td>Same vendors, plus open-source agent libraries</td></tr>
+      <tr><td>Site publication</td><td>Critical mass of websites publishes siteai.json so agents have something to check.</td><td>CMS plugins (WordPress, Shopify), site operators, reseller partners</td></tr>
+      <tr><td>Agent detection</td><td>Better mechanisms to detect AI agents that ignore or disguise themselves, so non-compliant traffic can be flagged.</td><td>Browser-fingerprinting research, WAF / CDN vendors, security community</td></tr>
+      <tr><td>Regulatory anchor</td><td>EU AI Act and Code of Practice in the EU, NIST AI RMF and CAISI in the US, cite machine-readable governance as a recognised signal.</td><td>EU Commission, NIST, national DPAs, standards bodies</td></tr>
     </tbody>
   </table>
-
-  <blockquote>
-    A2WF v1.1 is a website declaration envelope. It reuses external vocabularies wherever stable, and adds only the minimum new shape it needs (permissions, oversight, conformance metadata).
-  </blockquote>
+  <p style="font-size: 0.55em; margin-top: 0.4em;">None of these is purely the CG's job. Our role is to make all four possible and credible.</p>
   <aside class="notes">
-    This slide directly addresses Paola's three tips. Be ready to defend: "no NEW agent identity protocol, no NEW data-handling vocabulary, no NEW action vocabulary". The thing A2WF adds is the envelope that glues these together at a single well-known URL.
+    <p>Honest answer to "is anyone going to actually use this?" Four moving parts, each with a different stakeholder group. The CG can ship the spec and reference tools; it cannot force vendor or regulator adoption. But credible spec, reference adopters, and visible liaisons make all four more likely.</p>
   </aside>
 </section>
 
-<!-- Slide 5 - Seven Modules -->
+<!-- Slide 4 - What has been done so far -->
 <section>
-  <h2>The seven Modules in v1.1</h2>
-  <table>
-    <thead><tr><th>Module</th><th>Purpose</th></tr></thead>
-    <tbody>
-      <tr><td><code>dataHandling</code></td><td>Purposes, retention, lawful basis, controller (DPV-aligned)</td></tr>
-      <tr><td><code>agentIdentification</code></td><td>Accepted identity protocols and credential types</td></tr>
-      <tr><td><code>auditTrail</code></td><td>Lightweight audit posture, retention, accessibility</td></tr>
-      <tr><td><code>incidentReporting</code></td><td>Contact + intended acknowledgement timeframe</td></tr>
-      <tr><td><code>discoverabilityHints</code></td><td>Sitemap, Schema.org Action endpoints, rate-limit hints</td></tr>
-      <tr><td><code>jurisdictions</code></td><td>Region, applicable laws (EU AI Act, GDPR, ...)</td></tr>
-      <tr><td><code>codeOfPracticeAlignment</code></td><td>Alignment with industry codes (not certification)</td></tr>
-    </tbody>
-  </table>
-  <p style="margin-top: 1em;">
-    Modules are independent. A document can claim zero, one, or all seven via <code>conformance.moduleClaims</code>.
-    The Core does not require any module.
-  </p>
-  <aside class="notes">
-    "The seven modules are not seven things you have to do; they are seven shapes of declarations you can make if they apply to you." Highlight dataHandling aligns with DPV - that is the Paola hook.
-  </aside>
-</section>
-
-<!-- Slide 6 - EU Governance Starter Profile -->
-<section>
-  <h2>EU Governance Starter Profile</h2>
-  <p>A neutral example profile, published alongside the spec.</p>
-  <p>URI: <code>https://a2wf.org/profiles/eu-governance-starter/v1</code></p>
-
-  <h3>Requires these six module claims, minimally populated:</h3>
-  <ul style="columns: 2; column-gap: 2em;">
-    <li><code>jurisdictions</code> (region: EU, applicableLaws)</li>
-    <li><code>dataHandling</code> (purposes + retention + lawful basis + controller)</li>
-    <li><code>agentIdentification</code> (>= 1 protocol)</li>
-    <li><code>auditTrail</code> (enabled + retention)</li>
-    <li><code>incidentReporting</code> (contactEmail + responseTime)</li>
-    <li><code>discoverabilityHints</code> (sitemap or actions)</li>
-  </ul>
-
-  <h3>What the profile is NOT</h3>
-  <p>
-    <span class="pill pill-fail">NOT</span> a certification &middot;
-    <span class="pill pill-fail">NOT</span> a compliance audit &middot;
-    <span class="pill pill-fail">NOT</span> a legal claim &middot;
-    <span class="pill pill-fail">NOT</span> endorsed by any EU institution
-  </p>
-  <p style="margin-top: 0.8em;">
-    Any vendor may build tools around this profile. The constraints are:
-    <strong>no W3C / A2WF endorsement claims</strong>;
-    <strong>no "certified compliant"</strong>;
-    operator keeps the raw JSON portable and can switch vendors at any time.
-  </p>
-  <aside class="notes">
-    Anticipate "is this a back door to a paid certification market?" Answer: profile claim is publisher-declared; vendor reports MUST disclaim. The reference tools enforce this through built-in disclaimers. Customer-portability via raw JSON is the anti-lock-in protection.
-  </aside>
-</section>
-
-<!-- Slide 7 - Reference tools live -->
-<section>
-  <h2>Reference tools, live</h2>
-  <p>Three browser tools plus a set of server snippets, all under MIT at <a href="https://a2wf.github.io/spec/tools/" target="_blank">a2wf.github.io/spec/tools/</a></p>
-  <table>
-    <thead><tr><th>Tool</th><th>What it does</th></tr></thead>
-    <tbody>
-      <tr><td><strong>Wizard</strong></td><td>Generate a v1.1 document. 6 branch presets, Simple + Expert, live validation, JSON download. Imports v1.0 and v1.1.</td></tr>
-      <tr><td><strong>Validator</strong></td><td>Drag-and-drop validator. PASS / WARN / FAIL findings with spec section references. Three reference examples.</td></tr>
-      <tr><td><strong>EU Governance Readiness Checker</strong></td><td>Fetch a live site's A2WF policy. Map declarations to EU AI Act + GDPR anchors. Produces a vendor "Declaration Coverage Score" (NOT a compliance score).</td></tr>
-      <tr><td><strong>Logger Snippets</strong></td><td>Server-side snippets (nginx, Apache, Cloudflare Workers, Express, WordPress). Privacy-preserving by default; opt-in forwarding.</td></tr>
-    </tbody>
-  </table>
-  <p style="margin-top: 1em; font-size: 0.55em;">
-    All tools are MIT, static, self-hosted, no telemetry. Shared validator core (<code>validator/v1_1/core.js</code>) ensures CLI and browser agree.
-    The tools include hooks so third parties can wrap them with their own branding via URL parameters; wrapped instances must disclaim "not A2WF-endorsed".
-  </p>
-  <aside class="notes">
-    If demo permits, switch to a browser tab with the Wizard ("regulated sector" preset) and the EU Readiness Checker (run against https://a2wf.org to show v1.0 detection + migration recommendations). CORS fallback: if a live fetch fails on stage, switch to the downloaded JSON files.
-  </aside>
-</section>
-
-<!-- Slide 8 - Conformance model -->
-<section>
-  <h2>Conformance model</h2>
-  <p><strong>A2WF v1.1 conformance is qualitative, not numeric.</strong></p>
-
+  <h2>What has been done so far</h2>
+  <p style="font-size: 0.55em; margin-bottom: 0.4em;">Outreach and groundwork before this first community call.</p>
   <ul>
-    <li>A document validates to <span class="pill pill-pass">PASS</span>, <span class="pill pill-warn">PASS+WARN</span>, or <span class="pill pill-fail">FAIL</span></li>
-    <li>There is <strong>no 0-100 conformance score</strong> in the specification</li>
-    <li>Vendor tools MAY publish their own scoring products - these are vendor metrics, NOT A2WF conformance signals</li>
-    <li>Validator findings carry severity, a section reference, and an explanatory message</li>
-    <li>Conformance levels: <code>basic</code> and <code>standard</code>; profile claims add a third axis</li>
+    <li><strong>EU institutions:</strong> contacted regarding A2WF and the EU AI Act / Code of Practice alignment.</li>
+    <li><strong>NIST CAISI (US):</strong> submitted a one-page barrier-to-adoption statement for the listening sessions on AI agent governance; A2WF is also informed by the NIST AI Risk Management Framework.</li>
+    <li><strong>W3C liaisons:</strong> Paola Di Maio (AIKR CG) and Ian Jacobs (W3C Staff) reviewed the structural direction; their input shaped v1.1.</li>
+    <li><strong>Spec work:</strong> v1.0 published at a2wf.org; v1.1.0-draft.2 prepared for this call.</li>
+    <li><strong>Reference tools:</strong> Wizard, Validator, EU Governance Readiness Checker, and server-side logger snippets - all live and MIT-licensed.</li>
+    <li><strong>Pilots:</strong> early proof-of-concept implementations on financial-sector websites.</li>
+    <li><strong>Community:</strong> A2WF Community Group founded at W3C (March 2026); 19 participants signed up before the first call.</li>
   </ul>
-
-  <blockquote>
-    This was a deliberate choice. Numeric scores invite false-equivalence claims ("we are at 85, that means compliant") that the framework cannot underwrite.
-  </blockquote>
   <aside class="notes">
-    Strong defensible position. Mention the reference checker's score is capped at 59 on validation failure - that is the discipline we ask other vendors to apply too.
+    <p>This is the credibility slide. We are not arriving with a sketch on a napkin. The CAISI submission and EU outreach show regulator-side engagement; the liaison input shows standards-side engagement; the tools and POCs show the work is real, not just paper.</p>
   </aside>
 </section>
 
-<!-- Slide 9 - Open questions -->
+<!-- Slide 5 - Reference tools -->
 <section>
-  <h2>Open questions for the CG</h2>
-  <p>Five questions we want directional CG input on. These are not requests for resolution in this call; they are framings for the next ~6 weeks of issue tracking. We will open them as labelled GitHub issues within 48 hours of this meeting.</p>
+  <h2>Reference tools</h2>
+  <p style="font-size: 0.55em; margin-bottom: 0.4em;">Four open-source tools to make A2WF immediately usable. All MIT, all static, no telemetry.</p>
+  <table>
+    <thead>
+      <tr><th>Tool</th><th>What it does</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Wizard</td><td>Click-through generator: a site operator answers simple questions and gets a valid siteai.json file to download.</td></tr>
+      <tr><td>Validator</td><td>Drag-and-drop checker: load any siteai.json and see pass, warn, or fail findings with references to the spec.</td></tr>
+      <tr><td>EU Governance Readiness Checker</td><td>Fetches a live site's A2WF policy and maps it to EU AI Act and GDPR anchors. Produces a coverage view, not a compliance certificate.</td></tr>
+      <tr><td>Logger snippets</td><td>Server-side code samples (nginx, Apache, Cloudflare, Express, WordPress) that record agent fetches with privacy-preserving defaults.</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size: 0.55em; margin-top: 0.4em;">Live at <a href="https://a2wf.github.io/spec/tools/" target="_blank">a2wf.github.io/spec/tools/</a>. Third parties may wrap them with their own branding, with the disclaimer "not A2WF-endorsed".</p>
+  <aside class="notes">
+    <p>The tools are a deliberate lower-the-bar move: a site operator should not need to read the spec to get a valid file. They also de-risk the spec: if the tools cannot produce a valid file, the spec is too hard. Vendor wrapping is allowed because reseller adoption is part of the plan.</p>
+  </aside>
+</section>
+
+<!-- Slide 5 - moved to appendix -->
+
+<!-- Slide 6 - How you can shape v1.2 -->
+<section>
+  <h2>How you can shape v1.2</h2>
+  <p style="font-size: 0.55em; margin-bottom: 0.4em;">Three concrete ways to bring your interest into A2WF.</p>
+  <ul>
+    <li><strong>Open an issue</strong> on <a href="https://github.com/a2wf/spec/issues" target="_blank">github.com/a2wf/spec</a> - ideas, gaps, examples from your sector.</li>
+    <li><strong>Send a pull request</strong> on the spec, the profiles, or any reference tool.</li>
+    <li><strong>Book a 30-minute call</strong> with me directly to talk through your use case and how A2WF could fit. Mail <a href="mailto:wwimmer@ssc-slovakia.com">wwimmer@ssc-slovakia.com</a>.</li>
+  </ul>
+  <p style="font-size: 0.55em; margin-top: 0.4em;">Most useful question to bring: <em>which module or sector would you want to own?</em></p>
+  <aside class="notes">
+    <p>Lower the activation energy. Many CG participants never open an issue because they assume the maintainer is too busy. A direct 30-minute slot removes that friction and surfaces real interest faster than async threads.</p>
+  </aside>
+</section>
+
+<!-- Slide 7 - Your input -->
+<section>
+  <h2>Your input - what should we hear from you?</h2>
+  <p style="font-size: 0.55em; margin-bottom: 0.4em;">Open prompts for round-robin. Pick whichever fits your perspective.</p>
   <ol>
-    <li><strong>ODRL profile of A2WF</strong> &mdash; should v1.2 include a normative export to ODRL, or keep architectural alignment only? <em>(Paola's first tip)</em></li>
-    <li><strong>Trigger expression language</strong> &mdash; permissions may carry <code>conditions</code>; should the expression syntax be JSONLogic, ODRL Constraints, SHACL, or remain undefined? Currently undefined.</li>
-    <li><strong>Schema.org Action vocabulary curation</strong> &mdash; we curate ~20 actions; should the CG maintain the curated set, or open it to community submissions?</li>
-    <li><strong>Cache directive precedence</strong> &mdash; the spec (Section 9.4) currently says HTTP Cache-Control / ETag / Last-Modified win, with the document-internal <code>discovery.cache</code> as fallback. Is this the right ordering?</li>
-    <li><strong>Multi-region jurisdictional posture</strong> &mdash; sites in multiple EU member states declare one <code>jurisdictions.primary</code> with an applicableLaws union. Sufficient?</li>
+    <li>Where do you see A2WF helping or failing in your sector?</li>
+    <li>Which existing standard or group should we connect with that we have missed?</li>
+    <li>What would make you adopt or recommend siteai.json on a real site?</li>
+    <li>What is the single biggest risk you see with this approach?</li>
+    <li>Which open question above matters most to you personally?</li>
   </ol>
   <aside class="notes">
     Frame as "directional input over six weeks", not "resolution in one call". ODRL and trigger language especially need follow-up discussions; do not try to settle them on stage. The cache question is already partly decided in the spec; this is a check that the decision is acceptable.
-  </aside>
-</section>
-
-<!-- Slide 10 - Roadmap + Get involved -->
-<section>
-  <h2>Roadmap and how to participate</h2>
-  <div style="display: flex; gap: 2em;">
-    <div style="flex: 1;">
-      <h3>v1.1 trajectory</h3>
-      <ul>
-        <li>v1.1.0-draft.2 today (this CG call)</li>
-        <li>v1.1.0-draft.3 after feedback (end June)</li>
-        <li>First CG candidate Q3 2026</li>
-      </ul>
-      <h3>v1.2 candidates</h3>
-      <ul>
-        <li>ODRL profile (companion spec)</li>
-        <li>AIP integration when IETF stabilises</li>
-        <li>DPV 2.x updates</li>
-        <li>Profile maintenance + registry</li>
-      </ul>
-    </div>
-    <div style="flex: 1;">
-      <h3>How to participate</h3>
-      <ul>
-        <li>Repo issues: <a href="https://github.com/a2wf/spec/issues" target="_blank">github.com/a2wf/spec/issues</a></li>
-        <li>Pull requests welcome on <code>tools/</code> and profile drafts</li>
-        <li>Office hours: TBD by CG charter</li>
-      </ul>
-      <h3>Liaisons tracked</h3>
-      <ul>
-        <li>W3C AIKR CG (Paola Di Maio)</li>
-        <li>W3C Agent Identity Protocol CG</li>
-        <li>DPVCG</li>
-        <li>ODRL CG</li>
-      </ul>
-      <p style="font-size: 0.5em; color: #666;">Tracked for review only; no formal endorsement or reciprocal liaison agreement yet.</p>
-    </div>
-  </div>
-  <aside class="notes">
-    End on an invitation. Be ready for "should A2WF become a chartered CG and eventually a Working Group?" - answer: that is what this meeting is for.
   </aside>
 </section>
 
@@ -325,6 +198,119 @@
   </p>
 </section>
 
+<!-- Appendix - Next steps -->
+<section>
+  <h2>Appendix: next steps</h2>
+  <ul>
+    <li>Collect your input from this call into GitHub issues within 48 hours.</li>
+    <li>Quiet weeks for liaison review and contributions on the repo.</li>
+    <li>Second community call in roughly two months - earlier if input warrants, later if we need more time.</li>
+    <li>Direction beyond that is shaped by what we hear from you, not pre-decided here.</li>
+  </ul>
+  <aside class="notes">
+    <p>Deliberately short. The first call is for listening; the roadmap is a CG decision, not the editor's. Two months is a working assumption, not a commitment.</p>
+  </aside>
+</section>
+
+<!-- Appendix - Scope: what A2WF concerns -->
+<section>
+  <h2>Appendix: what A2WF concerns</h2>
+  <p style="font-size: 0.55em; margin-bottom: 0.4em;">Five domains A2WF touches on the agent-web boundary.</p>
+  <table>
+    <thead>
+      <tr><th>Domain</th><th>What A2WF does here</th><th>Standards reused</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Governance</td><td>Declares which actions are permitted, prohibited, or require human oversight; aligns with EU Code of Practice and AI Act obligations.</td><td>Schema.org, ODRL, EU CoP</td></tr>
+      <tr><td>Audit and provenance</td><td>Site-side logging contract: what gets recorded, how it is signed, how an auditor can verify declared vs. observed behaviour.</td><td>PROV-O, RFC 9421, AIVS (opt-in)</td></tr>
+      <tr><td>Authentication and identity</td><td>Expects agents to identify themselves; references identity protocols without redefining them.</td><td>DID, VC, AIP (opt-in)</td></tr>
+      <tr><td>Privacy and jurisdiction</td><td>Declares personal-data categories, processing purposes, applicable legal regions (GDPR, CCPA, ...).</td><td>DPV, ISO-3166</td></tr>
+      <tr><td>Discovery</td><td>Fixed well-known location for the site policy; agents can find it deterministically without crawling.</td><td>RFC 8615, RFC 8288</td></tr>
+    </tbody>
+  </table>
+  <aside class="notes">
+    <p>This slide answers "what is A2WF actually about?" in five buckets. The third column makes the orchestrator story concrete: every domain reuses existing standards.</p>
+  </aside>
+</section>
+
+<!-- Appendix - Adjacent landscape -->
+<section>
+  <h2>Appendix: adjacent standards and groups</h2>
+  <p style="font-size: 0.5em; margin-bottom: 0.3em;">Work A2WF touches, complements, or watches - not orchestrated inside our spec, but on the same map.</p>
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Where</th><th>Relation to A2WF</th><th>Status in v1.1</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>AIPREF</td><td>IETF WG</td><td>Site-side opt-out for AI content use (training, search). Complement: AIPREF covers content use, A2WF covers agent actions.</td><td>Watched, not referenced</td></tr>
+      <tr><td>robots.txt + extensions</td><td>de-facto / IETF</td><td>Crawler access control. A2WF sits on top: once an agent is allowed in, what may it DO?</td><td>Watched, not referenced</td></tr>
+      <tr><td>Anthropic ClaudeBot User-Agent convention</td><td>Vendor</td><td>Voluntary header naming for AI crawlers. Useful identity signal; no standard yet.</td><td>Acknowledged, not relied on</td></tr>
+      <tr><td>llms.txt / ai.txt</td><td>Community proposals</td><td>Markdown summaries for LLM ingestion. Different layer (content-shaping, not governance).</td><td>Out of scope</td></tr>
+      <tr><td>NLWeb, MCP, A2A</td><td>Industry (Microsoft, Anthropic, Google)</td><td>Agent-to-tool and agent-to-agent protocols. Informative context; A2WF stays site-facing.</td><td>Informative only</td></tr>
+      <tr><td>W3C AIKR CG (Paola Di Maio)</td><td>W3C CG</td><td>AI Knowledge Representation, transparency, hybrid symbolic / sub-symbolic AI. Liaison for review of governance vocabulary.</td><td>Liaison, review input adopted</td></tr>
+      <tr><td>W3C WebAgents CG (Fabien Gandon)</td><td>W3C CG</td><td>Agent semantics on the web. Liaison for the agent-side perspective.</td><td>Liaison, outreach pending</td></tr>
+      <tr><td>W3C Agent Identity Protocol CG</td><td>W3C CG</td><td>50+ members working on agent identity. A2WF's agentIdentification module references their work.</td><td>Referenced (opt-in)</td></tr>
+      <tr><td>W3C Semantic Agent Communication CG</td><td>W3C CG</td><td>Semantic interoperability between agents. Watching for vocabulary alignment.</td><td>Watched, not referenced</td></tr>
+      <tr><td>W3C Agentic Arbitration CG</td><td>W3C CG</td><td>Dispute resolution between agents and sites. Relevant once A2WF gets enforcement signals.</td><td>Watched, future fit</td></tr>
+      <tr><td>W3C DPVCG, ODRL CG</td><td>W3C CG</td><td>Already orchestrated in A2WF (see main glossary). Listed here for completeness.</td><td>Normative (when used)</td></tr>
+      <tr><td>WAI-ARIA</td><td>W3C WG</td><td>Accessibility semantics. Useful precedent for site-side declarations consumed by non-human clients.</td><td>Precedent only</td></tr>
+    </tbody>
+  </table>
+  <aside class="notes">
+    <p>This map exists so the CG sees we are aware of the broader landscape and not building in isolation. AIPREF is the most frequent "isn't that the same thing?" question; the answer is content-use vs. agent-action - different layers. Paola's AIKR CG is named explicitly because she is in this audience and her intersection inventory directly shaped this version. The vendor convention from Anthropic is acknowledged but not relied on - it could disappear with a single product decision.</p>
+  </aside>
+</section>
+
+<!-- Appendix - Standards glossary -->
+<section>
+  <h2>Appendix: standards glossary</h2>
+  <table>
+    <thead>
+      <tr><th>Acronym</th><th>Full name</th><th>What it defines</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>ODRL</td><td>Open Digital Rights Language (W3C Rec)</td><td>Machine-readable permissions, prohibitions, and obligations on digital assets.</td></tr>
+      <tr><td>Schema.org</td><td>Schema.org Actions vocabulary</td><td>Shared vocabulary for actions on the web (BuyAction, ReserveAction, OrderAction).</td></tr>
+      <tr><td>DPV</td><td>Data Privacy Vocabulary (W3C DPVCG)</td><td>Terms for personal-data categories, processing purposes, legal bases (GDPR-aligned).</td></tr>
+      <tr><td>DID</td><td>Decentralized Identifiers (W3C Rec)</td><td>Self-sovereign identifiers not tied to a central registry.</td></tr>
+      <tr><td>VC</td><td>Verifiable Credentials (W3C Rec)</td><td>Cryptographically signed claims an entity can present to prove attributes.</td></tr>
+      <tr><td>PROV-O</td><td>Provenance Ontology (W3C Rec)</td><td>Who did what, when, with which inputs - audit trail vocabulary.</td></tr>
+      <tr><td>AIP</td><td>Agent Identity Protocol (IETF draft)</td><td>Header-based identification of AI agents on HTTP requests.</td></tr>
+      <tr><td>AIVS</td><td>AI Verifiable Statements (IETF draft)</td><td>Agent-side signed log of actions taken, with integrity proofs.</td></tr>
+      <tr><td>EU CoP</td><td>EU Code of Practice for general-purpose AI</td><td>Voluntary EU Commission code that operationalises AI Act obligations.</td></tr>
+      <tr><td>RFC 8615</td><td>Well-Known URIs (IETF)</td><td>Convention for /.well-known/ paths used by our discovery endpoint.</td></tr>
+      <tr><td>RFC 9421</td><td>HTTP Message Signatures (IETF)</td><td>Signing HTTP requests and responses for integrity and authenticity.</td></tr>
+    </tbody>
+  </table>
+  <aside class="notes">
+    <p>This glossary is for the audience to take away. A2WF references each of these standards but does not redefine them - we orchestrate, we do not duplicate. Stable W3C Recommendations are normative when their feature block is used; IETF drafts are opt-in experimental until they stabilise.</p>
+  </aside>
+</section>
+
+<!-- Appendix - Standards re-use detail -->
+<section>
+  <h2>Appendix: standards re-use, not re-invention</h2>
+  <table>
+    <thead><tr><th>Standard</th><th>Used for</th><th>Status in A2WF v1.1</th></tr></thead>
+    <tbody>
+      <tr><td>Schema.org Actions</td><td><code>permissions[].schemaOrgType</code></td><td>Conditional normative</td></tr>
+      <tr><td>W3C DID Core</td><td>Agent identity resolution</td><td>Conditional normative (agentIdentification)</td></tr>
+      <tr><td>W3C VC Data Model 2.0</td><td>Agent credentials</td><td>Conditional normative (agentIdentification)</td></tr>
+      <tr><td>HTTP Message Signatures (RFC 9421)</td><td>Request authentication</td><td>Conditional normative (agentIdentification, auditTrail)</td></tr>
+      <tr><td>OAuth 2.0 (RFC 6749)</td><td>Delegated authorisation</td><td>Conditional normative (agentIdentification)</td></tr>
+      <tr><td>W3C ODRL 2.2</td><td>Architectural precedent</td><td>Informative; companion profile is a v1.2 candidate</td></tr>
+      <tr><td>W3C DPV 2.x</td><td>Data-handling vocabulary</td><td>Conditional normative (dataHandling)</td></tr>
+      <tr><td>llmstxt.org</td><td>Discovery hint, not replaced</td><td>Informative compatibility note</td></tr>
+      <tr><td>AIP (IETF Internet-Draft)</td><td>Agent identity protocol</td><td>Experimental, optional</td></tr>
+      <tr><td>RFC 8615 (.well-known) / RFC 9309 (robots)</td><td>Discovery path</td><td>Normative</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size: 0.55em; margin-top: 0.4em;">A2WF v1.1 is a website declaration envelope. It reuses external vocabularies wherever stable and adds only the minimum new shape it needs.</p>
+  <aside class="notes">
+    Reference detail kept in the appendix. Pull it up if anyone asks "which standards exactly do you build on?"
+  </aside>
+</section>
+
 </div>
 </div>
 
@@ -338,7 +324,7 @@
     history: true,
     controls: true,
     progress: true,
-    center: true,
+    center: false,
     width: 1280,
     height: 800,
     margin: 0.04,
